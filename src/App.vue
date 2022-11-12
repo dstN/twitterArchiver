@@ -1,10 +1,26 @@
 <script setup>
 import { ref } from "vue";
+import JSZip from 'jszip';
 
 const validFile = ref(true);
 const loading = ref(false);
 
+function extractZipFile(e) {
+  const arrayBuffer = e.target.result;
+  const jszip = new JSZip();
+  const zip = jszip.loadAsync(arrayBuffer);
+      
+  zip
+    .then((zipData) => {
+      console.log('zipData', zipData)
+    });
+} 
+
 function changed(e) {
+  const validFileTypes = [
+    'application/zip',
+    'application/x-zip-compressed'
+  ];
   let file;
   if (e.srcElement.files != undefined && [...e.srcElement.files].length) {
     file = [...e.srcElement.files];
@@ -14,13 +30,16 @@ function changed(e) {
 
   file = file[0];
   const fileType = file.type;
-  if (fileType !== "application/x-zip-compressed") {
-    loading.value = true;
+  if (!validFileTypes.includes(fileType)) {
     validFile.value = false;
     return;
   }
 
-  console.log(`${file} dropped`);
+  console.log('file', file);
+  loading.value = true;
+  const fileReader = new FileReader();
+  fileReader.addEventListener('loadend', extractZipFile);
+  fileReader.readAsArrayBuffer(file)
 }
 
 function checkDrop(e) {
