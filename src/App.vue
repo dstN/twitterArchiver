@@ -1,25 +1,28 @@
 <script setup>
 import { ref } from "vue";
-let validFile = ref(true);
-let loading = ref(false);
+
+const validFile = ref(true);
+const loading = ref(false);
+
 function changed(e) {
   let file;
-  let fileType;
   if (e.srcElement.files != undefined && [...e.srcElement.files].length) {
     file = [...e.srcElement.files];
   } else {
     file = [...e.dataTransfer.files];
   }
+
   file = file[0];
-  fileType = file.type;
-  if (fileType === "application/x-zip-compressed") {
-    console.log(`${file} dropped`);
-  } else {
+  const fileType = file.type;
+  if (fileType !== "application/x-zip-compressed") {
     loading.value = true;
-    console.log(loading.value);
     validFile.value = false;
+    return;
   }
+
+  console.log(`${file} dropped`);
 }
+
 function checkDrop(e) {
   e.preventDefault();
 }
@@ -27,6 +30,7 @@ function checkDrop(e) {
 
 <template>
   <div class="relative">
+    <the-spinner :isLoading="loading"/>
     <main class="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-100 font-sans" :class="loading ? 'blur-sm' : ''">
       <h1 class="font-display">twittr_Archivr</h1>
       <label id="dropZone" @dragenter="checkDrop" @dragover="checkDrop" @drop.prevent="changed" for="dropzone-file" :class="validFile ? 'border-blue-400' : 'border-red-400'" class="mx-auto flex w-full max-w-lg cursor-pointer flex-col items-center rounded-xl border-2 border-dashed bg-white p-6 text-center">
@@ -41,11 +45,6 @@ function checkDrop(e) {
         <input @change="changed" id="dropzone-file" accept=".zip, application/zip" type="file" class="hidden" />
       </label>
     </main>
-    <div :class="loading ? 'z-10 opacity-100' : ''" class="absolute left-0 top-0 -z-10 flex min-h-screen min-w-full flex-col items-center justify-center gap-4 bg-white bg-opacity-30 font-sans">
-      <div class="fixed top-0 right-0 z-50 flex h-screen w-screen items-center justify-center">
-        <div class="h-32 w-32 animate-spin rounded-full border-t-2 border-b-2 border-blue-400"></div>
-      </div>
-    </div>
   </div>
 </template>
 
