@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
+
 const loading = ref(false);
 const data = ref(null);
+
 function changeLoading() {
   loading.value = true;
 }
@@ -18,5 +20,3 @@ function changeLoading() {
     />
   </div>
 </template>
-
-<style scoped></style>
