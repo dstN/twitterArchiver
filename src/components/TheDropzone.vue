@@ -57,9 +57,11 @@ function changed(e) {
   fileReader.addEventListener("loadend", extractZipFile);
   fileReader.readAsArrayBuffer(file);
 }
+
 function checkDrop(e) {
   e.preventDefault();
 }
+
 function resetDrop(e) {
   if (!dragOver.value) {
     dragOver.value = true;

@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <div
     class="absolute left-0 top-0 z-10 flex min-h-screen min-w-full flex-col items-center justify-center gap-4 bg-white bg-opacity-30 font-sans opacity-100"

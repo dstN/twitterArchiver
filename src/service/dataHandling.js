@@ -1,4 +1,4 @@
-export async function fixJSON(json) {
+async function fixJSON(json) {
   json = json.split(/\r?\n|\r|\n/g);
   json.shift();
   json.unshift("[");
@@ -7,13 +7,11 @@ export async function fixJSON(json) {
 }
 
 export async function getData(zipData, fileName) {
-  const folder = "data";
-  let data;
+  const fileLocation = `data/${fileName}`;
   try {
-    data = await zipData.files[`${folder}/${fileName}`].async("string");
-    data = await fixJSON(data);
-    return data;
+    let data = await zipData.files[fileLocation].async("string");
+    return await fixJSON(data);
   } catch (e) {
-    console.log(`Error with ${fileName}: `, e);
+    console.error(`Error with ${fileLocation}: `, e);
   }
 }
