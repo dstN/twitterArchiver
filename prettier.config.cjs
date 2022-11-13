@@ -1,6 +1,9 @@
 module.exports = {
-  printWidth: 1920,
+  printWidth: 80,
   tabWidth: 2,
-	singleQuote: false,
+  singleQuote: false,
   plugins: [require("prettier-plugin-tailwindcss")],
+  proseWrap: "always",
+  singleAttributePerLine: true,
+  bracketSpacing: true,
 };
