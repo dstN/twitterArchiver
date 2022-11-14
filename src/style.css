@@ -1,6 +1,7 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 @import "./fonts.css";
 
 :root {

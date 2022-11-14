@@ -12,26 +12,30 @@ const props = defineProps({
 
 const validFile = ref(true);
 const dragOver = ref(false);
-const emit = defineEmits(["load"]);
+const emit = defineEmits(["load", "payloadEvent"]);
 
 async function extractZipFile(e) {
   const arrayBuffer = e.target.result;
   const jszip = new JSZip();
   const zipData = await jszip.loadAsync(arrayBuffer);
+  let data = {};
   //#region Get Tweets
   let tweets = await dataHandling.getData(zipData, "tweet.js");
-  console.log(tweets);
+  data.tweets = tweets;
   //#endregion
 
   //#region Get Profile
   let profile = await dataHandling.getData(zipData, "profile.js");
-  console.log(profile);
+  data.profile = profile;
   //#endregion
 
   //#region Get Account
   let account = await dataHandling.getData(zipData, "account.js");
-  console.log(account);
+  data.account = account;
   //#endregion
+
+  emit("load", false);
+  emit("payloadEvent", data);
 }
 
 function changed(e) {

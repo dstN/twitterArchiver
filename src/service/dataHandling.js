@@ -7,7 +7,7 @@ async function fixJSON(json) {
 }
 
 export async function getData(zipData, fileName) {
-  const fileLocation = `${folder}/${fileName}`;
+  const fileLocation = `data/${fileName}`;
   try {
     let data = await zipData.files[fileLocation].async("string");
     return await fixJSON(data);
