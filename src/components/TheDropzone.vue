@@ -21,7 +21,7 @@ async function extractZipFile(e) {
   let data = {};
   //#region Get Tweets
   let tweets = await dataHandling.getData(zipData, "tweet.js");
-  data.tweets = tweets;
+  data.tweets = tweets.map((item) => ({ ...item.tweet }));
   //#endregion
 
   //#region Get Profile
