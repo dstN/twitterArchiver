@@ -1,22 +1,22 @@
 <script setup>
-import { onMounted, toRefs } from "vue";
+import { toRefs, computed } from "vue";
+import TweetDate from "./partials/TweetDate.vue";
 
 const props = defineProps({
   items: Array,
+  account: Object,
+  profile: Object,
 });
 
-const { items } = toRefs(props);
-
-onMounted(function () {
-  console.log("TheContent: ", items.value);
-});
+const { items, account, profile } = toRefs(props);
 </script>
 
 <template>
   <DynamicScroller
     :items="items"
     :min-item-size="54"
-    class="scroller max-h-screen min-h-screen"
+    class="scroller mx-auto min-h-screen max-w-screen-sm shadow-2xl"
+    page-mode
   >
     <template v-slot="{ item, index, active }">
       <DynamicScrollerItem
@@ -29,13 +29,42 @@ onMounted(function () {
           :key="item.id"
           class="flex justify-center"
         >
-          <div class="block max-w-sm rounded-lg bg-white p-6 shadow-lg">
-            <h5 class="mb-2 text-xl font-medium leading-tight text-gray-900">
-              Card title
-            </h5>
-            <p class="mb-4 text-base text-gray-700">
-              {{ item.full_text }}
-            </p>
+          <div
+            class="block w-full max-w-screen-sm border-b-2 border-dashed border-blue-400 bg-white p-6 hover:bg-slate-100"
+          >
+            <div class="mb-2 flex min-h-[3rem] flex-row items-center gap-1">
+              <div class="mr-2">
+                <a
+                  :href="`https://twitter.com/i/user/${account.accountId}`"
+                  target="_blank"
+                >
+                  <img
+                    :src="profile.profileImage"
+                    class="w-12 rounded-full border border-slate-200"
+                  />
+                </a>
+              </div>
+              <div class="font-bold">
+                <a
+                  :href="`https://twitter.com/i/user/${account.accountId}`"
+                  target="_blank"
+                >
+                  {{ account.accountDisplayName }}
+                </a>
+              </div>
+              <div class="font-normal text-slate-700">
+                @{{ account.username }}
+              </div>
+              <div class="spacer">·</div>
+              <TweetDate
+                :tweetid="item.id"
+                :date="item.created_at"
+              />
+            </div>
+            <p
+              v-html="item.full_text"
+              class="mb-2 text-base text-gray-700"
+            ></p>
           </div>
         </div>
       </DynamicScrollerItem>

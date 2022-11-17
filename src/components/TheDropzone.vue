@@ -20,18 +20,34 @@ async function extractZipFile(e) {
   const zipData = await jszip.loadAsync(arrayBuffer);
   let data = {};
   //#region Get Tweets
-  let tweets = await dataHandling.getData(zipData, "tweet.js");
+  let tweetfile = zipData.file("data/tweet.js") ? "tweet.js" : "tweets.js";
+  let tweets = await dataHandling.getData(zipData, tweetfile);
   data.tweets = tweets.map((item) => ({ ...item.tweet }));
   //#endregion
 
   //#region Get Profile
   let profile = await dataHandling.getData(zipData, "profile.js");
-  data.profile = profile;
+  data.profile = profile.map((item) => ({ ...item.profile }));
   //#endregion
 
   //#region Get Account
   let account = await dataHandling.getData(zipData, "account.js");
-  data.account = account;
+  data.account = account.map((item) => ({ ...item.account }));
+  //#endregion
+
+  //#region Get Profile Pic
+  let userId = data.account[0].accountId;
+  let fileName = data.profile[0].avatarMediaUrl
+    .split("/")
+    .pop()
+    .split("#")[0]
+    .split("?")[0];
+  fileName = `${userId}-${fileName}`;
+  let profileImage = await dataHandling.getData(
+    zipData,
+    `profile_media/${fileName}`
+  );
+  data.profile[0].profileImage = profileImage;
   //#endregion
 
   emit("load", false);
@@ -78,7 +94,7 @@ function resetDrop(e) {
 
 <template>
   <main
-    class="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-100 font-sans"
+    class="flex min-h-screen flex-col items-center justify-center gap-4 font-sans"
     :class="isLoading ? 'blur-sm' : ''"
   >
     <h1 class="font-display">twittr_Archivr</h1>

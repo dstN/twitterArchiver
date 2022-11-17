@@ -14,15 +14,18 @@ function changeLoading(loadValue) {
 function handleData(payload) {
   data.value = payload;
   tweets.value = payload.tweets;
-  console.log("HandleData: ", tweets.value);
+  account.value = payload.account[0];
+  profile.value = payload.profile[0];
 }
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative bg-slate-300">
     <TheSpinner v-if="loading" />
     <TheContent
       :items="tweets"
+      :account="account"
+      :profile="profile"
       v-if="data"
     />
     <TheDropzone
