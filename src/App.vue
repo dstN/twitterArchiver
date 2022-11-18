@@ -3,9 +3,6 @@ import { ref } from "vue";
 
 const loading = ref(false);
 const data = ref(null);
-const tweets = ref(null);
-const account = ref(null);
-const profile = ref(null);
 
 function changeLoading(loadValue) {
   loading.value = loadValue;
@@ -13,9 +10,6 @@ function changeLoading(loadValue) {
 
 function handleData(payload) {
   data.value = payload;
-  tweets.value = payload.tweets;
-  account.value = payload.account[0];
-  profile.value = payload.profile[0];
 }
 </script>
 
@@ -23,9 +17,9 @@ function handleData(payload) {
   <div class="relative bg-slate-300">
     <TheSpinner v-if="loading" />
     <TheContent
-      :items="tweets"
-      :account="account"
-      :profile="profile"
+      :items="data.tweets"
+      :account="data.account"
+      :profile="data.profile"
       v-if="data"
     />
     <TheDropzone
