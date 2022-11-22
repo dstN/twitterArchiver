@@ -2,40 +2,36 @@
 import { toRefs, computed } from "vue";
 
 const props = defineProps({
-  tweetid: String,
-  date: String,
+  id: String,
+  dateStr: String,
 });
 
-const { date, tweetid } = toRefs(props);
+const { dateStr, id } = toRefs(props);
 
-const tweetDate = computed(() => {
-  let returnDate = new Date(date.value);
-  returnDate = returnDate.toLocaleDateString(undefined, {
+const formattedDate = computed(() => {
+  const date = new Date(dateStr.value);
+  return date.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
-  return returnDate;
 });
 
-const tweetLink = computed(() => {
-  let link;
-  let prefix = "https://twitter.com/i/status/";
-  link = prefix + tweetid.value;
-  return link;
+const link = computed(() => {
+  return `https://twitter.com/i/status/${id.value}`;
 });
 </script>
 
 <template>
   <a
-    :href="tweetLink"
+    :href="link"
     target="_blank"
   >
     <div
-      :title="date"
+      :title="dateStr"
       class="font-normal text-slate-700"
     >
-      {{ tweetDate }}
+      {{ formattedDate }}
     </div>
   </a>
 </template>

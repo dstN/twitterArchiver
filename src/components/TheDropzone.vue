@@ -4,10 +4,7 @@ import * as dataHandling from "../service/dataHandling";
 import { ref } from "vue";
 
 const props = defineProps({
-  isLoading: {
-    type: Boolean,
-    required: true,
-  },
+  isLoading: Boolean,
 });
 
 const validFile = ref(true);
@@ -18,20 +15,18 @@ async function extractZipFile(e) {
   const arrayBuffer = e.target.result;
   const jszip = new JSZip();
   const zipData = await jszip.loadAsync(arrayBuffer);
-  let data = {};
+  let data = { user: {} };
 
   //#region Get Data
   const tweetfile = zipData.file("data/tweet.js") ? "tweet.js" : "tweets.js";
   data.tweets = await dataHandling.getData(zipData, tweetfile, true);
-
-  data.profile = await dataHandling.getData(zipData, "profile.js");
-
-  data.account = await dataHandling.getData(zipData, "account.js");
+  data.user.profile = await dataHandling.getData(zipData, "profile.js");
+  data.user.account = await dataHandling.getData(zipData, "account.js");
   //#endregion
 
   //#region Get Profile Pic
-  const userId = data.account.accountId;
-  const file = data.profile.avatarMediaUrl
+  const userId = data.user.account.accountId;
+  const file = data.user.profile.avatarMediaUrl
     .split("/")
     .pop()
     .split("#")[0]
@@ -41,7 +36,7 @@ async function extractZipFile(e) {
     zipData,
     `profile_media/${fileName}`
   );
-  data.profile.profileImage = profileImage;
+  data.user.profile.profileImage = profileImage;
   //#endregion
 
   emit("load", false);

@@ -17,10 +17,8 @@ function handleData(payload) {
   <div class="relative bg-slate-300">
     <TheSpinner v-if="loading" />
     <TheContent
-      :items="data.tweets"
-      :account="data.account"
-      :profile="data.profile"
       v-if="data"
+      :data="data"
     />
     <TheDropzone
       :isLoading="loading"
