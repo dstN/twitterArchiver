@@ -1,3 +1,5 @@
+import Logger from './Logger';
+
 export async function ProcessData(zipData) {
   ZIP_DATA = zipData;
   return {
@@ -6,6 +8,7 @@ export async function ProcessData(zipData) {
   };
 }
 
+const LOGGER = new Logger("DataHandler");
 let ZIP_DATA;
 
 async function fixJson(json) {
@@ -19,16 +22,20 @@ async function fixJson(json) {
 }
 
 async function getFileFromZip(fileName) {
-  const mediaExtensions = ["jpg", "png", "gif", "jpeg", "jiff", "mp4"];
-  const fileLocation = `data/${fileName}`;
-  let extension = fileName.split(".").pop();
+  try {
+    const mediaExtensions = ["jpg", "png", "gif", "jpeg", "jiff", "mp4"];
+    const fileLocation = `data/${fileName}`;
+    let extension = fileName.split(".").pop();
 
-  if (mediaExtensions.includes(extension)) {
-    const rawData = await ZIP_DATA.files[fileLocation].async("blob");
-    return URL.createObjectURL(rawData);
-  } else {
-    const rawData = await ZIP_DATA.files[fileLocation].async("string");
-    return await fixJson(rawData);
+    if (mediaExtensions.includes(extension)) {
+      const rawData = await ZIP_DATA.files[fileLocation].async("blob");
+      return URL.createObjectURL(rawData);
+    } else {
+      const rawData = await ZIP_DATA.files[fileLocation].async("string");
+      return await fixJson(rawData);
+    }
+  } catch (error) {
+    LOGGER.error('Failed to get file from zip data', fileName, 'Error', error)
   }
 }
 
