@@ -1,6 +1,6 @@
 <script setup>
 import JSZip from "jszip";
-import * as dataHandling from "../service/dataHandling";
+import * as dataHandler from "../util/DataHandler";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -15,29 +15,7 @@ async function extractZipFile(e) {
   const arrayBuffer = e.target.result;
   const jszip = new JSZip();
   const zipData = await jszip.loadAsync(arrayBuffer);
-  let data = { user: {} };
-
-  //#region Get Data
-  const tweetfile = zipData.file("data/tweet.js") ? "tweet.js" : "tweets.js";
-  data.tweets = await dataHandling.getData(zipData, tweetfile, true);
-  data.user.profile = await dataHandling.getData(zipData, "profile.js");
-  data.user.account = await dataHandling.getData(zipData, "account.js");
-  //#endregion
-
-  //#region Get Profile Pic
-  const userId = data.user.account.accountId;
-  const file = data.user.profile.avatarMediaUrl
-    .split("/")
-    .pop()
-    .split("#")[0]
-    .split("?")[0];
-  const fileName = `${userId}-${file}`;
-  const profileImage = await dataHandling.getData(
-    zipData,
-    `profile_media/${fileName}`
-  );
-  data.user.profile.profileImage = profileImage;
-  //#endregion
+  const data = await dataHandler.ProcessData(zipData);
 
   emit("load", false);
   emit("payloadEvent", data);

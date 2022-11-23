@@ -29,7 +29,7 @@ const profile = computed(() => {
           target="_blank"
         >
           <img
-            :src="profile.profileImage"
+            :src="profile.Image"
             class="w-12 rounded-full border border-slate-200"
           />
         </a>
