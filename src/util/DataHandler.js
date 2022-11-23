@@ -40,24 +40,27 @@ async function getTweets() {
     /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gm;
 
   for (let tweet of tweets) {
+    const media = [];
     const result = tweet.full_text.matchAll(regex);
 
-    for (const match of result) {
+    for await (const match of result) {
       if (tweet.entities.urls.length) {
         tweet.full_text = resolveShortendLinks(tweet.full_text, tweet.entities.urls, match[0]);
       } else {
-        resolveMediaLinks();
+        const blob = await resolveMediaLinks(tweet.id, tweet.extended_entities.media, match[0]);
+        media.push(blob);
       }
     }
-  }
 
-  console.log(tweets[0])
+    tweet.media = media;
+  }
 
   return tweets;
 }
 
 function resolveShortendLinks(text, urls, urlMatch) {
   const entity = urls.find(obj => obj.url === urlMatch);
+
   text = text.replaceAll(
     urlMatch,
     entity ? entity.expanded_url : '!!!LINK COULD NOT BE RESOLVED!!!'
@@ -66,8 +69,23 @@ function resolveShortendLinks(text, urls, urlMatch) {
   return text;
 }
 
-function resolveMediaLinks() {
-  //TODO
+async function resolveMediaLinks(tweetId, media, urlMatch) {
+  const entity = media.find(obj => obj.url === urlMatch);
+  if (!entity) return;
+
+  let mediaName = "";
+  switch (entity.type) {
+    case "animated_gif":
+    case "video":
+      mediaName = entity.video_info.variants[0].url.split("/").pop().split("?")[0];
+      break;
+    case "photo":
+    default:
+      mediaName = entity.media_url.split("/").pop();
+      break;
+  }
+
+  return await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`);
 }
 
 async function getUser() {
