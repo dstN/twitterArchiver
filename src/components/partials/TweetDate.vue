@@ -3,17 +3,18 @@ import { toRefs, computed } from "vue";
 
 const props = defineProps({
   id: String,
-  dateStr: String,
+  date: Date,
 });
 
-const { dateStr, id } = toRefs(props);
+const { date, id } = toRefs(props);
 
 const formattedDate = computed(() => {
-  const date = new Date(dateStr.value);
-  return date.toLocaleDateString(undefined, {
+  return date.value.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 });
 
@@ -28,7 +29,7 @@ const link = computed(() => {
     target="_blank"
   >
     <div
-      :title="dateStr"
+      :title="date"
       class="font-normal text-slate-700"
     >
       {{ formattedDate }}

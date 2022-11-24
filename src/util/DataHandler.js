@@ -61,8 +61,9 @@ async function getTweets() {
 
     tweet.media = media;
   }
-
-  return tweets;
+  return tweets.map((tweet => {
+    return { id: tweet.id, created_at: new Date(tweet.created_at), full_text: tweet.full_text, media: tweet.media }
+  }))
 }
 
 function resolveShortendLinks(text, urls, urlMatch) {
@@ -70,7 +71,7 @@ function resolveShortendLinks(text, urls, urlMatch) {
 
   text = text.replaceAll(
     urlMatch,
-    entity ? entity.expanded_url : '!!!LINK COULD NOT BE RESOLVED!!!'
+    entity ? `<a class="text-blue-400" href="${entity.expanded_url}">${entity.expanded_url}</a>` : '<!LINK COULD NOT BE RESOLVED!>'
   );
 
   return text;
