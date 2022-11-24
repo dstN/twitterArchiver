@@ -19,9 +19,7 @@ const profile = computed(() => {
 </script>
 
 <template>
-  <div
-    class="block w-full max-w-screen-sm border-b-2 border-dashed border-blue-400 bg-white p-6 hover:bg-slate-100"
-  >
+  <div class="block w-full max-w-screen-sm p-6">
     <div class="mb-2 flex min-h-[3rem] flex-row items-center gap-1">
       <div class="mr-2">
         <a

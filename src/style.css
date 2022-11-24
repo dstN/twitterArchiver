@@ -15,3 +15,15 @@
 .dropLabel * {
   pointer-events: none;
 }
+
+@layer components {
+  .tweet {
+    @apply border-b-2 border-dashed;
+  }
+  .tweet:nth-of-type(odd) {
+    @apply border-indigo-400;
+  }
+  .tweet:nth-of-type(even) {
+    @apply border-blue-400;
+  }
+}

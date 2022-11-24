@@ -23,6 +23,7 @@ const user = computed(() => {
     :min-item-size="54"
     class="scroller mx-auto min-h-screen max-w-screen-sm shadow-2xl"
     page-mode
+    itemClass="tweet"
   >
     <template v-slot="{ item, index, active }">
       <DynamicScrollerItem
@@ -33,7 +34,7 @@ const user = computed(() => {
       >
         <div
           :key="item.id"
-          class="flex justify-center"
+          class="flex flex-col justify-center bg-white hover:bg-slate-100"
         >
           <Tweet
             :data="item"
