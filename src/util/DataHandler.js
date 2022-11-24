@@ -53,8 +53,10 @@ async function getTweets() {
     for await (const match of result) {
       if (tweet.entities.urls.length) {
         tweet.full_text = resolveShortendLinks(tweet.full_text, tweet.entities.urls, match[0]);
-      } else {
+      }
+      else if (tweet.extended_entities) {
         const blob = await resolveMediaLinks(tweet.id, tweet.extended_entities.media, match[0]);
+        tweet.full_text = tweet.full_text.replaceAll(match[0], "");
         media.push(blob);
       }
     }
