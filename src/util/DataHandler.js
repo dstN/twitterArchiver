@@ -95,7 +95,10 @@ async function resolveMediaLinks(tweetId, media, urlMatch) {
       break;
   }
 
-  return await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`);
+  return {
+    type: entity.type,
+    data: await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`)
+  };
 }
 
 async function getUser() {
