@@ -2,6 +2,7 @@
 import { ref, toRefs, computed } from "vue";
 import Tweet from "./partials/Tweet.vue";
 import debounce from "lodash/debounce";
+import * as ThreadHandler from "../util/ThreadHandler";
 
 const props = defineProps({
   data: Object,
@@ -50,6 +51,17 @@ const tweets = computed(() => {
 const user = computed(() => {
   return data.value.user;
 });
+
+function getThread(tweetId) {
+  const tweet = data.value.tweets.find((tweet) => tweet.id === tweetId);
+  tweet.thread = ThreadHandler.GetThread(
+    data.value.user.account.accountId,
+    data.value.tweets,
+    tweetId
+  );
+
+  console.log("thread", tweet.thread);
+}
 </script>
 
 <template>
@@ -95,6 +107,7 @@ const user = computed(() => {
               <Tweet
                 :data="item"
                 :user="user"
+                @get-thread="getThread"
               />
             </div>
           </DynamicScrollerItem>

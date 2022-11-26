@@ -7,6 +7,8 @@ const props = defineProps({
   user: Object,
 });
 
+const emit = defineEmits(["getThread"]);
+
 const { data, user } = toRefs(props);
 
 const account = computed(() => {
@@ -16,6 +18,10 @@ const account = computed(() => {
 const profile = computed(() => {
   return user.value.profile;
 });
+
+function getThread() {
+  emit("getThread", data.value.id);
+}
 </script>
 
 <template>
@@ -46,6 +52,15 @@ const profile = computed(() => {
         :id="data.id"
         :date="data.created_at"
       />
+      <template v-if="data.is_thread">
+        <div class="spacer">·</div>
+        <p
+          class="font-bold text-blue-600"
+          @click="getThread"
+        >
+          THREAD
+        </p>
+      </template>
     </div>
     <div class="tweet">
       <p

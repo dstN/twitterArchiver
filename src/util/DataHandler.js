@@ -3,13 +3,14 @@ import Logger from './Logger';
 export async function ProcessData(zipData) {
   ZIP_DATA = zipData;
   return {
-    tweets: await getTweets(),
-    user: await getUser()
+    user: await getUser(),
+    tweets: await getTweets()
   };
 }
 
 const LOGGER = new Logger("DataHandler");
 let ZIP_DATA;
+let ACCOUNT_ID;
 
 async function fixJson(json) {
   let makeArr = json.split(/\r?\n|\r|\n/g);
@@ -47,6 +48,7 @@ async function getTweets() {
     /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gm;
 
   for (let tweet of tweets) {
+    // check for links and media in the tweet
     const media = [];
     const result = tweet.full_text.matchAll(regex);
 
@@ -60,11 +62,22 @@ async function getTweets() {
         media.push(blob);
       }
     }
-
     tweet.media = media;
+
+    // check if the tweet contains child tweets (aka threads) :)
+    tweet.is_thread = checkForThread(tweets, tweet);
   }
+
   return tweets.map((tweet => {
-    return { id: tweet.id, created_at: new Date(tweet.created_at), full_text: tweet.full_text, media: tweet.media }
+    return {
+      id: tweet.id,
+      created_at: new Date(tweet.created_at),
+      is_thread: tweet.is_thread,
+      full_text: tweet.full_text,
+      media: tweet.media,
+      in_reply_to_user_id: tweet.in_reply_to_user_id,
+      in_reply_to_status_id: tweet.in_reply_to_status_id
+    }
   }))
 }
 
@@ -101,9 +114,16 @@ async function resolveMediaLinks(tweetId, media, urlMatch) {
   };
 }
 
+function checkForThread(tweets, origin) {
+  return tweets.filter(
+    tweet => tweet.in_reply_to_user_id === ACCOUNT_ID && tweet.in_reply_to_status_id === origin.id
+  ).length > 0
+}
+
 async function getUser() {
   const account = await getAccount();
-  const profile = await getProfile(account.accountId)
+  ACCOUNT_ID = account.accountId;
+  const profile = await getProfile()
 
   return {
     account,
@@ -115,10 +135,10 @@ async function getAccount() {
   return await getFileFromZip("account.js");
 }
 
-async function getProfile(id) {
+async function getProfile() {
   const profile = await getFileFromZip("profile.js");
   const file = profile.avatarMediaUrl.split("/").pop().split("#")[0].split("?")[0];
-  profile.Image = await getFileFromZip(`profile_media/${id}-${file}`);
+  profile.Image = await getFileFromZip(`profile_media/${ACCOUNT_ID}-${file}`);
 
   return profile;
 }
