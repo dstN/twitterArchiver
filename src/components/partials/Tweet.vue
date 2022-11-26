@@ -47,9 +47,32 @@ const profile = computed(() => {
         :date="data.created_at"
       />
     </div>
-    <p
-      v-html="data.full_text"
-      class="mb-2 text-base text-gray-700"
-    ></p>
+    <div class="tweet">
+      <p
+        v-html="data.full_text"
+        class="mb-2 text-base text-gray-700"
+      ></p>
+    </div>
+    <div
+      class="tweetMedia"
+      v-if="data.media.length"
+    >
+      <div
+        class="mediaFile"
+        v-for="media in data.media"
+      >
+        <img
+          v-if="media.type === 'photo'"
+          :src="media.data"
+        />
+        <video
+          v-else
+          autoplay
+          loop
+          :src="media.data"
+          class="h-full w-full"
+        ></video>
+      </div>
+    </div>
   </div>
 </template>

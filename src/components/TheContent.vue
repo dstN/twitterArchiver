@@ -90,7 +90,7 @@ const user = computed(() => {
           >
             <div
               :key="item.id"
-              class="flex flex-col justify-center bg-white hover:bg-slate-100"
+              class="flex flex-col justify-center border-b-2 border-dashed border-blue-400 bg-white hover:bg-slate-100"
             >
               <Tweet
                 :data="item"
