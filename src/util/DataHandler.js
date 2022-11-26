@@ -44,25 +44,15 @@ async function getTweets() {
   const tweetsFile = ZIP_DATA.file("data/tweet.js") ? "tweet.js" : "tweets.js";
   const tweets = await getFileFromZip(tweetsFile);
 
-  const regex =
-    /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gm;
-
   for (let tweet of tweets) {
     // check for links and media in the tweet
-    const media = [];
-    const result = tweet.full_text.matchAll(regex);
-
-    for await (const match of result) {
-      if (tweet.entities.urls.length) {
-        tweet.full_text = resolveShortendLinks(tweet.full_text, tweet.entities.urls, match[0]);
-      }
-      else if (tweet.extended_entities) {
-        const blob = await resolveMediaLinks(tweet.id, tweet.extended_entities.media, match[0]);
-        tweet.full_text = tweet.full_text.replaceAll(match[0], "");
-        media.push(blob);
-      }
+    if (tweet.entities.urls.length && !tweet.full_text.startsWith("RT")) {
+      tweet.full_text = resolveShortendLinks(tweet.full_text, tweet.entities.urls);
     }
-    tweet.media = media;
+    else if (tweet.extended_entities) {
+      tweet.media = await resolveMediaLinks(tweet.id, tweet.extended_entities.media);
+      tweet.full_text = tweet.full_text.replaceAll(tweet.extended_entities.media[0].url, "");
+    }
 
     // check if the tweet contains child tweets (aka threads) :)
     tweet.is_thread = checkForThread(tweets, tweet);
@@ -81,37 +71,39 @@ async function getTweets() {
   }))
 }
 
-function resolveShortendLinks(text, urls, urlMatch) {
-  const entity = urls.find(obj => obj.url === urlMatch);
-
-  text = text.replaceAll(
-    urlMatch,
-    entity ? `<a class="text-blue-400" href="${entity.expanded_url}">${entity.expanded_url}</a>` : '<!LINK COULD NOT BE RESOLVED!>'
-  );
+function resolveShortendLinks(text, urls) {
+  urls.forEach(entity => {
+    text = text.replaceAll(
+      entity.url,
+      entity ? `<a class="text-blue-400" href="${entity.expanded_url}">${entity.expanded_url}</a>` : '<!BROKEN LINK!>'
+    );
+  });
 
   return text;
 }
 
-async function resolveMediaLinks(tweetId, media, urlMatch) {
-  const entity = media.find(obj => obj.url === urlMatch);
-  if (!entity) return;
+async function resolveMediaLinks(tweetId, media) {
+  const resolvedMedia = []
+  for await (const entity of media) {
+    let mediaName = "";
+    switch (entity.type) {
+      case "animated_gif":
+      case "video":
+        mediaName = entity.video_info.variants[0].url.split("/").pop().split("?")[0];
+        break;
+      case "photo":
+      default:
+        mediaName = entity.media_url.split("/").pop();
+        break;
+    }
 
-  let mediaName = "";
-  switch (entity.type) {
-    case "animated_gif":
-    case "video":
-      mediaName = entity.video_info.variants[0].url.split("/").pop().split("?")[0];
-      break;
-    case "photo":
-    default:
-      mediaName = entity.media_url.split("/").pop();
-      break;
-  }
-
-  return {
-    type: entity.type,
-    data: await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`)
+    resolvedMedia.push({
+      type: entity.type,
+      data: await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`)
+    });
   };
+
+  return resolvedMedia;
 }
 
 function checkForThread(tweets, origin) {

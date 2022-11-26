@@ -23,7 +23,10 @@ const searchTermCaseSensitiveChanged = () => {
 };
 
 function filterTweets() {
-  if (searchTerm.value.length < 3) return;
+  if (searchTerm.value.length < 3) {
+    filteredData.value = data.value.tweets;
+    return;
+  }
 
   const insensitiveFilter = (tweet) => {
     return (
