@@ -50,7 +50,7 @@ async function getTweets() {
     if (tweet.entities.urls.length && !tweet.full_text.startsWith("RT")) {
       tweet.full_text = resolveShortendLinks(tweet.full_text, tweet.entities.urls);
     }
-    else if (tweet.extended_entities) {
+    if (tweet.extended_entities) {
       tweet.media = await resolveMediaLinks(tweet.id, tweet.extended_entities.media);
       tweet.full_text = tweet.full_text.replaceAll(tweet.extended_entities.media[0].url, "");
     }
