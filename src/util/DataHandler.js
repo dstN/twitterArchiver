@@ -22,15 +22,16 @@ async function fixJson(json) {
   return makeArr.length > 1 ? makeArr : makeArr[0];
 }
 
-async function getFileFromZip(fileName) {
+async function getFileFromZip(fileName, mediaType) {
   try {
     const mediaExtensions = ["jpg", "png", "gif", "jpeg", "jiff", "mp4"];
     const fileLocation = `data/${fileName}`;
     let extension = fileName.split(".").pop();
 
     if (mediaExtensions.includes(extension)) {
-      const rawData = await ZIP_DATA.files[fileLocation].async("blob");
-      return URL.createObjectURL(rawData);
+      const untypedBlob = await ZIP_DATA.files[fileLocation].async("blob");
+      const mediaBlob = new Blob([untypedBlob], { type: mediaType })
+      return URL.createObjectURL(mediaBlob)
     } else {
       const rawData = await ZIP_DATA.files[fileLocation].async("string");
       return await fixJson(rawData);
@@ -86,20 +87,23 @@ async function resolveMediaLinks(tweetId, media) {
   const resolvedMedia = []
   for await (const entity of media) {
     let mediaName = "";
+    let mediaType = "";
     switch (entity.type) {
       case "animated_gif":
       case "video":
         mediaName = entity.video_info.variants[0].url.split("/").pop().split("?")[0];
+        mediaType = "video/mp4";
         break;
       case "photo":
       default:
         mediaName = entity.media_url.split("/").pop();
+        mediaType = "image/png";
         break;
     }
 
     resolvedMedia.push({
       type: entity.type,
-      data: await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`)
+      data: await getFileFromZip(`tweet_media/${tweetId}-${mediaName}`, mediaType)
     });
   };
 
@@ -130,7 +134,7 @@ async function getAccount() {
 async function getProfile() {
   const profile = await getFileFromZip("profile.js");
   const file = profile.avatarMediaUrl.split("/").pop().split("#")[0].split("?")[0];
-  profile.Image = await getFileFromZip(`profile_media/${ACCOUNT_ID}-${file}`);
+  profile.Image = await getFileFromZip(`profile_media/${ACCOUNT_ID}-${file}`, "image/png");
 
   return profile;
 }

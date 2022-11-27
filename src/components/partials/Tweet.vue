@@ -70,7 +70,7 @@ function getThread() {
     </div>
     <div
       class="tweetMedia"
-      v-if="data.media.length"
+      v-if="data.media?.length"
     >
       <div
         class="mediaFile"
