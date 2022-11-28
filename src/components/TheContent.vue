@@ -61,13 +61,6 @@ function sortTweets() {
         return a.created_at - b.created_at;
       });
       break;
-    case "answer":
-      filteredData.value.sort((a, b) => {
-        return (
-          Number(b.in_reply_to_status_id) - Number(a.in_reply_to_status_id)
-        );
-      });
-      break;
     case "likes":
       filteredData.value.sort((a, b) => {
         return b.likes - a.likes;
@@ -76,16 +69,6 @@ function sortTweets() {
     case "retweets":
       filteredData.value.sort((a, b) => {
         return b.retweets - a.retweets;
-      });
-      break;
-    case "link":
-      filteredData.value.sort((a, b) => {
-        return Number(b.has_link) - Number(a.has_link);
-      });
-      break;
-    case "media":
-      filteredData.value.sort((a, b) => {
-        return Number(!!b.media) - Number(!!a.media);
       });
       break;
   }
@@ -170,36 +153,6 @@ function getThread(tweetId) {
           v-model="filterTerm"
         />
         <label for="retweets">by retweets</label>
-      </div>
-
-      <div>
-        <input
-          type="radio"
-          id="answer"
-          value="answer"
-          v-model="filterTerm"
-        />
-        <label for="answer">by answers only</label>
-      </div>
-
-      <div>
-        <input
-          type="radio"
-          id="link"
-          value="link"
-          v-model="filterTerm"
-        />
-        <label for="link">by contains link</label>
-      </div>
-
-      <div>
-        <input
-          type="radio"
-          id="media"
-          value="media"
-          v-model="filterTerm"
-        />
-        <label for="media">by contains media</label>
       </div>
     </div>
 
