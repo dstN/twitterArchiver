@@ -44,11 +44,11 @@ async function getFileFromZip(fileName, mediaType) {
 async function getTweets() {
   const tweetsFile = ZIP_DATA.file("data/tweet.js") ? "tweet.js" : "tweets.js";
   const tweets = await getFileFromZip(tweetsFile);
-
   for (let tweet of tweets) {
     // check for links and media in the tweet
     if (tweet.entities.urls.length && !tweet.full_text.startsWith("RT")) {
       tweet.full_text = resolveShortendLinks(tweet.full_text, tweet.entities.urls);
+      tweet.has_link = true;
     }
     if (tweet.extended_entities) {
       tweet.media = await resolveMediaLinks(tweet.id, tweet.extended_entities.media);
@@ -63,8 +63,11 @@ async function getTweets() {
     return {
       id: tweet.id,
       created_at: new Date(tweet.created_at),
+      likes: Number(tweet.favorite_count),
+      retweets: Number(tweet.retweet_count),
       is_thread: tweet.is_thread,
       full_text: tweet.full_text,
+      has_link: !!tweet.has_link,
       media: tweet.media,
       in_reply_to_user_id: tweet.in_reply_to_user_id,
       in_reply_to_status_id: tweet.in_reply_to_status_id

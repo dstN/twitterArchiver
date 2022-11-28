@@ -15,14 +15,14 @@ const searchTerm = ref("");
 const searchTermCaseSensitive = ref(false);
 
 const onSearchTermChange = debounce(() => {
-  filterTweets();
+  searchTweets();
 }, 150);
 
 const searchTermCaseSensitiveChanged = () => {
-  filterTweets();
+  searchTweets();
 };
 
-function filterTweets() {
+function searchTweets() {
   if (searchTerm.value.length < 3) {
     filteredData.value = data.value.tweets;
     return;
@@ -47,7 +47,52 @@ function filterTweets() {
   );
 }
 
+const filterTerm = ref("dateDesc");
+
+function sortTweets() {
+  switch (filterTerm.value) {
+    case "dateDesc":
+      filteredData.value.sort((a, b) => {
+        return b.created_at - a.created_at;
+      });
+      break;
+    case "dateAsc":
+      filteredData.value.sort((a, b) => {
+        return a.created_at - b.created_at;
+      });
+      break;
+    case "answer":
+      filteredData.value.sort((a, b) => {
+        return (
+          Number(b.in_reply_to_status_id) - Number(a.in_reply_to_status_id)
+        );
+      });
+      break;
+    case "likes":
+      filteredData.value.sort((a, b) => {
+        return b.likes - a.likes;
+      });
+      break;
+    case "retweets":
+      filteredData.value.sort((a, b) => {
+        return b.retweets - a.retweets;
+      });
+      break;
+    case "link":
+      filteredData.value.sort((a, b) => {
+        return Number(b.has_link) - Number(a.has_link);
+      });
+      break;
+    case "media":
+      filteredData.value.sort((a, b) => {
+        return Number(!!b.media) - Number(!!a.media);
+      });
+      break;
+  }
+}
+
 const tweets = computed(() => {
+  sortTweets();
   return filteredData.value;
 });
 
@@ -62,8 +107,6 @@ function getThread(tweetId) {
     data.value.tweets,
     tweetId
   );
-
-  console.log("thread", tweet.thread);
 }
 </script>
 
@@ -85,6 +128,78 @@ function getThread(tweetId) {
           @change="searchTermCaseSensitiveChanged"
         />
         <label for="checkbox">Case-Sensitive</label>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-5">
+      <div>
+        <input
+          type="radio"
+          id="dateDesc"
+          value="dateDesc"
+          v-model="filterTerm"
+        />
+        <label for="dateDesc">by date desc</label>
+      </div>
+
+      <div>
+        <input
+          type="radio"
+          id="dateAsc"
+          value="dateAsc"
+          v-model="filterTerm"
+        />
+        <label for="dateAsc">by date asc</label>
+      </div>
+
+      <div>
+        <input
+          type="radio"
+          id="likes"
+          value="likes"
+          v-model="filterTerm"
+        />
+        <label for="likes">by likes</label>
+      </div>
+
+      <div>
+        <input
+          type="radio"
+          id="retweets"
+          value="retweets"
+          v-model="filterTerm"
+        />
+        <label for="retweets">by retweets</label>
+      </div>
+
+      <div>
+        <input
+          type="radio"
+          id="answer"
+          value="answer"
+          v-model="filterTerm"
+        />
+        <label for="answer">by answers only</label>
+      </div>
+
+      <div>
+        <input
+          type="radio"
+          id="link"
+          value="link"
+          v-model="filterTerm"
+        />
+        <label for="link">by contains link</label>
+      </div>
+
+      <div>
+        <input
+          type="radio"
+          id="media"
+          value="media"
+          v-model="filterTerm"
+        />
+        <label for="media">by contains media</label>
       </div>
     </div>
 
