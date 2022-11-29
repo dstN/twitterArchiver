@@ -58,7 +58,7 @@ function getThread() {
           class="font-bold text-blue-600"
           @click="getThread"
         >
-          THREAD
+          {{ $t("tweet.thread") }}
         </p>
       </template>
     </div>

@@ -60,7 +60,7 @@ function resetDrop(e) {
     class="flex min-h-screen flex-col items-center justify-center gap-4 font-sans"
     :class="isLoading ? 'blur-sm' : ''"
   >
-    <h1 class="font-display">twittr_Archivr</h1>
+    <h1 class="font-display">{{ $t("title") }}</h1>
     <label
       @dragenter="resetDrop"
       @dragover="checkDrop"
@@ -77,7 +77,7 @@ function resetDrop(e) {
         <h2
           class="font-display text-xl font-medium tracking-wide text-gray-700"
         >
-          YES please DROP IT! 🤤
+          {{ $t("dropzone.drop") }}
         </h2>
       </div>
       <div
@@ -86,11 +86,8 @@ function resetDrop(e) {
       >
         <h2
           class="font-display text-xl font-medium tracking-wide text-gray-700"
-        >
-          Oh Dang! You picked a falsy file. Please pick the
-          <strong>ZIP-File</strong> you downloaded from Twitter directly without
-          touching it.
-        </h2>
+          v-html="$t('dropzone.invalidFile')"
+        />
       </div>
       <div
         class="flex h-full min-h-full grow flex-col items-center justify-between"
@@ -113,11 +110,11 @@ function resetDrop(e) {
         <h2
           class="font-display text-xl font-medium tracking-wide text-gray-700"
         >
-          Twitter Archive
+          {{ $t("dropzone.archive") }}
         </h2>
 
         <p class="tracking-wide text-gray-500">
-          Select or drag & drop your file (ZIP only).
+          {{ $t("dropzone.hint") }}
         </p>
       </div>
 

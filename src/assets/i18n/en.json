@@ -1,0 +1,22 @@
+{
+    "title": "twittr_Archivr",
+    "dropzone": {
+        "archive": "Twitter Archive",
+        "hint": "Select or drag & drop your file (ZIP only).",
+        "drop": "YES please DROP IT! 🤤",
+        "invalidFile": "Oh Dang! You picked a falsy file. Please pick the <strong>ZIP-File</strong> you downloaded from Twitter directly without touching it."
+    },
+    "content": {
+        "case-sensitive": "Case-Sensitive",
+        "sort": {
+            "dateDesc": "by date desc",
+            "dateAsc": "by date asc",
+            "likes": "by likes",
+            "retweets": "by retweets"
+        },
+        "notFound": "No tweets found by given search term: {0}"
+    },
+    "tweet": {
+        "thread": "THREAD"
+    }
+}

@@ -110,7 +110,7 @@ function getThread(tweetId) {
           v-model="searchTermCaseSensitive"
           @change="searchTermCaseSensitiveChanged"
         />
-        <label for="checkbox">Case-Sensitive</label>
+        <label for="checkbox">{{ $t("content.case-sensitive") }}</label>
       </div>
     </div>
 
@@ -122,7 +122,7 @@ function getThread(tweetId) {
           value="dateDesc"
           v-model="filterTerm"
         />
-        <label for="dateDesc">by date desc</label>
+        <label for="dateDesc">{{ $t("content.sort.dateDesc") }}</label>
       </div>
 
       <div>
@@ -132,7 +132,7 @@ function getThread(tweetId) {
           value="dateAsc"
           v-model="filterTerm"
         />
-        <label for="dateAsc">by date asc</label>
+        <label for="dateAsc">{{ $t("content.sort.dateAsc") }}</label>
       </div>
 
       <div>
@@ -142,7 +142,7 @@ function getThread(tweetId) {
           value="likes"
           v-model="filterTerm"
         />
-        <label for="likes">by likes</label>
+        <label for="likes">{{ $t("content.sort.likes") }}</label>
       </div>
 
       <div>
@@ -152,7 +152,7 @@ function getThread(tweetId) {
           value="retweets"
           v-model="filterTerm"
         />
-        <label for="retweets">by retweets</label>
+        <label for="retweets">{{ $t("content.sort.retweets") }}</label>
       </div>
     </div>
 
@@ -186,7 +186,7 @@ function getThread(tweetId) {
       </DynamicScroller>
     </template>
     <template v-else>
-      <h2>No tweets found by given search term: {{ searchTerm }}</h2>
+      <h2>{{ $t("content.notFound", [searchTerm]) }}</h2>
     </template>
   </div>
 </template>
