@@ -3,6 +3,7 @@ import { ref, toRefs, computed } from "vue";
 import Tweet from "./partials/Tweet.vue";
 import debounce from "lodash/debounce";
 import * as ThreadHandler from "../util/ThreadHandler";
+import { useSorting, useSort } from "../util/UseSorting";
 
 const props = defineProps({
   data: Object,
@@ -47,35 +48,10 @@ function searchTweets() {
   );
 }
 
-const filterTerm = ref("dateDesc");
-
-function sortTweets() {
-  switch (filterTerm.value) {
-    case "dateDesc":
-      filteredData.value.sort((a, b) => {
-        return b.created_at - a.created_at;
-      });
-      break;
-    case "dateAsc":
-      filteredData.value.sort((a, b) => {
-        return a.created_at - b.created_at;
-      });
-      break;
-    case "likes":
-      filteredData.value.sort((a, b) => {
-        return b.likes - a.likes;
-      });
-      break;
-    case "retweets":
-      filteredData.value.sort((a, b) => {
-        return b.retweets - a.retweets;
-      });
-      break;
-  }
-}
+const sortTerm = ref(useSort()[0]);
 
 const tweets = computed(() => {
-  sortTweets();
+  useSorting(sortTerm.value, filteredData);
   return filteredData.value;
 });
 
@@ -115,44 +91,17 @@ function getThread(tweetId) {
     </div>
 
     <div class="flex flex-wrap justify-center gap-5">
-      <div>
+      <div
+        v-for="sort in useSort()"
+        :key="sort"
+      >
         <input
           type="radio"
-          id="dateDesc"
-          value="dateDesc"
-          v-model="filterTerm"
+          :id="sort"
+          :value="sort"
+          v-model="sortTerm"
         />
-        <label for="dateDesc">{{ $t("content.sort.dateDesc") }}</label>
-      </div>
-
-      <div>
-        <input
-          type="radio"
-          id="dateAsc"
-          value="dateAsc"
-          v-model="filterTerm"
-        />
-        <label for="dateAsc">{{ $t("content.sort.dateAsc") }}</label>
-      </div>
-
-      <div>
-        <input
-          type="radio"
-          id="likes"
-          value="likes"
-          v-model="filterTerm"
-        />
-        <label for="likes">{{ $t("content.sort.likes") }}</label>
-      </div>
-
-      <div>
-        <input
-          type="radio"
-          id="retweets"
-          value="retweets"
-          v-model="filterTerm"
-        />
-        <label for="retweets">{{ $t("content.sort.retweets") }}</label>
+        <label :for="sort">{{ $t(`content.sort.${sort}`) }}</label>
       </div>
     </div>
 
