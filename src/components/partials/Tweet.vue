@@ -55,7 +55,7 @@ function getThread() {
       <template v-if="data.is_thread">
         <div class="spacer">·</div>
         <p
-          class="font-bold text-blue-600"
+          class="font-bold text-orange-600"
           @click="getThread"
         >
           {{ $t("tweet.thread") }}
@@ -82,8 +82,8 @@ function getThread() {
         />
         <video
           v-else
-          autoplay
           loop
+          controls
           :src="media.data"
           class="h-full w-full"
         ></video>

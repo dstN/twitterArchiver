@@ -67,7 +67,7 @@ function resetDrop(e) {
       @drop.prevent="changed"
       @dragleave="resetDrop"
       for="dropzone-file"
-      :class="validFile ? 'border-blue-400' : 'border-red-400'"
+      :class="validFile ? 'border-orange-400' : 'border-red-400'"
       class="dropLabel mx-auto flex min-h-[170px] w-full max-w-lg cursor-pointer flex-col rounded-xl border-2 border-dashed bg-white p-6 text-center"
     >
       <div
@@ -95,7 +95,7 @@ function resetDrop(e) {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="m-auto h-10 w-10 text-blue-500"
+          class="m-auto h-10 w-10 text-orange-500"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

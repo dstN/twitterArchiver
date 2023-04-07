@@ -14,7 +14,7 @@ function handleData(payload) {
 </script>
 
 <template>
-  <div class="relative bg-slate-300">
+  <div class="relative min-h-full bg-slate-300">
     <TheSpinner v-if="loading" />
     <TheContent
       v-if="data"

@@ -6,7 +6,7 @@
       class="fixed top-0 right-0 z-50 flex h-screen w-screen items-center justify-center"
     >
       <div
-        class="h-32 w-32 animate-spin rounded-full border-t-2 border-b-2 border-blue-400"
+        class="h-32 w-32 animate-spin rounded-full border-t-2 border-b-2 border-orange-400"
       ></div>
     </div>
   </div>

@@ -15,3 +15,10 @@
 .dropLabel * {
   pointer-events: none;
 }
+
+html,
+body,
+#app {
+  @apply min-h-full;
+  @apply h-full;
+}
