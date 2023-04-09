@@ -57,15 +57,87 @@ function getThread(tweetId) {
 
 <template>
   <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-2 col-start-2"></div>
+    <div class="col-span-3 col-start-2">
+      <div class="relative">
+        <div class="fixed">
+          <div class="p-4">
+            <h1 class="font-display text-2xl tracking-widest">
+              twittr archivr
+            </h1>
+            <nav class="py-6">
+              <ul>
+                <li>
+                  <a
+                    class="block py-4 text-xl font-bold text-orange-600"
+                    href=""
+                    >All Tweets</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="block py-4 text-xl font-bold"
+                    href=""
+                    >Only Tweets</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="block py-4 text-xl font-bold"
+                    href=""
+                    >Only Replies</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="block py-4 text-xl font-bold"
+                    href=""
+                    >Only Retweets</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="scroller col-span-5 bg-white shadow-2xl">
+      <div
+        class="sticky top-0 z-10 w-full border-b border-solid border-orange-400 bg-white"
+      >
+        <div class="p-6">
+          <div>
+            <h2 class="font-display text-xl tracking-widest text-orange-600">
+              All Tweets
+            </h2>
+            <p>
+              You are now seeing all tweets. Including Replies, Retweets and
+              normal Tweets.
+            </p>
+          </div>
+          <div class="flex flex-wrap justify-center gap-5">
+            <div
+              v-for="sort in useSort()"
+              :key="sort"
+            >
+              <input
+                type="radio"
+                :id="sort"
+                :value="sort"
+                v-model="sortTerm"
+              />
+              <label :for="sort">{{ $t(`content.sort.${sort}`) }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
       <template v-if="tweets.length > 0">
         <DynamicScroller
           :items="tweets"
           :min-item-size="54"
-          class="scroller w-100"
+          class="scroller w-100 pt-4"
           page-mode
           itemClass="tweet"
+          :buffer="800"
         >
           <template v-slot="{ item, index, active }">
             <DynamicScrollerItem
@@ -98,7 +170,7 @@ function getThread(tweetId) {
           <div class="relative mr-16 w-80 p-5 pb-0 text-gray-300">
             <button
               type="submit"
-              class="absolute ml-4 mt-3 mr-4"
+              class="absolute ml-4 mr-4 mt-3"
             >
               <svg
                 class="h-4 w-4 fill-current"
@@ -126,21 +198,6 @@ function getThread(tweetId) {
               v-model="searchTerm"
               @input="onSearchTermChange"
             />
-          </div>
-
-          <div class="flex flex-wrap justify-center gap-5">
-            <div
-              v-for="sort in useSort()"
-              :key="sort"
-            >
-              <input
-                type="radio"
-                :id="sort"
-                :value="sort"
-                v-model="sortTerm"
-              />
-              <label :for="sort">{{ $t(`content.sort.${sort}`) }}</label>
-            </div>
           </div>
         </div>
       </div>
