@@ -25,7 +25,7 @@ function getThread() {
 </script>
 
 <template>
-  <div class="block w-full max-w-screen-sm p-6">
+  <div class="block w-full p-6">
     <div class="mb-2 flex min-h-[3rem] flex-row items-center gap-1">
       <div class="mr-2">
         <a
@@ -72,7 +72,7 @@ function getThread() {
     </div>
     <div
       class="tweetMedia"
-      v-if="data.media?.length"
+      v-if="!data.media?.length"
     >
       <div
         class="mediaFile"
