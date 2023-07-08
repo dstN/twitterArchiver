@@ -38,7 +38,9 @@ function getThread() {
           />
         </a>
       </div>
-      <div class="font-bold">
+      <div
+        class="block max-w-xs overflow-hidden text-ellipsis whitespace-nowrap font-bold"
+      >
         <a
           :href="`https://twitter.com/i/user/${account.accountId}`"
           target="_blank"

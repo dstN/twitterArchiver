@@ -60,7 +60,7 @@ function getThread(tweetId) {
     <div class="col-span-3 col-start-2">
       <div class="relative">
         <div class="fixed">
-          <div class="p-4">
+          <div class="px-4 py-6">
             <h1 class="font-display text-2xl tracking-widest">
               twittr archivr
             </h1>
@@ -106,7 +106,7 @@ function getThread(tweetId) {
       >
         <div class="p-6">
           <div>
-            <h2 class="font-display text-xl tracking-widest text-orange-600">
+            <h2 class="font-display text-2xl tracking-widest text-orange-600">
               All Tweets
             </h2>
             <p>
