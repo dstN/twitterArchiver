@@ -50,7 +50,7 @@ function getThread(tweetId) {
   tweet.thread = ThreadHandler.GetThread(
     data.value.user.account.accountId,
     data.value.tweets,
-    tweetId
+    tweetId,
   );
 }
 </script>
@@ -166,10 +166,10 @@ function getThread(tweetId) {
         <DynamicScroller
           :items="tweets"
           :min-item-size="54"
-          class="scroller w-100 pt-4"
+          class="scroller w-100"
           page-mode
           itemClass="tweet"
-          :buffer="800"
+          :buffer="200"
         >
           <template v-slot="{ item, index, active }">
             <DynamicScrollerItem

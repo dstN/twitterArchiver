@@ -71,8 +71,8 @@ function getThread() {
       ></p>
     </div>
     <div
-      class="tweetMedia"
-      v-if="!data.media?.length"
+      class="tweetMedia w-auto rounded-2xl border border-solid border-orange-400"
+      v-if="data.media?.length"
     >
       <div
         class="mediaFile"
@@ -81,15 +81,17 @@ function getThread() {
         <img
           v-if="media.type === 'photo'"
           :src="media.data"
+          class="rounded-2xl"
         />
         <video
           v-else
           loop
           controls
           :src="media.data"
-          class="h-full w-full"
+          class="h-full w-full rounded-2xl"
         ></video>
       </div>
     </div>
   </div>
 </template>
+<style scoped></style>
