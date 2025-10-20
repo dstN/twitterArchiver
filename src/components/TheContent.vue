@@ -7,6 +7,7 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { debounce } from "../util/debounce";
 import * as ThreadHandler from "../util/ThreadHandler";
 import { useSorting, useSort } from "../util/UseSorting";
+import { useSelection } from "../composables/useSelection";
 
 // Constants for performance tuning
 const SEARCH_DEBOUNCE_MS = 150;
@@ -32,8 +33,17 @@ const mobileMenuRef = ref(null);
 const showScrollTop = ref(false);
 const showMobileSearch = ref(false);
 const showExportMenu = ref(false);
-const selectedTweets = ref(new Set());
-const selectionMode = ref(false);
+
+// Selection state management
+const {
+  selectedTweets,
+  selectionMode,
+  toggleSelectionMode,
+  toggleTweetSelection,
+  selectAllTweets,
+  deselectAllTweets,
+  isSelected,
+} = useSelection();
 
 const onSearchTermChange = debounce(() => {
   applyFilters();
@@ -65,34 +75,13 @@ function toggleMobileSearch() {
   }
 }
 
-function toggleSelectionMode() {
-  selectionMode.value = !selectionMode.value;
-  if (!selectionMode.value) {
-    selectedTweets.value.clear();
-  }
+function toggleSelectionModeLocal() {
+  toggleSelectionMode();
   showExportMenu.value = false;
 }
 
-function toggleTweetSelection(tweetId) {
-  if (selectedTweets.value.has(tweetId)) {
-    selectedTweets.value.delete(tweetId);
-  } else {
-    selectedTweets.value.add(tweetId);
-  }
-  // Force reactivity
-  selectedTweets.value = new Set(selectedTweets.value);
-}
-
-function selectAllTweets() {
-  displayedTweets.value.forEach((tweet) => {
-    selectedTweets.value.add(tweet.id);
-  });
-  selectedTweets.value = new Set(selectedTweets.value);
-}
-
-function deselectAllTweets() {
-  selectedTweets.value.clear();
-  selectedTweets.value = new Set(selectedTweets.value);
+function selectAllDisplayedTweets() {
+  selectAllTweets(displayedTweets.value);
 }
 
 function exportAsJSON() {
@@ -583,8 +572,8 @@ const threadTweets = computed(() => {
     @export-j-s-o-n="exportAsJSON"
     @export-c-s-v="exportAsCSV"
     @print="printTweets"
-    @toggle-selection-mode="toggleSelectionMode"
-    @select-all="selectAllTweets"
+    @toggle-selection-mode="toggleSelectionModeLocal"
+    @select-all="selectAllDisplayedTweets"
     @deselect-all="deselectAllTweets"
   />
 
@@ -802,7 +791,7 @@ const threadTweets = computed(() => {
                     class="flex border-t border-gray-200 dark:border-gray-600"
                   >
                     <button
-                      @click="selectAllTweets"
+                      @click="selectAllDisplayedTweets"
                       class="flex-1 border-r border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
                     >
                       Select All
@@ -1197,7 +1186,7 @@ const threadTweets = computed(() => {
             class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
             :class="{
               'ring-2 ring-inset ring-orange-600':
-                selectionMode && selectedTweets.has(item.id),
+                selectionMode && isSelected(item.id),
             }"
           >
             <!-- Selection Checkbox (only in selection mode) -->
@@ -1207,7 +1196,7 @@ const threadTweets = computed(() => {
             >
               <input
                 type="checkbox"
-                :checked="selectedTweets.has(item.id)"
+                :checked="isSelected(item.id)"
                 @change="toggleTweetSelection(item.id)"
                 class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
               />
