@@ -498,20 +498,20 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
           <div class="mb-4 flex items-center justify-between lg:hidden">
             <button
               @click="openMobileMenu"
-              class="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="rounded-lg py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-gray-700 dark:text-gray-300"
+                class="h-8 w-9 text-orange-600 dark:text-orange-600"
                 fill="none"
-                viewBox="0 0 24 24"
+                viewBox="0 0 28 24"
                 stroke="currentColor"
+                stroke-width="2.5"
               >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
+                  d="M2 5h24M2 12h24M2 19h24"
                 />
               </svg>
             </button>
