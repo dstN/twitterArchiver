@@ -98,7 +98,8 @@ const user = computed(() => {
 });
 
 // Thread view state and navigation
-const { threadView, threadTweets, getThread, exitThreadView } = useThreadView(data);
+const { threadView, threadTweets, getThread, exitThreadView } =
+  useThreadView(data);
 
 // Export functionality
 const { showExportMenu, exportAsJSON, exportAsCSV } = useExport(
@@ -109,7 +110,7 @@ const { showExportMenu, exportAsJSON, exportAsCSV } = useExport(
   threadView,
   threadTweets,
   filterType,
-  user
+  user,
 );
 </script>
 

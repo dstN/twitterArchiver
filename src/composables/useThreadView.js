@@ -64,7 +64,9 @@ export function useThreadView(data) {
     const upwardsReversed = [...thread.upwards].reverse();
 
     // Check if origin is already in upwards (it should be)
-    const originInUpwards = upwardsReversed.some((t) => t.id === originTweet.id);
+    const originInUpwards = upwardsReversed.some(
+      (t) => t.id === originTweet.id,
+    );
 
     if (originInUpwards) {
       // Origin is already in the correct position in upwards

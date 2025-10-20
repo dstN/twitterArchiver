@@ -4,7 +4,16 @@
 
 import { ref } from "vue";
 
-export function useExport(data, filteredData, selectedTweets, selectionMode, threadView, threadTweets, filterType, user) {
+export function useExport(
+  data,
+  filteredData,
+  selectedTweets,
+  selectionMode,
+  threadView,
+  threadTweets,
+  filterType,
+  user,
+) {
   const showExportMenu = ref(false);
 
   /**
@@ -114,7 +123,11 @@ export function useExport(data, filteredData, selectedTweets, selectionMode, thr
     ];
     const rows = tweetsToExport.map((tweet) => [
       new Date(tweet.created_at).toLocaleString(),
-      tweet.retweeted ? "Retweet" : tweet.in_reply_to_user_id ? "Reply" : "Tweet",
+      tweet.retweeted
+        ? "Retweet"
+        : tweet.in_reply_to_user_id
+          ? "Reply"
+          : "Tweet",
       `"${tweet.full_text.replace(/"/g, '""')}"`,
       tweet.favorite_count || 0,
       tweet.retweet_count || 0,
