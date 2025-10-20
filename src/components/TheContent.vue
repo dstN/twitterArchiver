@@ -1,13 +1,12 @@
 <script setup>
-import { ref, toRefs, computed, onMounted, onUnmounted } from "vue";
+import { ref, toRefs, computed, watch, onMounted, onUnmounted } from "vue";
 import Tweet from "./partials/Tweet.vue";
 import TheMobileMenu from "./TheMobileMenu.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { debounce } from "../util/debounce";
 import * as ThreadHandler from "../util/ThreadHandler";
-import { useSorting, useSort } from "../util/UseSorting";
 import { useSelection } from "../composables/useSelection";
+import { useFilters } from "../composables/useFilters";
 
 // Constants for performance tuning
 const SEARCH_DEBOUNCE_MS = 150;
@@ -25,14 +24,26 @@ const props = defineProps({
 const emit = defineEmits(["toggleDarkMode"]);
 
 const { data } = toRefs(props);
-const filteredData = ref(data.value.tweets);
 
-const searchTerm = ref("");
-const filterType = ref("all"); // 'all', 'tweets', 'replies', 'retweets'
 const mobileMenuRef = ref(null);
 const showScrollTop = ref(false);
 const showMobileSearch = ref(false);
 const showExportMenu = ref(false);
+
+// Filtering, search, and sorting
+const {
+  searchTerm,
+  filterType,
+  sortBy,
+  sortDirection,
+  filteredData,
+  tweets,
+  tweetCounts,
+  applyFilters,
+  onSearchTermChange,
+  setFilterType,
+  toggleSort,
+} = useFilters(data);
 
 // Selection state management
 const {
@@ -44,10 +55,6 @@ const {
   deselectAllTweets,
   isSelected,
 } = useSelection();
-
-const onSearchTermChange = debounce(() => {
-  applyFilters();
-}, SEARCH_DEBOUNCE_MS);
 
 function openMobileMenu() {
   mobileMenuRef.value?.open();
@@ -258,81 +265,11 @@ function handleScroll(e) {
   }
 }
 
-function setFilterType(type) {
-  filterType.value = type;
-  applyFilters();
-}
-
-function applyFilters() {
-  let filtered = data.value.tweets;
-
-  // Apply type filter first
-  switch (filterType.value) {
-    case "tweets":
-      // Only original tweets (not replies, not retweets)
-      filtered = filtered.filter(
-        (tweet) =>
-          !tweet.in_reply_to_status_id && !tweet.full_text.startsWith("RT @"),
-      );
-      break;
-    case "replies":
-      // Only replies (tweets that are replying to someone, but not retweets)
-      filtered = filtered.filter(
-        (tweet) =>
-          tweet.in_reply_to_status_id && !tweet.full_text.startsWith("RT @"),
-      );
-      break;
-    case "retweets":
-      // Only retweets (tweets that start with "RT @")
-      filtered = filtered.filter((tweet) => tweet.full_text.startsWith("RT @"));
-      break;
-    case "threads":
-      // Only threads (tweets that are marked as threads)
-      filtered = filtered.filter((tweet) => tweet.is_thread);
-      break;
-    // 'all' - no filtering
-  }
-
-  // Apply search filter if search term exists
-  if (searchTerm.value.length >= 3) {
-    const insensitiveFilter = (tweet) => {
-      return (
-        tweet.full_text
-          .toLowerCase()
-          .includes(searchTerm.value.toLowerCase()) ||
-        tweet.id === searchTerm.value
-      );
-    };
-    filtered = filtered.filter(insensitiveFilter);
-  }
-
-  filteredData.value = filtered;
-  displayedCount.value = INITIAL_TWEET_COUNT; // Reset to initial count
-  startIndex.value = 0; // Reset start index
-  isLoading.value = false; // Reset loading state
-}
-
-// New sorting system with toggle buttons
-const sortBy = ref("date"); // 'date', 'likes', 'retweets'
-const sortDirection = ref("desc"); // 'asc' or 'desc'
-
-function toggleSort(type) {
-  if (sortBy.value === type) {
-    // Toggle direction if same type
-    sortDirection.value = sortDirection.value === "desc" ? "asc" : "desc";
-  } else {
-    // New type, default to desc
-    sortBy.value = type;
-    sortDirection.value = "desc";
-  }
-}
-
-const tweets = computed(() => {
-  const sortKey =
-    sortBy.value + (sortDirection.value === "desc" ? "Desc" : "Asc");
-
-  useSorting(sortKey, filteredData);
-  return filteredData.value;
+// Watch for filter changes and reset scroll position
+watch([filterType, searchTerm], () => {
+  displayedCount.value = INITIAL_TWEET_COUNT;
+  startIndex.value = 0;
+  isLoading.value = false;
 });
 
 // Infinite scroll implementation - Twitter style
@@ -350,40 +287,6 @@ const displayedTweets = computed(() => {
 const hasMore = computed(() => {
   return startIndex.value + displayedCount.value < tweets.value.length;
 });
-
-// Tweet counters for menu
-const tweetCounts = computed(() => {
-  const all = data.value.tweets;
-
-  // Count different types
-  const tweets = all.filter(
-    (t) => !t.in_reply_to_status_id && !t.full_text.startsWith("RT @"),
-  );
-  const replies = all.filter(
-    (t) => t.in_reply_to_status_id && !t.full_text.startsWith("RT @"),
-  );
-  const retweets = all.filter((t) => t.full_text.startsWith("RT @"));
-
-  // Count threads: Find root tweets that start threads
-  // A thread root is a tweet that is_thread but is NOT replying to own tweets
-  const threadRoots = all.filter((t) => {
-    if (!t.is_thread) return false;
-    // If it's replying to an own tweet, it's part of a thread, not the root
-    const isReplyToOwnTweet =
-      t.in_reply_to_user_id === data.value.user.account.accountId &&
-      all.some((tweet) => tweet.id === t.in_reply_to_status_id);
-    return !isReplyToOwnTweet;
-  });
-
-  return {
-    all: all.length,
-    tweets: tweets.length,
-    replies: replies.length,
-    retweets: retweets.length,
-    threads: threadRoots.length,
-  };
-});
-
 function loadMore() {
   console.log("loadMore called!", {
     hasMore: hasMore.value,
