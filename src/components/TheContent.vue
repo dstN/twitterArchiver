@@ -839,7 +839,7 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
     <!-- Search Toggle Button -->
     <button
       @click="toggleMobileSearch"
-      class="rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-600 dark:hover:bg-gray-700"
+      class="rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-700 dark:hover:bg-gray-600"
       :class="{
         'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700':
           showMobileSearch,

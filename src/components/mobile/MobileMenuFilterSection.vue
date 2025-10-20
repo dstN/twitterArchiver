@@ -20,7 +20,7 @@ function selectFilter(type) {
           :class="
             filterType === 'all'
               ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
           "
           class="w-full rounded-lg px-4 py-3 text-left text-lg font-bold transition-colors"
         >
@@ -38,7 +38,7 @@ function selectFilter(type) {
           :class="
             filterType === 'tweets'
               ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
           "
           class="w-full rounded-lg px-4 py-3 text-left text-lg font-bold transition-colors"
         >
@@ -56,7 +56,7 @@ function selectFilter(type) {
           :class="
             filterType === 'replies'
               ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
           "
           class="w-full rounded-lg px-4 py-3 text-left text-lg font-bold transition-colors"
         >
@@ -74,7 +74,7 @@ function selectFilter(type) {
           :class="
             filterType === 'retweets'
               ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
           "
           class="w-full rounded-lg px-4 py-3 text-left text-lg font-bold transition-colors"
         >
@@ -92,7 +92,7 @@ function selectFilter(type) {
           :class="
             filterType === 'threads'
               ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
-              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
           "
           class="w-full rounded-lg px-4 py-3 text-left text-lg font-bold transition-colors"
         >

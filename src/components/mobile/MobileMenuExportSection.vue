@@ -53,7 +53,7 @@ function printTweets() {
       :class="
         selectionMode
           ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
-          : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+          : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
       "
       class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left transition-colors"
     >
@@ -109,7 +109,7 @@ function printTweets() {
     <button
       @click="exportJSON"
       :disabled="selectionMode && selectedCount === 0"
-      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-600"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -140,7 +140,7 @@ function printTweets() {
     <button
       @click="exportCSV"
       :disabled="selectionMode && selectedCount === 0"
-      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-600"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +171,7 @@ function printTweets() {
     <button
       @click="printTweets"
       :disabled="selectionMode && selectedCount === 0"
-      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-700"
+      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-300 dark:hover:bg-gray-600"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
