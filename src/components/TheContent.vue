@@ -1,105 +1,679 @@
 <script setup>
-import { ref, toRefs, computed } from "vue";
+import { ref, toRefs, computed, onMounted, onUnmounted } from "vue";
 import Tweet from "./partials/Tweet.vue";
+import TheMobileMenu from "./TheMobileMenu.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import debounce from "lodash/debounce";
 import * as ThreadHandler from "../util/ThreadHandler";
 import { useSorting, useSort } from "../util/UseSorting";
 
 const props = defineProps({
   data: Object,
+  isDarkMode: Boolean,
 });
+
+const emit = defineEmits(["toggleDarkMode"]);
 
 const { data } = toRefs(props);
 const filteredData = ref(data.value.tweets);
 
 const searchTerm = ref("");
+const filterType = ref("all"); // 'all', 'tweets', 'replies', 'retweets'
+const mobileMenuRef = ref(null);
+const showScrollTop = ref(false);
+const showMobileSearch = ref(false);
+const showExportMenu = ref(false);
+const selectedTweets = ref(new Set());
+const selectionMode = ref(false);
 
 const onSearchTermChange = debounce(() => {
-  searchTweets();
+  applyFilters();
 }, 150);
 
-function searchTweets() {
-  if (searchTerm.value.length < 3) {
-    filteredData.value = data.value.tweets;
-    return;
-  }
-
-  const insensitiveFilter = (tweet) => {
-    return (
-      tweet.full_text.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-      tweet.id === searchTerm.value
-    );
-  };
-
-  filteredData.value = data.value.tweets.filter(insensitiveFilter);
+function openMobileMenu() {
+  mobileMenuRef.value?.open();
 }
 
-const sortTerm = ref(useSort()[0]);
+function toggleDarkMode() {
+  emit("toggleDarkMode");
+}
+
+function reloadPage() {
+  window.location.reload();
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function toggleMobileSearch() {
+  showMobileSearch.value = !showMobileSearch.value;
+  if (showMobileSearch.value) {
+    // Focus the search input after it appears
+    setTimeout(() => {
+      document.getElementById("mobile-search-input")?.focus();
+    }, 100);
+  }
+}
+
+function toggleSelectionMode() {
+  selectionMode.value = !selectionMode.value;
+  if (!selectionMode.value) {
+    selectedTweets.value.clear();
+  }
+  showExportMenu.value = false;
+}
+
+function toggleTweetSelection(tweetId) {
+  if (selectedTweets.value.has(tweetId)) {
+    selectedTweets.value.delete(tweetId);
+  } else {
+    selectedTweets.value.add(tweetId);
+  }
+  // Force reactivity
+  selectedTweets.value = new Set(selectedTweets.value);
+}
+
+function selectAllTweets() {
+  displayedTweets.value.forEach((tweet) => {
+    selectedTweets.value.add(tweet.id);
+  });
+  selectedTweets.value = new Set(selectedTweets.value);
+}
+
+function deselectAllTweets() {
+  selectedTweets.value.clear();
+  selectedTweets.value = new Set(selectedTweets.value);
+}
+
+function exportAsJSON() {
+  let tweetsToExport;
+
+  if (selectionMode.value && selectedTweets.value.size > 0) {
+    // Export selected tweets
+    tweetsToExport = filteredData.value.filter((t) =>
+      selectedTweets.value.has(t.id),
+    );
+  } else if (threadView.value) {
+    // Export current thread only
+    tweetsToExport = threadTweets.value;
+  } else {
+    // Export all filtered tweets
+    tweetsToExport = filteredData.value;
+  }
+
+  // Clean tweets: remove blob URLs from media
+  const cleanedTweets = tweetsToExport.map((tweet) => {
+    const cleanTweet = { ...tweet };
+
+    // Remove blob URLs from entities.media
+    if (cleanTweet.entities?.media) {
+      cleanTweet.entities.media = cleanTweet.entities.media.map((media) => {
+        const { blobUrl, ...cleanMedia } = media;
+        return cleanMedia;
+      });
+    }
+
+    // Remove blob URLs from extended_entities.media
+    if (cleanTweet.extended_entities?.media) {
+      cleanTweet.extended_entities.media =
+        cleanTweet.extended_entities.media.map((media) => {
+          const { blobUrl, ...cleanMedia } = media;
+          return cleanMedia;
+        });
+    }
+
+    return cleanTweet;
+  });
+
+  const dataToExport = {
+    user: user.value,
+    tweets: cleanedTweets,
+    exported_at: new Date().toISOString(),
+    filter: filterType.value,
+    total_count: cleanedTweets.length,
+    selection_mode: selectionMode.value,
+    selected_count: selectionMode.value ? selectedTweets.value.size : null,
+    thread_mode: threadView.value !== null,
+    thread_origin: threadView.value ? threadView.value.originTweet.id : null,
+  };
+
+  const blob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  let suffix;
+  if (selectionMode.value && selectedTweets.value.size > 0) {
+    suffix = `selected-${selectedTweets.value.size}`;
+  } else if (threadView.value) {
+    suffix = `thread-${threadView.value.originTweet.id}`;
+  } else {
+    suffix = filterType.value;
+  }
+  a.download = `twitter-archive-${suffix}-${new Date().toISOString().split("T")[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showExportMenu.value = false;
+}
+
+function exportAsCSV() {
+  let tweetsToExport;
+
+  if (selectionMode.value && selectedTweets.value.size > 0) {
+    // Export selected tweets
+    tweetsToExport = filteredData.value.filter((t) =>
+      selectedTweets.value.has(t.id),
+    );
+  } else if (threadView.value) {
+    // Export current thread only
+    tweetsToExport = threadTweets.value;
+  } else {
+    // Export all filtered tweets
+    tweetsToExport = filteredData.value;
+  }
+
+  const headers = [
+    "Date",
+    "Type",
+    "Text",
+    "Likes",
+    "Retweets",
+    "Replies",
+    "URL",
+  ];
+  const rows = tweetsToExport.map((tweet) => [
+    new Date(tweet.created_at).toLocaleString(),
+    tweet.retweeted ? "Retweet" : tweet.in_reply_to_user_id ? "Reply" : "Tweet",
+    `"${tweet.full_text.replace(/"/g, '""')}"`,
+    tweet.favorite_count || 0,
+    tweet.retweet_count || 0,
+    tweet.reply_count || 0,
+    `https://twitter.com/i/status/${tweet.id}`,
+  ]);
+
+  const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  let suffix;
+  if (selectionMode.value && selectedTweets.value.size > 0) {
+    suffix = `selected-${selectedTweets.value.size}`;
+  } else if (threadView.value) {
+    suffix = `thread-${threadView.value.originTweet.id}`;
+  } else {
+    suffix = filterType.value;
+  }
+  a.download = `twitter-archive-${suffix}-${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showExportMenu.value = false;
+}
+
+function handleScroll(e) {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  showScrollTop.value = scrollTop > 500;
+
+  // Check if we're near the bottom (within 1000px) - load more
+  const scrollHeight = document.documentElement.scrollHeight;
+  const clientHeight = window.innerHeight;
+  const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+
+  // Check if we're near the top (within 500px) - load previous
+  const distanceFromTop = scrollTop;
+
+  console.log("Scroll:", {
+    scrollTop,
+    scrollHeight,
+    clientHeight,
+    distanceFromBottom,
+    distanceFromTop,
+    hasMore: hasMore.value,
+    hasPrevious: startIndex.value > 0,
+    isLoading: isLoading.value,
+  });
+
+  // Load more at bottom
+  if (distanceFromBottom < 1000 && hasMore.value && !isLoading.value) {
+    console.log("Triggering loadMore!");
+    loadMore();
+  }
+
+  // Load previous at top
+  if (distanceFromTop < 500 && startIndex.value > 0 && !isLoading.value) {
+    console.log("Triggering loadPrevious!");
+    loadPrevious();
+  }
+}
+
+function setFilterType(type) {
+  filterType.value = type;
+  applyFilters();
+}
+
+function applyFilters() {
+  let filtered = data.value.tweets;
+
+  // Apply type filter first
+  switch (filterType.value) {
+    case "tweets":
+      // Only original tweets (not replies, not retweets)
+      filtered = filtered.filter(
+        (tweet) =>
+          !tweet.in_reply_to_status_id && !tweet.full_text.startsWith("RT @"),
+      );
+      break;
+    case "replies":
+      // Only replies (tweets that are replying to someone, but not retweets)
+      filtered = filtered.filter(
+        (tweet) =>
+          tweet.in_reply_to_status_id && !tweet.full_text.startsWith("RT @"),
+      );
+      break;
+    case "retweets":
+      // Only retweets (tweets that start with "RT @")
+      filtered = filtered.filter((tweet) => tweet.full_text.startsWith("RT @"));
+      break;
+    case "threads":
+      // Only threads (tweets that are marked as threads)
+      filtered = filtered.filter((tweet) => tweet.is_thread);
+      break;
+    // 'all' - no filtering
+  }
+
+  // Apply search filter if search term exists
+  if (searchTerm.value.length >= 3) {
+    const insensitiveFilter = (tweet) => {
+      return (
+        tweet.full_text
+          .toLowerCase()
+          .includes(searchTerm.value.toLowerCase()) ||
+        tweet.id === searchTerm.value
+      );
+    };
+    filtered = filtered.filter(insensitiveFilter);
+  }
+
+  filteredData.value = filtered;
+  displayedCount.value = 25; // Reset to initial count
+  startIndex.value = 0; // Reset start index
+  isLoading.value = false; // Reset loading state
+}
+
+// New sorting system with toggle buttons
+const sortBy = ref("date"); // 'date', 'likes', 'retweets'
+const sortDirection = ref("desc"); // 'asc' or 'desc'
+
+function toggleSort(type) {
+  if (sortBy.value === type) {
+    // Toggle direction if same type
+    sortDirection.value = sortDirection.value === "desc" ? "asc" : "desc";
+  } else {
+    // New type, default to desc
+    sortBy.value = type;
+    sortDirection.value = "desc";
+  }
+}
 
 const tweets = computed(() => {
-  useSorting(sortTerm.value, filteredData);
+  const sortKey =
+    sortBy.value + (sortDirection.value === "desc" ? "Desc" : "Asc");
+
+  useSorting(sortKey, filteredData);
   return filteredData.value;
+});
+
+// Infinite scroll implementation - Twitter style
+const displayedCount = ref(25); // Start with 25 tweets
+const loadMoreCount = 25; // Load 25 more each time
+const startIndex = ref(0); // Track where visible items start
+const itemsToKeepAbove = 150; // Keep max 150 items in DOM
+const isLoading = ref(false); // Prevent multiple simultaneous loads
+
+const displayedTweets = computed(() => {
+  const end = startIndex.value + displayedCount.value;
+  return tweets.value.slice(startIndex.value, end);
+});
+
+const hasMore = computed(() => {
+  return startIndex.value + displayedCount.value < tweets.value.length;
+});
+
+// Tweet counters for menu
+const tweetCounts = computed(() => {
+  const all = data.value.tweets;
+
+  // Count different types
+  const tweets = all.filter(
+    (t) => !t.in_reply_to_status_id && !t.full_text.startsWith("RT @"),
+  );
+  const replies = all.filter(
+    (t) => t.in_reply_to_status_id && !t.full_text.startsWith("RT @"),
+  );
+  const retweets = all.filter((t) => t.full_text.startsWith("RT @"));
+
+  // Count threads: Find root tweets that start threads
+  // A thread root is a tweet that is_thread but is NOT replying to own tweets
+  const threadRoots = all.filter((t) => {
+    if (!t.is_thread) return false;
+    // If it's replying to an own tweet, it's part of a thread, not the root
+    const isReplyToOwnTweet =
+      t.in_reply_to_user_id === data.value.user.account.accountId &&
+      all.some((tweet) => tweet.id === t.in_reply_to_status_id);
+    return !isReplyToOwnTweet;
+  });
+
+  return {
+    all: all.length,
+    tweets: tweets.length,
+    replies: replies.length,
+    retweets: retweets.length,
+    threads: threadRoots.length,
+  };
+});
+
+function loadMore() {
+  console.log("loadMore called!", {
+    hasMore: hasMore.value,
+    isLoading: isLoading.value,
+    displayedCount: displayedCount.value,
+    startIndex: startIndex.value,
+    totalTweets: tweets.value.length,
+  });
+
+  if (hasMore.value && !isLoading.value) {
+    isLoading.value = true;
+
+    // Save scroll height before changes
+    const scrollHeight = document.documentElement.scrollHeight;
+
+    const maxWindow = itemsToKeepAbove; // e.g., 100
+
+    // First, increase the displayed count
+    displayedCount.value += loadMoreCount;
+
+    // Then check if we exceeded the max window and need to slide
+    if (displayedCount.value > maxWindow) {
+      const excess = displayedCount.value - maxWindow;
+      startIndex.value += excess;
+      displayedCount.value = maxWindow;
+      console.log(
+        `Sliding window DOWN: Removed ${excess} from top. startIndex: ${startIndex.value}, displayedCount: ${displayedCount.value}`,
+      );
+    } else {
+      console.log(
+        `Expanding window DOWN: displayedCount: ${displayedCount.value}`,
+      );
+    }
+
+    setTimeout(() => {
+      isLoading.value = false;
+    }, 500);
+  }
+}
+
+function loadPrevious() {
+  if (startIndex.value <= 0 || isLoading.value) return;
+
+  console.log("loadPrevious called!", {
+    startIndex: startIndex.value,
+    displayedCount: displayedCount.value,
+    isLoading: isLoading.value,
+    totalTweets: tweets.value.length,
+  });
+
+  isLoading.value = true;
+
+  // Save current scroll position and the first visible tweet element
+  const scrollY = window.scrollY;
+  const firstTweet = document.querySelector("[data-tweet-id]");
+  const firstTweetId = firstTweet?.getAttribute("data-tweet-id");
+  const firstTweetOffset = firstTweet?.getBoundingClientRect().top || 0;
+
+  const maxWindow = itemsToKeepAbove;
+  const loadAmount = Math.min(loadMoreCount, startIndex.value);
+
+  // Move the window up
+  startIndex.value -= loadAmount;
+  displayedCount.value += loadAmount;
+
+  // Check if we exceeded the max window and need to slide
+  if (displayedCount.value > maxWindow) {
+    const excess = displayedCount.value - maxWindow;
+    displayedCount.value = maxWindow;
+    console.log(
+      `Sliding window UP: Removed ${excess} from bottom. startIndex: ${startIndex.value}, displayedCount: ${displayedCount.value}`,
+    );
+  } else {
+    console.log(
+      `Expanding window UP: startIndex: ${startIndex.value}, displayedCount: ${displayedCount.value}`,
+    );
+  }
+
+  // Use nextTick to wait for DOM update
+  setTimeout(() => {
+    // Try to restore position using the reference tweet
+    if (firstTweetId) {
+      const newFirstTweet = document.querySelector(
+        `[data-tweet-id="${firstTweetId}"]`,
+      );
+      if (newFirstTweet) {
+        const newOffset = newFirstTweet.getBoundingClientRect().top;
+        const scrollAdjustment = firstTweetOffset - newOffset;
+        window.scrollTo({
+          top: window.scrollY - scrollAdjustment,
+          behavior: "instant",
+        });
+        console.log("Restored scroll using reference tweet");
+      }
+    }
+
+    isLoading.value = false;
+  }, 100); // Reduced timeout for better responsiveness
+}
+
+// Window scroll listener for infinite scroll and scroll-to-top button
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
 });
 
 const user = computed(() => {
   return data.value.user;
 });
 
+// Thread view state
+const threadView = ref(null); // Will hold { originTweet, thread, scrollPosition } when viewing a thread
+
 function getThread(tweetId) {
   const tweet = data.value.tweets.find((tweet) => tweet.id === tweetId);
-  tweet.thread = ThreadHandler.GetThread(
+  const thread = ThreadHandler.GetThread(
     data.value.user.account.accountId,
     data.value.tweets,
     tweetId,
   );
+
+  // Save current scroll position
+  const scrollPosition = window.scrollY;
+
+  // Set thread view mode
+  threadView.value = {
+    originTweet: tweet,
+    thread: thread,
+    scrollPosition: scrollPosition,
+  };
+
+  // Scroll to top when entering thread view
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+function exitThreadView() {
+  const savedScrollPosition = threadView.value?.scrollPosition || 0;
+  threadView.value = null;
+
+  // Restore scroll position after DOM update
+  setTimeout(() => {
+    window.scrollTo({ top: savedScrollPosition, behavior: "smooth" });
+  }, 100);
+}
+
+// Thread tweets in correct order (top to bottom)
+const threadTweets = computed(() => {
+  if (!threadView.value) return [];
+
+  const { originTweet, thread } = threadView.value;
+
+  // upwards contains: origin tweet + all tweets it replies to
+  // downwards contains: all replies to the origin tweet
+  // upwards is in order: [origin, parent1, parent2, ...oldest]
+  // We need: [oldest, ..., parent2, parent1, origin, child1, child2, ...newest]
+
+  const upwardsReversed = [...thread.upwards].reverse();
+
+  // Check if origin is already in upwards (it should be)
+  const originInUpwards = upwardsReversed.some((t) => t.id === originTweet.id);
+
+  if (originInUpwards) {
+    // Origin is already in the correct position in upwards
+    return [...upwardsReversed, ...thread.downwards];
+  } else {
+    // Fallback: manually insert origin between upwards and downwards
+    return [...upwardsReversed, originTweet, ...thread.downwards];
+  }
+});
 </script>
 
 <template>
+  <!-- Mobile Menu -->
+  <TheMobileMenu
+    ref="mobileMenuRef"
+    :filter-type="filterType"
+    :is-dark-mode="isDarkMode"
+    :tweet-counts="tweetCounts"
+    :selection-mode="selectionMode"
+    :selected-count="selectedTweets.size"
+    @set-filter-type="setFilterType"
+    @toggle-dark-mode="toggleDarkMode"
+    @export-j-s-o-n="exportAsJSON"
+    @export-c-s-v="exportAsCSV"
+    @print="printTweets"
+    @toggle-selection-mode="toggleSelectionMode"
+    @select-all="selectAllTweets"
+    @deselect-all="deselectAllTweets"
+  />
+
   <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-3 col-start-2">
-      <div class="relative">
-        <div class="fixed">
-          <div class="px-4 py-6">
-            <h1 class="font-display text-2xl tracking-widest">
+    <!-- Desktop Sidebar - Hidden on mobile -->
+    <div
+      class="hidden lg:col-span-4 lg:col-start-1 lg:block xl:col-span-3 xl:col-start-2"
+    >
+      <div class="relative h-screen">
+        <div class="fixed flex h-screen flex-col">
+          <div class="flex-1 px-4 py-6">
+            <h1
+              @click="reloadPage"
+              class="cursor-pointer font-display text-2xl tracking-widest text-gray-900 transition-colors hover:text-orange-600 dark:text-orange-600 dark:hover:text-orange-700"
+            >
               twittr archivr
             </h1>
             <nav class="py-6">
               <ul>
                 <li>
                   <a
-                    class="block py-4 text-xl font-bold text-orange-600"
+                    @click.prevent="setFilterType('all')"
+                    :class="
+                      filterType === 'all'
+                        ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
                     href=""
-                    >All Tweets</a
                   >
+                    All Tweets
+                    <small class="ml-2 text-sm opacity-70"
+                      >({{ tweetCounts.all }})</small
+                    >
+                  </a>
                 </li>
                 <li>
                   <a
-                    class="block py-4 text-xl font-bold"
+                    @click.prevent="setFilterType('tweets')"
+                    :class="
+                      filterType === 'tweets'
+                        ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
                     href=""
-                    >Only Tweets</a
                   >
+                    Only Tweets
+                    <small class="ml-2 text-sm opacity-70"
+                      >({{ tweetCounts.tweets }})</small
+                    >
+                  </a>
                 </li>
                 <li>
                   <a
-                    class="block py-4 text-xl font-bold"
+                    @click.prevent="setFilterType('replies')"
+                    :class="
+                      filterType === 'replies'
+                        ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
                     href=""
-                    >Only Replies</a
                   >
+                    Only Replies
+                    <small class="ml-2 text-sm opacity-70"
+                      >({{ tweetCounts.replies }})</small
+                    >
+                  </a>
                 </li>
                 <li>
                   <a
-                    class="block py-4 text-xl font-bold"
+                    @click.prevent="setFilterType('retweets')"
+                    :class="
+                      filterType === 'retweets'
+                        ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
                     href=""
-                    >Only Retweets</a
                   >
+                    Only Retweets
+                    <small class="ml-2 text-sm opacity-70"
+                      >({{ tweetCounts.retweets }})</small
+                    >
+                  </a>
+                </li>
+                <li>
+                  <a
+                    @click.prevent="setFilterType('threads')"
+                    :class="
+                      filterType === 'threads'
+                        ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
+                    href=""
+                  >
+                    Only Threads
+                    <small class="ml-2 text-sm opacity-70"
+                      >({{ tweetCounts.threads }})</small
+                    >
+                  </a>
                 </li>
               </ul>
             </nav>
-            <div class="w-100 relative text-gray-300">
+            <div class="w-100 relative text-gray-300 dark:text-gray-500">
               <button
                 type="submit"
-                class="absolute ml-4 mr-4 mt-3"
+                class="absolute ml-4 mr-4 mt-3 text-white"
               >
                 <svg
                   class="h-4 w-4 fill-current"
@@ -121,80 +695,712 @@ function getThread(tweetId) {
                 </svg>
               </button>
               <input
-                class="h-10 w-full border-0 bg-orange-400 px-10 pr-5 text-sm shadow focus:outline-none"
+                class="h-10 w-full rounded-lg border-0 bg-orange-600 px-10 pr-5 text-sm text-white placeholder-white shadow focus:outline-none dark:bg-orange-600"
                 type="text"
                 placeholder="Search Tweets..."
                 v-model="searchTerm"
                 @input="onSearchTermChange"
               />
             </div>
+
+            <!-- Export & Print Actions -->
+            <div class="relative mt-6">
+              <button
+                @click="showExportMenu = !showExportMenu"
+                class="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-3 text-white transition-all hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span class="font-medium">Export & Print</span>
+                <span
+                  v-if="selectionMode && selectedTweets.size > 0"
+                  class="rounded-full bg-white px-2 py-0.5 text-xs font-bold text-orange-600"
+                >
+                  {{ selectedTweets.size }}
+                </span>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <Transition name="fade-scale">
+                <div
+                  v-if="showExportMenu"
+                  class="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-700"
+                >
+                  <!-- Selection Mode Toggle -->
+                  <button
+                    @click="toggleSelectionMode"
+                    class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
+                    :class="
+                      selectionMode
+                        ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
+                        : 'text-gray-700 dark:text-gray-200'
+                    "
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                      />
+                    </svg>
+                    <div class="flex-1">
+                      <div class="font-medium">
+                        {{
+                          selectionMode
+                            ? "Selection Mode Active"
+                            : "Select Specific Tweets"
+                        }}
+                      </div>
+                      <div class="text-xs opacity-70">
+                        {{
+                          selectionMode
+                            ? `${selectedTweets.size} selected`
+                            : "Choose individual tweets"
+                        }}
+                      </div>
+                    </div>
+                  </button>
+
+                  <!-- Select All/Deselect All (only in selection mode) -->
+                  <div
+                    v-if="selectionMode"
+                    class="flex border-t border-gray-200 dark:border-gray-600"
+                  >
+                    <button
+                      @click="selectAllTweets"
+                      class="flex-1 border-r border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      @click="deselectAllTweets"
+                      class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
+                    >
+                      Deselect All
+                    </button>
+                  </div>
+
+                  <div
+                    class="border-t border-gray-200 dark:border-gray-600"
+                  ></div>
+
+                  <button
+                    @click="exportAsJSON"
+                    :disabled="selectionMode && selectedTweets.size === 0"
+                    class="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-200 dark:hover:bg-gray-600"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <div>
+                      <div class="font-medium">Export as JSON</div>
+                      <div class="text-xs opacity-70">
+                        {{
+                          selectionMode && selectedTweets.size > 0
+                            ? `${selectedTweets.size} tweets`
+                            : "All filtered tweets"
+                        }}
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    @click="exportAsCSV"
+                    :disabled="selectionMode && selectedTweets.size === 0"
+                    class="flex w-full items-center gap-3 border-t border-gray-200 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    <div>
+                      <div class="font-medium">Export as CSV</div>
+                      <div class="text-xs opacity-70">
+                        {{
+                          selectionMode && selectedTweets.size > 0
+                            ? `${selectedTweets.size} tweets`
+                            : "All filtered tweets"
+                        }}
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    @click="printTweets"
+                    class="flex w-full items-center gap-3 border-t border-gray-200 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                      />
+                    </svg>
+                    <div>
+                      <div class="font-medium">Print Tweets</div>
+                      <div class="text-xs opacity-70">Print or save as PDF</div>
+                    </div>
+                  </button>
+                </div>
+              </Transition>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="scroller col-span-7 bg-white shadow-2xl 2xl:col-span-5">
-      <div
-        class="sticky top-0 z-10 w-full border-b border-solid border-orange-400 bg-white"
-      >
-        <div class="p-6">
-          <div>
-            <h2 class="font-display text-2xl tracking-widest text-orange-600">
-              All Tweets
-            </h2>
-            <p>
-              You are now seeing all tweets. Including Replies, Retweets and
-              normal Tweets.
-            </p>
-          </div>
-          <div class="flex flex-wrap justify-center gap-5">
-            <div
-              v-for="sort in useSort()"
-              :key="sort"
-            >
-              <input
-                type="radio"
-                :id="sort"
-                :value="sort"
-                v-model="sortTerm"
-              />
-              <label :for="sort">{{ $t(`content.sort.${sort}`) }}</label>
+          <!-- Support Links at Bottom -->
+          <div class="px-4 pb-6">
+            <!-- Ko-fi Link -->
+            <div class="mb-3">
+              <a
+                href="https://ko-fi.com/dstn"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3 text-white transition-all hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
+              >
+                <span class="text-lg">🥤</span>
+                <span class="font-medium">Buy me a Red Bull</span>
+              </a>
+            </div>
+            <!-- GitHub Link -->
+            <div>
+              <a
+                href="https://github.com/dstN/twitterArchiver"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3 text-white transition-all hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
+              >
+                <font-awesome-icon
+                  :icon="faGithub"
+                  class="h-5 w-5"
+                />
+                <span class="font-medium">View on GitHub</span>
+              </a>
             </div>
           </div>
         </div>
       </div>
-      <template v-if="tweets.length > 0">
-        <DynamicScroller
-          :items="tweets"
-          :min-item-size="54"
-          class="scroller w-100"
-          page-mode
-          itemClass="tweet"
-          :buffer="200"
-        >
-          <template v-slot="{ item, index, active }">
-            <DynamicScrollerItem
-              :item="item"
-              :active="active"
-              :size-dependencies="[item.full_text]"
-              :data-index="index"
+    </div>
+    <!-- Main Content - Full width on mobile, 7 cols on desktop -->
+    <div
+      class="scroller col-span-12 bg-white shadow-2xl dark:bg-gray-800 lg:col-span-7 2xl:col-span-5"
+    >
+      <div
+        class="sticky top-0 z-10 w-full border-b border-solid border-orange-600 bg-white dark:border-orange-600 dark:bg-gray-800"
+      >
+        <div class="p-6">
+          <!-- Mobile Header with Hamburger -->
+          <div class="mb-4 flex items-center justify-between lg:hidden">
+            <button
+              @click="openMobileMenu"
+              class="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 text-gray-700 dark:text-gray-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+            <h2
+              class="font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
+            >
+              {{
+                filterType === "all"
+                  ? "All Tweets"
+                  : filterType === "tweets"
+                    ? "Only Tweets"
+                    : filterType === "replies"
+                      ? "Only Replies"
+                      : filterType === "threads"
+                        ? "Only Threads"
+                        : "Only Retweets"
+              }}
+            </h2>
+            <div class="w-10"></div>
+            <!-- Spacer for centering -->
+          </div>
+
+          <!-- Thread View Header -->
+          <div v-if="threadView">
+            <button
+              @click="exitThreadView"
+              class="mb-6 flex items-center gap-2 font-bold text-orange-600 hover:text-orange-600 dark:text-orange-600 dark:hover:text-orange-600"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Back to
+              {{
+                filterType === "all"
+                  ? "All Tweets"
+                  : filterType === "tweets"
+                    ? "Only Tweets"
+                    : filterType === "replies"
+                      ? "Only Replies"
+                      : filterType === "threads"
+                        ? "Only Threads"
+                        : "Only Retweets"
+              }}
+            </button>
+            <h2
+              class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
+            >
+              Thread View
+            </h2>
+            <p class="dark:text-gray-300">
+              Viewing {{ threadTweets.length }} tweets in this thread
+            </p>
+          </div>
+          <!-- Normal View Header (Desktop only) -->
+          <div
+            v-else
+            class="hidden lg:block"
+          >
+            <h2
+              class="mb-6 font-display text-2xl tracking-widest text-orange-600 dark:text-orange-600"
+            >
+              {{
+                filterType === "all"
+                  ? "All Tweets"
+                  : filterType === "tweets"
+                    ? "Only Tweets"
+                    : filterType === "replies"
+                      ? "Only Replies"
+                      : filterType === "threads"
+                        ? "Only Threads"
+                        : "Only Retweets"
+              }}
+            </h2>
+            <p class="dark:text-gray-300">
+              {{
+                filterType === "all"
+                  ? "You are now seeing all tweets. Including Replies, Retweets and normal Tweets."
+                  : filterType === "tweets"
+                    ? "You are now seeing only original tweets (no replies or retweets)."
+                    : filterType === "replies"
+                      ? "You are now seeing only replies to other tweets."
+                      : filterType === "threads"
+                        ? "You are now seeing only threads with multiple connected tweets."
+                        : "You are now seeing only retweets."
+              }}
+            </p>
+          </div>
+          <!-- Sort buttons (only in normal view) -->
+          <div
+            v-if="!threadView"
+            class="mt-4"
+            :class="
+              filterType === 'retweets'
+                ? 'grid grid-cols-3 gap-2'
+                : 'grid grid-cols-3 gap-2'
+            "
+          >
+            <button
+              @click="toggleSort('date')"
+              class="flex items-center justify-center gap-1 rounded-lg px-3 py-2 font-medium transition-all"
+              :class="
+                sortBy === 'date'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+              "
+            >
+              <span>Date</span>
+              <svg
+                v-if="sortBy === 'date'"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 flex-shrink-0"
+                :class="{ 'rotate-180': sortDirection === 'asc' }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            <button
+              v-if="filterType !== 'retweets'"
+              @click="toggleSort('likes')"
+              class="flex items-center justify-center gap-1 rounded-lg px-3 py-2 font-medium transition-all"
+              :class="
+                sortBy === 'likes'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+              "
+            >
+              <span>Likes</span>
+              <svg
+                v-if="sortBy === 'likes'"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 flex-shrink-0"
+                :class="{ 'rotate-180': sortDirection === 'asc' }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+
+            <button
+              v-if="filterType !== 'retweets'"
+              @click="toggleSort('retweets')"
+              class="flex items-center justify-center gap-1 rounded-lg px-3 py-2 font-medium transition-all"
+              :class="
+                sortBy === 'retweets'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+              "
+              title="Retweets"
+            >
+              <span class="sm:hidden">RTs</span>
+              <span class="hidden sm:inline">Retweets</span>
+              <svg
+                v-if="sortBy === 'retweets'"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 flex-shrink-0"
+                :class="{ 'rotate-180': sortDirection === 'asc' }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thread View -->
+      <template v-if="threadView">
+        <div class="tweets-list">
+          <div
+            v-for="(item, index) in threadTweets"
+            :key="item.id"
+            class="border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+            :class="{
+              'bg-orange-50 dark:bg-orange-900/20':
+                item.id === threadView.originTweet.id,
+            }"
+          >
+            <Tweet
+              :data="item"
+              :user="user"
+              :thread-tweets="threadTweets"
+              :in-thread-view="true"
+              @get-thread="getThread"
+            />
+          </div>
+        </div>
+      </template>
+
+      <!-- Normal View -->
+      <template v-else-if="displayedTweets.length > 0">
+        <div class="tweets-list">
+          <div
+            v-for="item in displayedTweets"
+            :key="item.id"
+            :data-tweet-id="item.id"
+            class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+            :class="{
+              'ring-2 ring-inset ring-orange-600':
+                selectionMode && selectedTweets.has(item.id),
+            }"
+          >
+            <!-- Selection Checkbox (only in selection mode) -->
+            <div
+              v-if="selectionMode"
+              class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
+            >
+              <input
+                type="checkbox"
+                :checked="selectedTweets.has(item.id)"
+                @change="toggleTweetSelection(item.id)"
+                class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
+              />
+            </div>
+
+            <div :class="{ 'ml-12': selectionMode }">
+              <Tweet
+                :data="item"
+                :user="user"
+                @get-thread="getThread"
+              />
+            </div>
+          </div>
+
+          <!-- Loading indicator -->
+          <div class="load-more-trigger p-6 text-center">
+            <div
+              v-if="hasMore"
+              class="text-gray-500 dark:text-gray-400"
             >
               <div
-                :key="item.id"
-                class="flex flex-col justify-center border-b border-solid border-orange-400 bg-white hover:bg-slate-100"
-              >
-                <Tweet
-                  :data="item"
-                  :user="user"
-                  @get-thread="getThread"
-                />
-              </div>
-            </DynamicScrollerItem>
-          </template>
-        </DynamicScroller>
+                v-if="isLoading"
+                class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-r-transparent dark:border-orange-600"
+              ></div>
+              <p class="mt-2">
+                {{ isLoading ? "Loading more tweets..." : "Scroll for more" }}
+              </p>
+            </div>
+            <div
+              v-else
+              class="text-gray-500 dark:text-gray-400"
+            >
+              <p>{{ $t("content.allLoaded") || "All tweets loaded" }}</p>
+            </div>
+          </div>
+        </div>
       </template>
       <template v-else>
-        <h2>{{ $t("content.notFound", [searchTerm]) }}</h2>
+        <h2 class="p-6 dark:text-gray-300">
+          {{ $t("content.notFound", [searchTerm]) }}
+        </h2>
       </template>
     </div>
   </div>
+
+  <!-- Mobile Search Button (Mobile only) -->
+  <div
+    class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 transition-all duration-300 lg:hidden"
+    :class="{ 'bottom-24': showScrollTop }"
+  >
+    <!-- Search Field (appears when toggled) -->
+    <Transition name="slide-up">
+      <div
+        v-if="showMobileSearch"
+        class="w-72 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800"
+      >
+        <div class="relative text-gray-300 dark:text-gray-500">
+          <button
+            type="button"
+            class="absolute ml-3 mt-2.5 text-gray-400"
+          >
+            <svg
+              class="h-4 w-4 fill-current"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 56.966 56.966"
+            >
+              <path
+                d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
+              ></path>
+            </svg>
+          </button>
+          <input
+            id="mobile-search-input"
+            class="h-10 w-full rounded-lg border border-gray-300 bg-white px-10 pr-5 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-600 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-600"
+            type="text"
+            placeholder="Search Tweets..."
+            v-model="searchTerm"
+            @input="onSearchTermChange"
+          />
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Search Toggle Button -->
+    <button
+      @click="toggleMobileSearch"
+      class="rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-600 dark:hover:bg-gray-700"
+      :class="{
+        'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700':
+          showMobileSearch,
+      }"
+      aria-label="Toggle search"
+    >
+      <svg
+        v-if="!showMobileSearch"
+        class="h-6 w-6 fill-current"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 56.966 56.966"
+      >
+        <path
+          d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
+        ></path>
+      </svg>
+      <svg
+        v-else
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Scroll to Top Button (All screens) -->
+  <Transition name="fade">
+    <button
+      v-if="showScrollTop"
+      @click="scrollToTop"
+      class="fixed bottom-6 right-6 z-50 rounded-full bg-orange-600 p-4 text-white shadow-lg transition-all hover:bg-orange-700 hover:shadow-xl dark:bg-orange-600 dark:hover:bg-orange-700"
+      aria-label="Scroll to top"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 10l7-7m0 0l7 7m-7-7v18"
+        />
+      </svg>
+    </button>
+  </Transition>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.fade-scale-enter-from,
+.fade-scale-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+
+@media print {
+  /* Hide navigation, buttons, and UI elements when printing */
+  nav,
+  .fixed,
+  button,
+  .mobile-menu,
+  .search-bar,
+  .export-menu {
+    display: none !important;
+  }
+
+  /* Optimize tweet display for printing */
+  .tweets-list {
+    page-break-inside: avoid;
+  }
+
+  /* Show all tweets when printing */
+  .tweet {
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+}
+</style>

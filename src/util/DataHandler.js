@@ -1,11 +1,56 @@
 import Logger from "./Logger";
 
 export async function ProcessData(zipData) {
-  ZIP_DATA = zipData;
-  return {
-    user: await getUser(),
-    tweets: await getTweets(),
-  };
+  try {
+    ZIP_DATA = zipData;
+
+    // Validate the ZIP data structure
+    if (!zipData || !zipData.files) {
+      throw new Error("Invalid ZIP data structure");
+    }
+
+    // List all files in the ZIP for debugging
+    const fileList = Object.keys(zipData.files);
+    console.log("Files in ZIP archive:", fileList);
+
+    // Check for required data directory
+    const dataFiles = fileList.filter((f) => f.startsWith("data/"));
+    if (dataFiles.length === 0) {
+      throw new Error(
+        "No data directory found in ZIP archive. This may not be a valid Twitter archive.",
+      );
+    }
+
+    console.log("Data files found:", dataFiles);
+
+    // Verify this looks like a Twitter archive by checking for essential files
+    const requiredFiles = ["data/account.js", "data/profile.js"];
+    const tweetFile = fileList.some(
+      (f) => f === "data/tweet.js" || f === "data/tweets.js",
+    );
+
+    if (!tweetFile) {
+      throw new Error(
+        "No tweet data file found. Expected 'data/tweet.js' or 'data/tweets.js'.",
+      );
+    }
+
+    const missingRequired = requiredFiles.filter(
+      (file) => !fileList.includes(file),
+    );
+    if (missingRequired.length > 0) {
+      console.warn("Missing some expected files:", missingRequired);
+      // Don't throw error for missing profile files as they might be optional in some archives
+    }
+
+    return {
+      user: await getUser(),
+      tweets: await getTweets(),
+    };
+  } catch (error) {
+    LOGGER.error("Failed to process ZIP data:", error);
+    throw error; // Re-throw to be handled by the calling component
+  }
 }
 
 const LOGGER = new Logger("DataHandler");
@@ -13,20 +58,57 @@ let ZIP_DATA;
 let ACCOUNT_ID;
 
 async function fixJson(json) {
-  let makeArr = json.split(/\r?\n|\r|\n/g);
-  makeArr.shift();
-  makeArr.unshift("[");
-  const makeObj = JSON.parse(makeArr.join(" "));
-  const getKey = Object.keys(makeObj[0])[0];
-  makeArr = makeObj.map((item) => ({ ...item[`${getKey}`] }));
-  return makeArr.length > 1 ? makeArr : makeArr[0];
+  try {
+    if (!json || json.trim().length === 0) {
+      throw new Error("Empty JSON content");
+    }
+
+    let makeArr = json.split(/\r?\n|\r|\n/g);
+
+    if (makeArr.length === 0) {
+      throw new Error("No content found in file");
+    }
+
+    makeArr.shift();
+    makeArr.unshift("[");
+
+    const jsonContent = makeArr.join(" ");
+    console.log("Parsing JSON content, length:", jsonContent.length);
+
+    const makeObj = JSON.parse(jsonContent);
+
+    if (!Array.isArray(makeObj) || makeObj.length === 0) {
+      throw new Error("Parsed JSON is not a valid array or is empty");
+    }
+
+    const getKey = Object.keys(makeObj[0])[0];
+    makeArr = makeObj.map((item) => ({ ...item[`${getKey}`] }));
+    return makeArr.length > 1 ? makeArr : makeArr[0];
+  } catch (error) {
+    LOGGER.error("Failed to parse JSON:", error);
+    console.log(
+      "Raw JSON content:",
+      json ? json.substring(0, 500) + "..." : "null",
+    );
+    throw new Error(`JSON parsing failed: ${error.message}`);
+  }
 }
 
-async function getFileFromZip(fileName, mediaType) {
+async function getFileFromZip(fileName, mediaType, isOptional = false) {
   try {
     const mediaExtensions = ["jpg", "png", "gif", "jpeg", "jiff", "mp4"];
     const fileLocation = `data/${fileName}`;
     let extension = fileName.split(".").pop();
+
+    // Check if file exists in ZIP
+    if (!ZIP_DATA.files[fileLocation]) {
+      if (isOptional) {
+        LOGGER.warn(`Optional file not found in ZIP: ${fileLocation}`);
+        return null; // Return null for optional files instead of throwing
+      } else {
+        throw new Error(`File not found in ZIP: ${fileLocation}`);
+      }
+    }
 
     if (mediaExtensions.includes(extension)) {
       const untypedBlob = await ZIP_DATA.files[fileLocation].async("blob");
@@ -34,23 +116,59 @@ async function getFileFromZip(fileName, mediaType) {
       return URL.createObjectURL(mediaBlob);
     } else {
       const rawData = await ZIP_DATA.files[fileLocation].async("string");
+      console.log(
+        "Processing file:",
+        fileName,
+        "Size:",
+        rawData.length,
+        "chars",
+      );
       return await fixJson(rawData);
     }
   } catch (error) {
-    //LOGGER.error("Failed to get file from zip data", fileName, "Error", error);
+    LOGGER.error("Failed to get file from zip data", fileName, "Error", error);
+    if (isOptional) {
+      LOGGER.warn(`Skipping optional file due to error: ${fileName}`);
+      return null;
+    }
+    throw error; // Re-throw for critical files
   }
 }
 
 async function getTweets() {
-  const tweetsFile = ZIP_DATA.file("data/tweet.js") ? "tweet.js" : "tweets.js";
+  // Check for both possible tweet file names
+  const tweetFileExists = ZIP_DATA.file("data/tweet.js");
+  const tweetsFileExists = ZIP_DATA.file("data/tweets.js");
+
+  if (!tweetFileExists && !tweetsFileExists) {
+    throw new Error(
+      "No tweet data file found in archive. Expected 'tweet.js' or 'tweets.js' in data folder.",
+    );
+  }
+
+  const tweetsFile = tweetFileExists ? "tweet.js" : "tweets.js";
+  console.log("Using tweets file:", tweetsFile);
+
   const fileName = tweetsFile.substring(0, tweetsFile.lastIndexOf("."));
   const tweets = await getFileFromZip(tweetsFile);
+
+  if (!Array.isArray(tweets)) {
+    throw new Error("Tweet data is not in expected array format");
+  }
+
+  console.log("Processing", tweets.length, "tweets");
+
   for (let tweet of tweets) {
     // check for links and media in the tweet
-    if (tweet.entities.urls.length && !tweet.full_text.startsWith("RT")) {
+    if (
+      tweet.entities &&
+      tweet.entities.urls &&
+      tweet.entities.urls.length &&
+      !tweet.full_text.startsWith("RT")
+    ) {
       tweet.full_text = resolveShortendLinks(
         tweet.full_text,
-        tweet.entities.urls
+        tweet.entities.urls,
       );
       tweet.has_link = true;
     }
@@ -58,11 +176,11 @@ async function getTweets() {
       tweet.media = await resolveMediaLinks(
         tweet.id,
         tweet.extended_entities.media,
-        fileName
+        fileName,
       );
       tweet.full_text = tweet.full_text.replaceAll(
         tweet.extended_entities.media[0].url,
-        ""
+        "",
       );
     }
 
@@ -91,8 +209,8 @@ function resolveShortendLinks(text, urls) {
     text = text.replaceAll(
       entity.url,
       entity
-        ? `<a class="text-orange-400" href="${entity.expanded_url}">${entity.expanded_url}</a>`
-        : "<!BROKEN LINK!>"
+        ? `<a class="text-orange-600" href="${entity.expanded_url}">${entity.expanded_url}</a>`
+        : "<!BROKEN LINK!>",
     );
   });
 
@@ -124,31 +242,48 @@ async function resolveMediaLinks(tweetId, media, fileName) {
       LOGGER.log(
         await getFileFromZip(
           `${fileName}_media/${tweetId}-${mediaName}`,
-          mediaType
-        )
+          mediaType,
+          true, // Mark as optional
+        ),
       );
     }
 
-    resolvedMedia.push({
-      type: entity.type,
-      data: await getFileFromZip(
-        `${fileName}_media/${tweetId}-${mediaName}`,
-        mediaType
-      ),
-    });
+    // Mark media files as optional - if they don't exist, skip them instead of crashing
+    const mediaData = await getFileFromZip(
+      `${fileName}_media/${tweetId}-${mediaName}`,
+      mediaType,
+      true, // Mark as optional
+    );
+
+    // Only add media if it was successfully loaded
+    if (mediaData) {
+      resolvedMedia.push({
+        type: entity.type,
+        data: mediaData,
+      });
+    } else {
+      LOGGER.warn(`Skipping missing media for tweet ${tweetId}: ${mediaName}`);
+    }
   }
 
   return resolvedMedia;
 }
 
 function checkForThread(tweets, origin) {
-  return (
+  // Check if there are replies to this tweet (downwards)
+  const hasReplies =
     tweets.filter(
       (tweet) =>
         tweet.in_reply_to_user_id === ACCOUNT_ID &&
-        tweet.in_reply_to_status_id === origin.id
-    ).length > 0
-  );
+        tweet.in_reply_to_status_id === origin.id,
+    ).length > 0;
+
+  // Check if this tweet is replying to another own tweet (upwards)
+  const isReplyToOwnTweet =
+    origin.in_reply_to_user_id === ACCOUNT_ID &&
+    tweets.some((tweet) => tweet.id === origin.in_reply_to_status_id);
+
+  return hasReplies || isReplyToOwnTweet;
 }
 
 async function getUser() {
@@ -175,7 +310,7 @@ async function getProfile() {
     .split("?")[0];
   profile.Image = await getFileFromZip(
     `profile_media/${ACCOUNT_ID}-${file}`,
-    "image/png"
+    "image/png",
   );
 
   return profile;

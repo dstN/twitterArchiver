@@ -14,7 +14,8 @@
             "likes": "by likes",
             "retweets": "by retweets"
         },
-        "notFound": "No tweets found by given search term: {0}"
+        "notFound": "No tweets found by given search term: {0}",
+        "allLoaded": "You've reached the end! All tweets loaded."
     },
     "tweet": {
         "thread": "THREAD"

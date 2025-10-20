@@ -36,7 +36,7 @@ const link = computed(() => {
   >
     <div
       :title="date"
-      class="font-normal text-slate-700"
+      class="font-normal text-slate-700 dark:text-gray-400"
     >
       {{ formattedDate }} · {{ formattedTime }}
     </div>

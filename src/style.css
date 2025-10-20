@@ -1,7 +1,6 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-@import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 @import "./fonts.css";
 
 :root {
@@ -21,4 +20,9 @@ body,
 #app {
   @apply min-h-full;
   @apply h-full;
+}
+
+/* Smooth scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
 }
