@@ -2,7 +2,7 @@
  * Selection Composable - Manages tweet selection state and operations
  */
 
-import { ref } from 'vue';
+import { ref } from "vue";
 
 export function useSelection() {
   const selectedTweets = ref(new Set());
