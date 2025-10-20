@@ -21,7 +21,7 @@ function toggleDarkMode() {
       <!-- Dark Mode Toggle -->
       <button
         @click="toggleDarkMode"
-        class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-white transition-colors hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700"
+        class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-colors hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
         :title="isDarkMode ? 'Light Mode' : 'Dark Mode'"
       >
         <svg

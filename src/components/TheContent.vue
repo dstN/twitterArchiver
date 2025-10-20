@@ -102,7 +102,7 @@ const { threadView, threadTweets, getThread, exitThreadView } =
   useThreadView(data);
 
 // Export functionality
-const { showExportMenu, exportAsJSON, exportAsCSV } = useExport(
+const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
   data,
   filteredData,
   selectedTweets,
@@ -127,6 +127,7 @@ const { showExportMenu, exportAsJSON, exportAsCSV } = useExport(
     @toggle-dark-mode="toggleDarkMode"
     @export-j-s-o-n="exportAsJSON"
     @export-c-s-v="exportAsCSV"
+    @print="printTweets"
     @toggle-selection-mode="toggleSelectionModeLocal"
     @select-all="selectAllDisplayedTweets"
     @deselect-all="deselectAllTweets"

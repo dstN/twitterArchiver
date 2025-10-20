@@ -156,9 +156,21 @@ export function useExport(
     showExportMenu.value = false;
   }
 
+  /**
+   * Print tweets (opens browser print dialog)
+   */
+  function printTweets() {
+    showExportMenu.value = false;
+    // Small delay to let the UI update before printing
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  }
+
   return {
     showExportMenu,
     exportAsJSON,
     exportAsCSV,
+    printTweets,
   };
 }
