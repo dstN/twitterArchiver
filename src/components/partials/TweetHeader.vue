@@ -44,9 +44,7 @@ function getThread() {
     <!-- User Info and Metadata -->
     <div class="min-w-0 flex-1">
       <!-- Username and Handle -->
-      <div
-        class="flex flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap"
-      >
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap">
         <a
           :href="`https://twitter.com/i/user/${account.accountId}`"
           target="_blank"
