@@ -4,9 +4,17 @@ import Tweet from "./partials/Tweet.vue";
 import TheMobileMenu from "./TheMobileMenu.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import debounce from "lodash/debounce";
+import { debounce } from "../util/debounce";
 import * as ThreadHandler from "../util/ThreadHandler";
 import { useSorting, useSort } from "../util/UseSorting";
+
+// Constants for performance tuning
+const SEARCH_DEBOUNCE_MS = 150;
+const SCROLL_TOP_THRESHOLD = 500;
+const SCROLL_BOTTOM_THRESHOLD = 1000;
+const INITIAL_TWEET_COUNT = 25;
+const TWEET_BATCH_SIZE = 25;
+const MAX_CACHED_TWEETS = 150;
 
 const props = defineProps({
   data: Object,
@@ -29,7 +37,7 @@ const selectionMode = ref(false);
 
 const onSearchTermChange = debounce(() => {
   applyFilters();
-}, 150);
+}, SEARCH_DEBOUNCE_MS);
 
 function openMobileMenu() {
   mobileMenuRef.value?.open();
@@ -219,14 +227,14 @@ function exportAsCSV() {
 
 function handleScroll(e) {
   const scrollTop = window.scrollY || document.documentElement.scrollTop;
-  showScrollTop.value = scrollTop > 500;
+  showScrollTop.value = scrollTop > SCROLL_TOP_THRESHOLD;
 
-  // Check if we're near the bottom (within 1000px) - load more
+  // Check if we're near the bottom (within SCROLL_BOTTOM_THRESHOLD) - load more
   const scrollHeight = document.documentElement.scrollHeight;
   const clientHeight = window.innerHeight;
   const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-  // Check if we're near the top (within 500px) - load previous
+  // Check if we're near the top (within SCROLL_TOP_THRESHOLD) - load previous
   const distanceFromTop = scrollTop;
 
   console.log("Scroll:", {
@@ -241,13 +249,21 @@ function handleScroll(e) {
   });
 
   // Load more at bottom
-  if (distanceFromBottom < 1000 && hasMore.value && !isLoading.value) {
+  if (
+    distanceFromBottom < SCROLL_BOTTOM_THRESHOLD &&
+    hasMore.value &&
+    !isLoading.value
+  ) {
     console.log("Triggering loadMore!");
     loadMore();
   }
 
   // Load previous at top
-  if (distanceFromTop < 500 && startIndex.value > 0 && !isLoading.value) {
+  if (
+    distanceFromTop < SCROLL_TOP_THRESHOLD &&
+    startIndex.value > 0 &&
+    !isLoading.value
+  ) {
     console.log("Triggering loadPrevious!");
     loadPrevious();
   }
@@ -302,7 +318,7 @@ function applyFilters() {
   }
 
   filteredData.value = filtered;
-  displayedCount.value = 25; // Reset to initial count
+  displayedCount.value = INITIAL_TWEET_COUNT; // Reset to initial count
   startIndex.value = 0; // Reset start index
   isLoading.value = false; // Reset loading state
 }
@@ -331,10 +347,10 @@ const tweets = computed(() => {
 });
 
 // Infinite scroll implementation - Twitter style
-const displayedCount = ref(25); // Start with 25 tweets
-const loadMoreCount = 25; // Load 25 more each time
+const displayedCount = ref(INITIAL_TWEET_COUNT);
+const loadMoreCount = TWEET_BATCH_SIZE;
 const startIndex = ref(0); // Track where visible items start
-const itemsToKeepAbove = 150; // Keep max 150 items in DOM
+const itemsToKeepAbove = MAX_CACHED_TWEETS;
 const isLoading = ref(false); // Prevent multiple simultaneous loads
 
 const displayedTweets = computed(() => {

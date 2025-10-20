@@ -1,15 +1,11 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import TheDarkModeToggle from "./components/TheDarkModeToggle.vue";
+import { useDarkMode } from "./composables/useDarkMode";
 
 const loading = ref(false);
 const data = ref(null);
-const isDarkMode = ref(false);
-
-onMounted(() => {
-  // Check for dark mode on mount
-  isDarkMode.value = document.documentElement.classList.contains("dark");
-});
+const { isDarkMode, toggleDarkMode } = useDarkMode();
 
 function changeLoading(loadValue) {
   loading.value = loadValue;
@@ -17,17 +13,6 @@ function changeLoading(loadValue) {
 
 function handleData(payload) {
   data.value = payload;
-}
-
-function toggleDarkMode() {
-  isDarkMode.value = !isDarkMode.value;
-  if (isDarkMode.value) {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  }
 }
 </script>
 
