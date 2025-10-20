@@ -4,11 +4,11 @@ import Tweet from "./partials/Tweet.vue";
 import TheMobileMenu from "./TheMobileMenu.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import * as ThreadHandler from "../util/ThreadHandler";
 import { useSelection } from "../composables/useSelection";
 import { useFilters } from "../composables/useFilters";
 import { useExport } from "../composables/useExport";
 import { useInfiniteScroll } from "../composables/useInfiniteScroll";
+import { useThreadView } from "../composables/useThreadView";
 
 const props = defineProps({
   data: Object,
@@ -97,65 +97,8 @@ const user = computed(() => {
   return data.value.user;
 });
 
-// Thread view state
-const threadView = ref(null); // Will hold { originTweet, thread, scrollPosition } when viewing a thread
-
-function getThread(tweetId) {
-  const tweet = data.value.tweets.find((tweet) => tweet.id === tweetId);
-  const thread = ThreadHandler.GetThread(
-    data.value.user.account.accountId,
-    data.value.tweets,
-    tweetId,
-  );
-
-  // Save current scroll position
-  const scrollPosition = window.scrollY;
-
-  // Set thread view mode
-  threadView.value = {
-    originTweet: tweet,
-    thread: thread,
-    scrollPosition: scrollPosition,
-  };
-
-  // Scroll to top when entering thread view
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function exitThreadView() {
-  const savedScrollPosition = threadView.value?.scrollPosition || 0;
-  threadView.value = null;
-
-  // Restore scroll position after DOM update
-  setTimeout(() => {
-    window.scrollTo({ top: savedScrollPosition, behavior: "smooth" });
-  }, 100);
-}
-
-// Thread tweets in correct order (top to bottom)
-const threadTweets = computed(() => {
-  if (!threadView.value) return [];
-
-  const { originTweet, thread } = threadView.value;
-
-  // upwards contains: origin tweet + all tweets it replies to
-  // downwards contains: all replies to the origin tweet
-  // upwards is in order: [origin, parent1, parent2, ...oldest]
-  // We need: [oldest, ..., parent2, parent1, origin, child1, child2, ...newest]
-
-  const upwardsReversed = [...thread.upwards].reverse();
-
-  // Check if origin is already in upwards (it should be)
-  const originInUpwards = upwardsReversed.some((t) => t.id === originTweet.id);
-
-  if (originInUpwards) {
-    // Origin is already in the correct position in upwards
-    return [...upwardsReversed, ...thread.downwards];
-  } else {
-    // Fallback: manually insert origin between upwards and downwards
-    return [...upwardsReversed, originTweet, ...thread.downwards];
-  }
-});
+// Thread view state and navigation
+const { threadView, threadTweets, getThread, exitThreadView } = useThreadView(data);
 
 // Export functionality
 const { showExportMenu, exportAsJSON, exportAsCSV } = useExport(
