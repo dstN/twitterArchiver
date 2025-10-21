@@ -22,7 +22,7 @@
  * setFilterType('threads'); // Show only threads
  */
 
-import { ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { debounce } from "../util/debounce";
 import { useSorting } from "../util/UseSorting";
 
@@ -34,57 +34,89 @@ export function useFilters(data) {
   const filterType = ref("all"); // 'all', 'tweets', 'replies', 'retweets', 'threads'
   const sortBy = ref("date"); // 'date', 'likes', 'retweets'
   const sortDirection = ref("desc"); // 'asc' or 'desc'
-  const filteredData = ref(data.value.tweets);
+  const filteredData = ref([...data.value.tweets]);
+  const isFiltering = ref(false);
+
+  function waitForPaint() {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+  }
+
+  async function withFilterSpinner(task) {
+    const alreadyFiltering = isFiltering.value;
+
+    if (!alreadyFiltering) {
+      isFiltering.value = true;
+      await nextTick();
+      await waitForPaint();
+    }
+
+    try {
+      return await task();
+    } finally {
+      if (!alreadyFiltering) {
+        await nextTick();
+        await waitForPaint();
+        isFiltering.value = false;
+      }
+    }
+  }
 
   /**
    * Applies filters and search to tweet data
    */
   function applyFilters() {
-    let filtered = data.value.tweets;
+    return withFilterSpinner(() => {
+      let filtered = [...data.value.tweets];
 
-    // Apply type filter
-    switch (filterType.value) {
-      case "tweets":
-        // Only original tweets (not replies, not retweets)
-        filtered = filtered.filter(
-          (tweet) =>
-            !tweet.in_reply_to_status_id && !tweet.full_text.startsWith("RT @"),
-        );
-        break;
-      case "replies":
-        // Only replies (tweets that are replying to someone, but not retweets)
-        filtered = filtered.filter(
-          (tweet) =>
-            tweet.in_reply_to_status_id && !tweet.full_text.startsWith("RT @"),
-        );
-        break;
-      case "retweets":
-        // Only retweets (tweets that start with "RT @")
-        filtered = filtered.filter((tweet) =>
-          tweet.full_text.startsWith("RT @"),
-        );
-        break;
-      case "threads":
-        // Only threads (tweets that are marked as threads)
-        filtered = filtered.filter((tweet) => tweet.is_thread);
-        break;
-      // 'all' - no filtering
-    }
+      // Apply type filter
+      switch (filterType.value) {
+        case "tweets":
+          // Only original tweets (not replies, not retweets)
+          filtered = filtered.filter(
+            (tweet) =>
+              !tweet.in_reply_to_status_id &&
+              !tweet.full_text.startsWith("RT @"),
+          );
+          break;
+        case "replies":
+          // Only replies (tweets that are replying to someone, but not retweets)
+          filtered = filtered.filter(
+            (tweet) =>
+              tweet.in_reply_to_status_id &&
+              !tweet.full_text.startsWith("RT @"),
+          );
+          break;
+        case "retweets":
+          // Only retweets (tweets that start with "RT @")
+          filtered = filtered.filter((tweet) =>
+            tweet.full_text.startsWith("RT @"),
+          );
+          break;
+        case "threads":
+          // Only threads (tweets that are marked as threads)
+          filtered = filtered.filter((tweet) => tweet.is_thread);
+          break;
+        // 'all' - no filtering
+      }
 
-    // Apply search filter if search term exists
-    if (searchTerm.value.length >= 3) {
-      const insensitiveFilter = (tweet) => {
-        return (
-          tweet.full_text
-            .toLowerCase()
-            .includes(searchTerm.value.toLowerCase()) ||
-          tweet.id === searchTerm.value
-        );
-      };
-      filtered = filtered.filter(insensitiveFilter);
-    }
+      // Apply search filter if search term exists
+      if (searchTerm.value.length >= 3) {
+        const insensitiveFilter = (tweet) => {
+          return (
+            tweet.full_text
+              .toLowerCase()
+              .includes(searchTerm.value.toLowerCase()) ||
+            tweet.id === searchTerm.value
+          );
+        };
+        filtered = filtered.filter(insensitiveFilter);
+      }
 
-    filteredData.value = filtered;
+      filteredData.value = filtered;
+      runSort();
+    });
   }
 
   /**
@@ -100,7 +132,7 @@ export function useFilters(data) {
    */
   function setFilterType(type) {
     filterType.value = type;
-    applyFilters();
+    return applyFilters();
   }
 
   /**
@@ -108,26 +140,36 @@ export function useFilters(data) {
    * @param {string} type - Sort type ('date', 'likes', 'retweets')
    */
   function toggleSort(type) {
-    if (sortBy.value === type) {
-      // Toggle direction if same type
-      sortDirection.value = sortDirection.value === "desc" ? "asc" : "desc";
-    } else {
-      // New type, default to desc
-      sortBy.value = type;
-      sortDirection.value = "desc";
-    }
+    return withFilterSpinner(() => {
+      if (sortBy.value === type) {
+        // Toggle direction if same type
+        sortDirection.value =
+          sortDirection.value === "desc" ? "asc" : "desc";
+      } else {
+        // New type, default to desc
+        sortBy.value = type;
+        sortDirection.value = "desc";
+      }
+
+      runSort();
+    });
   }
 
   /**
    * Computed sorted tweets
    */
   const tweets = computed(() => {
-    const sortKey =
-      sortBy.value + (sortDirection.value === "desc" ? "Desc" : "Asc");
-
-    useSorting(sortKey, filteredData);
     return filteredData.value;
   });
+
+  function runSort() {
+    const sortKey =
+      sortBy.value + (sortDirection.value === "desc" ? "Desc" : "Asc");
+    useSorting(sortKey, filteredData);
+  }
+
+  // Ensure initial dataset follows default sort
+  runSort();
 
   /**
    * Computed tweet counts by type
@@ -175,5 +217,6 @@ export function useFilters(data) {
     onSearchTermChange,
     setFilterType,
     toggleSort,
+    isFiltering,
   };
 }

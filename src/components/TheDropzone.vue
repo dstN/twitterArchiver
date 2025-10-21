@@ -3,6 +3,8 @@ import * as dataHandler from "../util/DataHandler";
 import { ZipValidator } from "../util/ZipValidator";
 import { ref } from "vue";
 
+const MAX_ARCHIVE_BYTES = 2 * 1024 * 1024 * 1024; // ~2GB browser ArrayBuffer limit
+
 const props = defineProps({
   isLoading: Boolean,
 });
@@ -104,6 +106,14 @@ function handleFileSelection(event) {
   const fileType = file.type;
   if (!validFileTypes.includes(fileType)) {
     validFile.value = false;
+    return;
+  }
+
+  if (file.size >= MAX_ARCHIVE_BYTES) {
+    validFile.value = false;
+    alert(
+      "This archive is larger than 2GB. Browsers cannot load such large files fully into memory, so please trim your export or split it before trying again."
+    );
     return;
   }
 

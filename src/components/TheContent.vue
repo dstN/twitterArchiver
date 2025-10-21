@@ -32,10 +32,10 @@ const {
   filteredData,
   tweets,
   tweetCounts,
-  applyFilters,
   onSearchTermChange,
   setFilterType,
   toggleSort,
+  isFiltering,
 } = useFilters(data);
 
 // Selection state management
@@ -150,6 +150,9 @@ const {
 </script>
 
 <template>
+  <!-- Filtering Spinner -->
+  <TheSpinner v-if="isFiltering" />
+
   <!-- Mobile Menu -->
   <TheMobileMenu
     ref="mobileMenuRef"

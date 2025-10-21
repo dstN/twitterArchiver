@@ -1,80 +1,81 @@
 {
-    "title": "twittr_Archivr",
-    "dropzone": {
-        "archive": "Twitter-Archiv",
-        "hint": "Wähle eine Datei aus oder ziehe sie hierher (nur ZIP).",
-        "drop": "JA bitte, lass es FALLEN! 🤤",
-        "invalidFile": "Oh nein! Du hast eine falsche Datei ausgewählt. Bitte wähle die <strong>ZIP-Datei</strong>, die du direkt von Twitter heruntergeladen hast, ohne sie zu verändern.",
-        "introduction": {
-            "title": "Dein privater Twitter-Archiv-Viewer",
-            "description": "Dieses Tool hilft dir, dein Twitter-Archiv lokal zu erkunden und zu organisieren—komplett privat und sicher.",
-            "features": [
-                "🔍 Durchsuche und filtere deine Tweets, Antworten und Threads",
-                "💾 Exportiere gefilterte Ergebnisse als JSON oder CSV",
-                "🌐 Teile Tweets auf anderen Plattformen (Bluesky, Mastodon, Threads)",
-                "🔒 100% lokale Verarbeitung—kein Server-Upload, deine Daten bleiben privat"
-            ]
-        }
-    },
-    "sidebar": {
-        "search": {
-            "placeholder": "Tweets durchsuchen...",
-            "label": "Suche"
-        },
-        "export": {
-            "button": "Exportieren & Drucken",
-            "selectionMode": "Auswahlmodus aktiv",
-            "selectTweets": "Bestimmte Tweets auswählen",
-            "selectedCount": "{0} ausgewählt",
-            "clickToSelect": "Klicke Tweets zum Auswählen",
-            "selectAll": "Alle auswählen",
-            "deselectAll": "Alle abwählen",
-            "exportJSON": "Als JSON exportieren",
-            "exportCSV": "Als CSV exportieren",
-            "print": "Tweets drucken"
-        },
-        "filters": {
-            "title": "Filter",
-            "all": "Alle Tweets",
-            "tweets": "Tweets",
-            "replies": "Antworten",
-            "retweets": "Retweets",
-            "threads": "Threads"
-        },
-        "reload": "Seite neu laden"
-    },
-    "content": {
-        "case-sensitive": "Groß-/Kleinschreibung beachten",
-        "sort": {
-            "dateDesc": "nach Datum absteigend",
-            "dateAsc": "nach Datum aufsteigend",
-            "likes": "nach Likes",
-            "retweets": "nach Retweets"
-        },
-        "notFound": "Keine Tweets für den Suchbegriff gefunden: {0}",
-        "allLoaded": "Du hast das Ende erreicht! Alle Tweets geladen."
-    },
-    "tweet": {
-        "thread": "THREAD",
-        "viewThread": "Thread anzeigen",
-        "closeThread": "Thread schließen",
-        "likes": "Likes",
-        "retweets": "Retweets",
-        "replies": "Antworten",
-        "share": {
-            "title": "Teilen",
-            "copyLink": "Link kopieren",
-            "linkCopied": "Link kopiert!",
-            "bluesky": "Auf Bluesky teilen",
-            "mastodon": "Auf Mastodon teilen",
-            "threads": "Auf Threads teilen"
-        }
-    },
-    "aria": {
-        "toggleDarkMode": "Dunkelmodus umschalten",
-        "hamburgerMenu": "Menü öffnen",
-        "scrollToTop": "Nach oben scrollen",
-        "toggleSearch": "Suche umschalten",
-        "closeMenu": "Menü schließen"
+  "title": "twittr_Archivr",
+  "dropzone": {
+    "archive": "Twitter-Archiv",
+    "hint": "Wähle eine Datei aus oder ziehe sie hierher (nur ZIP).",
+    "drop": "JA bitte, lass es FALLEN! 🤤",
+    "invalidFile": "Oh nein! Du hast eine falsche Datei ausgewählt. Bitte wähle die \u003cstrong\u003eZIP-Datei\u003c/strong\u003e, die du direkt von Twitter heruntergeladen hast, ohne sie zu verändern.",
+    "introduction": {
+      "title": "Dein privater Twitter-Archiv-Viewer",
+      "description": "Dieses Tool hilft dir, dein Twitter-Archiv lokal zu erkunden und zu organisieren—komplett privat und sicher.",
+      "features": [
+        "🔍 Durchsuche und filtere deine Tweets, Antworten und Threads",
+        "💾 Exportiere gefilterte Ergebnisse als JSON oder CSV",
+        "🌐 Teile Tweets auf anderen Plattformen (Bluesky, Mastodon, Threads)",
+        "🔒 100% lokale Verarbeitung—kein Server-Upload, deine Daten bleiben privat",
+        "🛠️ Browserverarbeitung funktioniert nur zuverlässig bis ~2GB"
+      ]
     }
+  },
+  "sidebar": {
+    "search": {
+      "placeholder": "Tweets durchsuchen...",
+      "label": "Suche"
+    },
+    "export": {
+      "button": "Exportieren \u0026 Drucken",
+      "selectionMode": "Auswahlmodus aktiv",
+      "selectTweets": "Bestimmte Tweets auswählen",
+      "selectedCount": "{0} ausgewählt",
+      "clickToSelect": "Klicke Tweets zum Auswählen",
+      "selectAll": "Alle auswählen",
+      "deselectAll": "Alle abwählen",
+      "exportJSON": "Als JSON exportieren",
+      "exportCSV": "Als CSV exportieren",
+      "print": "Tweets drucken"
+    },
+    "filters": {
+      "title": "Filter",
+      "all": "Alle Tweets",
+      "tweets": "Tweets",
+      "replies": "Antworten",
+      "retweets": "Retweets",
+      "threads": "Threads"
+    },
+    "reload": "Seite neu laden"
+  },
+  "content": {
+    "case-sensitive": "Groß-/Kleinschreibung beachten",
+    "sort": {
+      "dateDesc": "nach Datum absteigend",
+      "dateAsc": "nach Datum aufsteigend",
+      "likes": "nach Likes",
+      "retweets": "nach Retweets"
+    },
+    "notFound": "Keine Tweets für den Suchbegriff gefunden: {0}",
+    "allLoaded": "Du hast das Ende erreicht! Alle Tweets geladen."
+  },
+  "tweet": {
+    "thread": "THREAD",
+    "viewThread": "Thread anzeigen",
+    "closeThread": "Thread schließen",
+    "likes": "Likes",
+    "retweets": "Retweets",
+    "replies": "Antworten",
+    "share": {
+      "title": "Teilen",
+      "copyLink": "Link kopieren",
+      "linkCopied": "Link kopiert!",
+      "bluesky": "Auf Bluesky teilen",
+      "mastodon": "Auf Mastodon teilen",
+      "threads": "Auf Threads teilen"
+    }
+  },
+  "aria": {
+    "toggleDarkMode": "Dunkelmodus umschalten",
+    "hamburgerMenu": "Menü öffnen",
+    "scrollToTop": "Nach oben scrollen",
+    "toggleSearch": "Suche umschalten",
+    "closeMenu": "Menü schließen"
+  }
 }
