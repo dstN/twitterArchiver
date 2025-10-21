@@ -7,14 +7,14 @@ const { isDarkMode: isDark, toggleDarkMode } = useDarkMode();
 <template>
   <button
     @click="toggleDarkMode"
-    class="fixed right-4 top-4 z-50 rounded-full border border-gray-200 bg-white p-3 shadow-lg transition-all duration-200 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800"
+    class="fixed right-6 top-4 z-50 rounded-full border border-gray-200 bg-white p-2.5 shadow-lg transition-all duration-200 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800 sm:p-3 md:right-8 lg:right-6 lg:top-6"
     :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
   >
     <!-- Sun icon (light mode) -->
     <svg
       v-if="isDark"
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6 text-yellow-500"
+      class="h-5 w-5 text-yellow-500 sm:h-6 sm:w-6"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -31,7 +31,7 @@ const { isDarkMode: isDark, toggleDarkMode } = useDarkMode();
     <svg
       v-else
       xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6 text-gray-700"
+      class="h-5 w-5 text-gray-700 sm:h-6 sm:w-6"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"

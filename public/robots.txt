@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Crawl everything
+User-agent: *
+Allow: /
+
+# Uncomment and update when you have a sitemap
+# Sitemap: https://twittrarchivr.vercel.app/sitemap.xml

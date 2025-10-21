@@ -1,8 +1,37 @@
 /**
- * Utility functions for validating and debugging ZIP files
+ * ZIP Validator - Utilities for validating and debugging ZIP files
+ *
+ * Provides low-level ZIP file validation by checking headers, signatures,
+ * and structure before attempting to load with JSZip.
  */
 
+/**
+ * ZIP file validation and debugging utilities
+ * @class
+ */
 export class ZipValidator {
+  /**
+   * Validates ZIP file structure at the binary level
+   *
+   * Checks ZIP signatures, file size, headers, and footers to ensure
+   * the file is a valid ZIP archive before processing.
+   *
+   * @param {ArrayBuffer} arrayBuffer - Raw ZIP file data
+   * @returns {Promise<Object>} Validation result with errors, warnings, and metadata
+   * @returns {boolean} isValid - Whether ZIP structure is valid
+   * @returns {Array<string>} errors - Critical validation errors
+   * @returns {Array<string>} warnings - Non-critical issues
+   * @returns {number} fileSize - Size of the ZIP file in bytes
+   * @returns {boolean} hasValidHeader - Whether ZIP header signature is valid
+   * @returns {boolean} hasValidFooter - Whether ZIP footer is valid
+   * @returns {number} estimatedFileCount - Estimated number of files in archive
+   *
+   * @example
+   * const validation = await ZipValidator.validateZipStructure(buffer);
+   * if (!validation.isValid) {
+   *   console.error('Invalid ZIP:', validation.errors);
+   * }
+   */
   static async validateZipStructure(arrayBuffer) {
     const validation = {
       isValid: true,

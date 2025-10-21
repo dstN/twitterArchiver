@@ -1,5 +1,20 @@
 /**
  * Thread View Composable - Manages thread view state and navigation
+ *
+ * Handles entering/exiting thread view mode, which displays a single tweet
+ * and all its replies/connected tweets in a focused view.
+ *
+ * @param {Ref<Object>} data - Reactive data object containing tweets and user info
+ * @returns {Object} Thread view state and actions
+ * @returns {Ref<Object|null>} threadView - Current thread view state (null when not in thread view)
+ * @returns {ComputedRef<Array>} threadTweets - Tweets in the current thread
+ * @returns {Function} getThread - Enter thread view for a specific tweet
+ * @returns {Function} exitThread - Exit thread view and restore scroll position
+ *
+ * @example
+ * const { threadView, threadTweets, getThread, exitThread } = useThreadView(data);
+ * getThread('1234567890'); // View thread for tweet ID
+ * exitThread(); // Return to main view
  */
 
 import { ref, computed } from "vue";

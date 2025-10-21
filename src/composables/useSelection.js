@@ -1,5 +1,21 @@
 /**
  * Selection Composable - Manages tweet selection state and operations
+ *
+ * Provides functionality for multi-select mode, individual tweet selection,
+ * and batch operations (select all/deselect all).
+ *
+ * @returns {Object} Selection state and actions
+ * @returns {Ref<Set>} selectedTweets - Set of selected tweet IDs
+ * @returns {Ref<boolean>} selectionMode - Whether selection mode is active
+ * @returns {Function} toggleSelectionMode - Toggle selection mode on/off
+ * @returns {Function} toggleTweetSelection - Toggle single tweet selection
+ * @returns {Function} selectAllTweets - Select all provided tweets
+ * @returns {Function} deselectAllTweets - Clear all selections
+ * @returns {Function} isTweetSelected - Check if tweet is selected
+ *
+ * @example
+ * const { selectedTweets, selectionMode, toggleSelectionMode } = useSelection();
+ * toggleSelectionMode(); // Enable selection mode
  */
 
 import { ref } from "vue";

@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted, computed } from "vue";
+import { ref, watch, onUnmounted, computed } from "vue";
+import { useKeyboardNavigation } from "../../composables/useKeyboardNavigation";
 
 const props = defineProps({
   media: Object,
@@ -80,24 +81,17 @@ function prev() {
   }
 }
 
-function handleKeydown(e) {
-  if (!props.show) return;
-
-  if (e.key === "Escape") {
-    close();
-  } else if (e.key === "ArrowRight") {
-    next();
-  } else if (e.key === "ArrowLeft") {
-    prev();
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("keydown", handleKeydown);
-});
+// Set up keyboard navigation
+useKeyboardNavigation(
+  {
+    onEscape: close,
+    onArrowLeft: prev,
+    onArrowRight: next,
+  },
+  () => props.show,
+);
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
   // Cleanup in case component unmounts while lightbox is open
   document.body.style.position = "";
   document.body.style.top = "";

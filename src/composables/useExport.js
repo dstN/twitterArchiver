@@ -1,5 +1,27 @@
 /**
- * Export Composable - Manages tweet export functionality (JSON, CSV)
+ * Export Composable - Manages tweet export functionality (JSON, CSV, Print)
+ *
+ * Provides export capabilities for tweets in multiple formats. Handles both
+ * filtered data and selected tweets, with special handling for thread views.
+ *
+ * @param {Ref<Object>} data - Full dataset
+ * @param {Ref<Array>} filteredData - Filtered tweet array
+ * @param {Ref<Set>} selectedTweets - Set of selected tweet IDs
+ * @param {Ref<boolean>} selectionMode - Whether selection mode is active
+ * @param {Ref<boolean>} threadView - Whether thread view is active
+ * @param {Ref<Array>} threadTweets - Tweets in current thread
+ * @param {Ref<string>} filterType - Active filter type
+ * @param {Ref<Object>} user - User account data
+ * @returns {Object} Export state and actions
+ * @returns {Ref<boolean>} showExportMenu - Export menu visibility state
+ * @returns {Function} toggleExportMenu - Toggle export menu
+ * @returns {Function} exportJSON - Export tweets as JSON file
+ * @returns {Function} exportCSV - Export tweets as CSV file
+ * @returns {Function} printTweets - Print tweets to PDF/printer
+ *
+ * @example
+ * const { exportJSON, exportCSV, printTweets } = useExport(...);
+ * exportJSON(); // Downloads filtered tweets as JSON
  */
 
 import { ref } from "vue";

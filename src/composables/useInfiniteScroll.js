@@ -1,15 +1,37 @@
 /**
  * Infinite Scroll Composable - Manages bidirectional infinite scrolling with windowing
+ *
+ * Implements efficient infinite scrolling in both directions with DOM windowing.
+ * Loads content as user scrolls near top or bottom, while maintaining performance
+ * by limiting the number of tweets in DOM.
+ *
+ * @param {Ref<Array>} tweets - Reactive array of all tweets
+ * @param {Ref<string>} filterType - Current filter type (triggers reset on change)
+ * @param {Ref<string>} searchTerm - Current search term (triggers reset on change)
+ * @returns {Object} Scroll state and actions
+ * @returns {ComputedRef<Array>} displayedTweets - Currently visible tweets in viewport
+ * @returns {Ref<number>} displayedCount - Number of tweets currently displayed
+ * @returns {Ref<number>} startIndex - Start index of displayed window
+ * @returns {Ref<boolean>} isLoading - Loading state for scroll operations
+ * @returns {ComputedRef<boolean>} hasMore - Whether more tweets available at bottom
+ * @returns {Ref<boolean>} showScrollTop - Whether to show scroll-to-top button
+ * @returns {Function} loadMore - Load more tweets at bottom
+ * @returns {Function} loadPrevious - Load previous tweets at top
+ * @returns {Function} handleScroll - Scroll event handler
+ * @returns {Function} scrollToTop - Scroll to page top
+ *
+ * @example
+ * const { displayedTweets, hasMore, loadMore, showScrollTop } = useInfiniteScroll(tweets, filterType, searchTerm);
  */
 
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
-
-// Constants for performance tuning
-const SCROLL_TOP_THRESHOLD = 500;
-const SCROLL_BOTTOM_THRESHOLD = 1000;
-const INITIAL_TWEET_COUNT = 25;
-const TWEET_BATCH_SIZE = 25;
-const MAX_CACHED_TWEETS = 150;
+import {
+  SCROLL_TOP_THRESHOLD,
+  SCROLL_BOTTOM_THRESHOLD,
+  INITIAL_TWEET_COUNT,
+  TWEET_BATCH_SIZE,
+  MAX_CACHED_TWEETS,
+} from "../constants/scrollConfig";
 
 export function useInfiniteScroll(tweets, filterType, searchTerm) {
   const displayedCount = ref(INITIAL_TWEET_COUNT);

@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
   faBluesky,
@@ -7,6 +6,7 @@ import {
   faMastodon,
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
+import { useShareActions } from "../../composables/useShareActions";
 
 const props = defineProps({
   tweetText: String,
@@ -17,65 +17,38 @@ const props = defineProps({
 
 const emit = defineEmits(["close"]);
 
-const showCopiedFeedback = ref(false);
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showCopiedFeedback.value = true;
-    setTimeout(() => {
-      showCopiedFeedback.value = false;
-    }, 2000);
-  });
-}
+const {
+  showCopiedFeedback,
+  copyTweetText,
+  copyThreadText,
+  shareToBluesky,
+  shareToThreads,
+  shareToMastodon,
+  shareToLinkedIn,
+} = useShareActions();
 
 function copyTweet() {
-  copyToClipboard(props.tweetText);
+  copyTweetText(props.tweetText);
 }
 
 function copyThread() {
-  if (!props.threadTweets || props.threadTweets.length === 0) return;
-
-  // Combine all thread tweets with separators
-  const threadText = props.threadTweets
-    .map(
-      (tweet, index) =>
-        `${index + 1}/${props.threadTweets.length}\n\n${tweet.full_text}`,
-    )
-    .join("\n\n---\n\n");
-
-  copyToClipboard(threadText);
+  copyThreadText(props.threadTweets);
 }
 
-function shareToBluesky() {
-  const text = encodeURIComponent(props.tweetText);
-  window.open(`https://bsky.app/intent/compose?text=${text}`, "_blank");
-  emit("close");
+function handleShareToBluesky() {
+  shareToBluesky(props.tweetText, () => emit("close"));
 }
 
-function shareToThreads() {
-  const text = encodeURIComponent(props.tweetText);
-  window.open(`https://threads.net/intent/post?text=${text}`, "_blank");
-  emit("close");
+function handleShareToThreads() {
+  shareToThreads(props.tweetText, () => emit("close"));
 }
 
-function shareToMastodon() {
-  // Mastodon doesn't have a universal share URL, so we copy and give instructions
-  copyToClipboard(props.tweetText);
-  alert("Text copied! Paste it into your Mastodon instance.");
-  emit("close");
+function handleShareToMastodon() {
+  shareToMastodon(props.tweetText, () => emit("close"));
 }
 
-function shareToLinkedIn() {
-  // LinkedIn doesn't support text-only sharing anymore
-  // Copy text and open LinkedIn homepage for manual posting
-  copyToClipboard(props.tweetText);
-  window.open("https://www.linkedin.com/", "_blank");
-  // Show feedback that text was copied
-  showCopiedFeedback.value = true;
-  setTimeout(() => {
-    showCopiedFeedback.value = false;
-    emit("close");
-  }, 2000);
+function handleShareToLinkedIn() {
+  shareToLinkedIn(props.tweetText, () => emit("close"));
 }
 
 function close() {
@@ -193,7 +166,7 @@ function close() {
         </p>
         <div class="grid grid-cols-2 gap-2">
           <button
-            @click="shareToBluesky"
+            @click="handleShareToBluesky"
             class="flex items-center gap-2 rounded-lg bg-blue-500 p-3 text-white transition-colors hover:bg-blue-600"
           >
             <font-awesome-icon
@@ -204,7 +177,7 @@ function close() {
           </button>
 
           <button
-            @click="shareToThreads"
+            @click="handleShareToThreads"
             class="flex items-center gap-2 rounded-lg bg-black p-3 text-white transition-colors hover:bg-gray-800"
           >
             <font-awesome-icon
@@ -215,7 +188,7 @@ function close() {
           </button>
 
           <button
-            @click="shareToMastodon"
+            @click="handleShareToMastodon"
             class="flex items-center gap-2 rounded-lg bg-purple-600 p-3 text-white transition-colors hover:bg-purple-700"
           >
             <font-awesome-icon
@@ -226,7 +199,7 @@ function close() {
           </button>
 
           <button
-            @click="shareToLinkedIn"
+            @click="handleShareToLinkedIn"
             class="flex items-center gap-2 rounded-lg bg-blue-700 p-3 text-white transition-colors hover:bg-blue-800"
           >
             <font-awesome-icon

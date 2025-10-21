@@ -150,11 +150,12 @@ function openLightbox(media, index) {
 /* Grid layouts with specific heights for DPI scaling */
 .media-grid-single {
   @apply grid grid-cols-1 gap-0.5;
-  height: 288px; /* Fixed height - divisible by 4 for clean DPI scaling */
 }
 
 .media-grid-single .media-container {
-  @apply relative aspect-video h-full overflow-hidden;
+  @apply relative w-full overflow-hidden;
+  height: 0;
+  padding-bottom: 75%; /* 4:3 ratio = 75% (3/4 = 0.75) */
 }
 
 .media-grid-two {
@@ -223,7 +224,7 @@ function openLightbox(media, index) {
 }
 
 .video-preview {
-  @apply relative h-full w-full overflow-hidden;
+  @apply absolute inset-0 overflow-hidden;
 }
 
 .video-preview video {

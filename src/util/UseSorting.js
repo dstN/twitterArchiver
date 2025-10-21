@@ -1,3 +1,19 @@
+/**
+ * Sorting Utility - Provides tweet sorting functionality
+ *
+ * Sorts tweets in-place by date, likes, or retweets in ascending/descending order.
+ */
+
+/**
+ * Sorts an array of tweets based on the specified sort mode
+ *
+ * @param {string} sort - Sort mode ('dateDesc', 'dateAsc', 'likes', 'likesDesc', 'likesAsc', 'retweets', 'retweetsDesc', 'retweetsAsc')
+ * @param {Ref<Array>} refArr - Reactive array of tweets to sort (sorted in-place)
+ *
+ * @example
+ * useSorting('likesDesc', tweets); // Sort by likes, most liked first
+ * useSorting('dateAsc', tweets);   // Sort by date, oldest first
+ */
 export function useSorting(sort, refArr) {
   switch (sort) {
     case "dateDesc":
@@ -35,6 +51,11 @@ export function useSorting(sort, refArr) {
   }
 }
 
+/**
+ * Returns available sort modes
+ *
+ * @returns {Array<string>} Array of available sort mode strings
+ */
 export function useSort() {
   return ["dateDesc", "dateAsc", "likes", "retweets"];
 }

@@ -1,5 +1,25 @@
 /**
  * Filters Composable - Manages tweet filtering, search, and sorting
+ *
+ * Provides comprehensive filtering, search, and sorting capabilities for tweets.
+ * Includes debounced search, type filtering (tweets/replies/threads), and sort options.
+ *
+ * @param {Ref<Object>} data - Reactive data object containing tweets array
+ * @returns {Object} Filter state and actions
+ * @returns {Ref<string>} searchTerm - Current search query
+ * @returns {Ref<string>} filterType - Active filter ('all', 'tweets', 'replies', 'retweets', 'threads')
+ * @returns {Ref<string>} sortBy - Sort field ('date', 'likes', 'retweets')
+ * @returns {Ref<string>} sortDirection - Sort direction ('asc', 'desc')
+ * @returns {Ref<Array>} filteredData - Filtered and sorted tweet array
+ * @returns {Object} tweetCounts - Count of tweets per filter type
+ * @returns {Function} updateSearchTerm - Update search query (debounced)
+ * @returns {Function} setFilterType - Change active filter
+ * @returns {Function} setSortBy - Change sort field
+ * @returns {Function} setSortDirection - Change sort direction
+ *
+ * @example
+ * const { searchTerm, filterType, filteredData, setFilterType } = useFilters(data);
+ * setFilterType('threads'); // Show only threads
  */
 
 import { ref, computed } from "vue";

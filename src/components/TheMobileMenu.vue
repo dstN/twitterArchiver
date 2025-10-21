@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import MobileMenuFilterSection from "./mobile/MobileMenuFilterSection.vue";
 import MobileMenuExportSection from "./mobile/MobileMenuExportSection.vue";
 import MobileMenuBottomActionBar from "./mobile/MobileMenuBottomActionBar.vue";
@@ -25,6 +25,22 @@ const emit = defineEmits([
 ]);
 
 const isOpen = ref(false);
+
+// Lock/unlock body scroll when menu opens/closes
+watch(isOpen, (newValue) => {
+  if (newValue) {
+    // Menu is opening - disable scroll
+    document.body.style.overflow = "hidden";
+  } else {
+    // Menu is closing - enable scroll
+    document.body.style.overflow = "";
+  }
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+  document.body.style.overflow = "";
+});
 
 function open() {
   isOpen.value = true;
