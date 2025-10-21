@@ -182,7 +182,7 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
       class="scroller col-span-12 bg-white shadow-2xl dark:bg-gray-800 lg:col-span-7 2xl:col-span-5"
     >
       <div
-        class="sticky top-0 z-10 w-full border-b border-solid border-orange-600 bg-white dark:border-orange-600 dark:bg-gray-800"
+        class="sticky top-0 z-20 w-full border-b border-solid border-orange-600 bg-white dark:border-orange-600 dark:bg-gray-800"
       >
         <div class="p-6">
           <!-- Mobile Header with Hamburger -->
