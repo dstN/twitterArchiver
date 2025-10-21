@@ -285,7 +285,7 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
                         : "Only Retweets"
               }}
             </h2>
-            <p class="dark:text-gray-300">
+            <p class="text-gray-900 dark:text-gray-300">
               {{
                 filterType === "all"
                   ? "You are now seeing all tweets. Including Replies, Retweets and normal Tweets."

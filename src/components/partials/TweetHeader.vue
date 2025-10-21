@@ -48,7 +48,7 @@ function getThread() {
         <a
           :href="`https://twitter.com/i/user/${account.accountId}`"
           target="_blank"
-          class="max-w-[200px] truncate font-bold hover:underline dark:text-gray-200"
+          class="max-w-[200px] truncate font-bold text-gray-900 hover:underline dark:text-gray-200"
         >
           {{ account.accountDisplayName }}
         </a>
