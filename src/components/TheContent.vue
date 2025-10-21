@@ -90,6 +90,11 @@ function handleFilterTypeChange(type) {
   if (threadView.value) {
     exitThreadView();
   }
+  // Clear search term when changing filters to avoid confusion
+  if (searchTerm.value) {
+    searchTerm.value = "";
+    onSearchTermChange();
+  }
   setFilterType(type);
 }
 

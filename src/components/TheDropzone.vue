@@ -1,5 +1,4 @@
 <script setup>
-import JSZip from "jszip";
 import * as dataHandler from "../util/DataHandler";
 import { ZipValidator } from "../util/ZipValidator";
 import { ref } from "vue";
@@ -28,6 +27,8 @@ async function extractZipFile(e) {
       throw new Error(`Invalid ZIP file: ${validation.errors.join(", ")}`);
     }
 
+    // Lazy load JSZip only when needed (reduces initial bundle size)
+    const JSZip = (await import("jszip")).default;
     const jszip = new JSZip();
 
     // Try loading with different options for better compatibility
@@ -119,7 +120,7 @@ function resetDrop(e) {
     <div
       class="mb-1 w-full max-w-lg rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
-      <h2 class="mb-3 font-display text-gray-800 dark:text-orange-600">
+      <h2 class="mb-3 font-display text-lg text-gray-300">
         {{ $t("dropzone.introduction.title") }}
       </h2>
       <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
