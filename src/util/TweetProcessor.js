@@ -24,7 +24,6 @@ export async function getTweets(zipData, accountId) {
   }
 
   const tweetsFile = tweetFileExists ? "tweet.js" : "tweets.js";
-  console.log("Using tweets file:", tweetsFile);
 
   const fileName = tweetsFile.substring(0, tweetsFile.lastIndexOf("."));
   const tweets = await getFileFromZip(zipData, tweetsFile);
@@ -32,8 +31,6 @@ export async function getTweets(zipData, accountId) {
   if (!Array.isArray(tweets)) {
     throw new Error("Tweet data is not in expected array format");
   }
-
-  console.log("Processing", tweets.length, "tweets");
 
   // Process each tweet
   for (let tweet of tweets) {

@@ -31,7 +31,6 @@ export function fixJson(json, fileName = "unknown") {
     makeArr.unshift("[");
 
     const jsonContent = makeArr.join(" ");
-    console.log("Parsing JSON content, length:", jsonContent.length);
 
     const makeObj = JSON.parse(jsonContent);
 
@@ -46,10 +45,6 @@ export function fixJson(json, fileName = "unknown") {
     return makeArr.length > 1 ? makeArr : makeArr[0];
   } catch (error) {
     LOGGER.error("Failed to parse JSON:", error);
-    console.log(
-      "Raw JSON content:",
-      json ? json.substring(0, 500) + "..." : "null",
-    );
     throw new DataParseError(
       `Failed to parse ${fileName}: ${error.message}`,
       fileName,

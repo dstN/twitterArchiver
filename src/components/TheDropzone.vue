@@ -21,18 +21,11 @@ async function extractZipFile(e) {
       throw new Error("Empty or invalid file content");
     }
 
-    console.log("File size:", arrayBuffer.byteLength, "bytes");
-
     // Validate ZIP structure before processing
     const validation = await ZipValidator.validateZipStructure(arrayBuffer);
-    console.log(ZipValidator.formatValidationReport(validation));
 
     if (!validation.isValid) {
       throw new Error(`Invalid ZIP file: ${validation.errors.join(", ")}`);
-    }
-
-    if (validation.warnings.length > 0) {
-      console.warn("ZIP validation warnings:", validation.warnings);
     }
 
     const jszip = new JSZip();
@@ -43,11 +36,6 @@ async function extractZipFile(e) {
       optimizedBinaryString: false,
       createFolders: false,
     });
-
-    console.log(
-      "ZIP loaded successfully, files found:",
-      Object.keys(zipData.files).length,
-    );
 
     const data = await dataHandler.ProcessData(zipData);
 

@@ -28,12 +28,6 @@ const lightboxMedia = ref(null);
 const lightboxIndex = ref(0);
 
 function openLightbox(media, index) {
-  console.log("Opening lightbox:", {
-    media,
-    index,
-    allMedia: data.value.media,
-  });
-
   if (!media || !media.data) {
     console.error("Invalid media:", media);
     return;

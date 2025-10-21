@@ -48,7 +48,6 @@ export async function getFileFromZip(
 
     // Handle JSON files
     const rawData = await zipData.files[fileLocation].async("string");
-    console.log("Processing file:", fileName, "Size:", rawData.length, "chars");
     return await fixJson(rawData, fileName);
   } catch (error) {
     LOGGER.error("Failed to get file from zip data", fileName, "Error", error);

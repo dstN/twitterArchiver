@@ -20,7 +20,6 @@ export function validateArchiveStructure(zipData) {
   }
 
   const fileList = Object.keys(zipData.files);
-  console.log("Files in ZIP archive:", fileList);
 
   // Check for data directory
   const dataFiles = fileList.filter((f) => f.startsWith("data/"));
@@ -30,8 +29,6 @@ export function validateArchiveStructure(zipData) {
     );
     return { isValid: false, errors, warnings };
   }
-
-  console.log("Data files found:", dataFiles);
 
   // Check for tweet files
   const hasTweetFile = fileList.some(

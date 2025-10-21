@@ -261,7 +261,7 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
             >
               Thread View
             </h2>
-            <p class="dark:text-gray-300">
+            <p class="text-gray-900 dark:text-gray-300">
               Viewing {{ threadTweets.length }} tweets in this thread
             </p>
           </div>

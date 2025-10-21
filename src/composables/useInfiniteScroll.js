@@ -61,14 +61,6 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
    * Load more tweets at the bottom (scroll down)
    */
   function loadMore() {
-    console.log("loadMore called!", {
-      hasMore: hasMore.value,
-      isLoading: isLoading.value,
-      displayedCount: displayedCount.value,
-      startIndex: startIndex.value,
-      totalTweets: tweets.value.length,
-    });
-
     if (hasMore.value && !isLoading.value) {
       isLoading.value = true;
 
@@ -82,13 +74,6 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
         const excess = displayedCount.value - maxWindow;
         startIndex.value += excess;
         displayedCount.value = maxWindow;
-        console.log(
-          `Sliding window DOWN: Removed ${excess} from top. startIndex: ${startIndex.value}, displayedCount: ${displayedCount.value}`,
-        );
-      } else {
-        console.log(
-          `Expanding window DOWN: displayedCount: ${displayedCount.value}`,
-        );
       }
 
       setTimeout(() => {
@@ -102,13 +87,6 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
    */
   function loadPrevious() {
     if (startIndex.value <= 0 || isLoading.value) return;
-
-    console.log("loadPrevious called!", {
-      startIndex: startIndex.value,
-      displayedCount: displayedCount.value,
-      isLoading: isLoading.value,
-      totalTweets: tweets.value.length,
-    });
 
     isLoading.value = true;
 
@@ -129,13 +107,6 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
     if (displayedCount.value > maxWindow) {
       const excess = displayedCount.value - maxWindow;
       displayedCount.value = maxWindow;
-      console.log(
-        `Sliding window UP: Removed ${excess} from bottom. startIndex: ${startIndex.value}, displayedCount: ${displayedCount.value}`,
-      );
-    } else {
-      console.log(
-        `Expanding window UP: startIndex: ${startIndex.value}, displayedCount: ${displayedCount.value}`,
-      );
     }
 
     // Use setTimeout to wait for DOM update
@@ -152,7 +123,6 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
             top: window.scrollY - scrollAdjustment,
             behavior: "instant",
           });
-          console.log("Restored scroll using reference tweet");
         }
       }
 
@@ -175,24 +145,12 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
     // Check if we're near the top (within SCROLL_TOP_THRESHOLD) - load previous
     const distanceFromTop = scrollTop;
 
-    console.log("Scroll:", {
-      scrollTop,
-      scrollHeight,
-      clientHeight,
-      distanceFromBottom,
-      distanceFromTop,
-      hasMore: hasMore.value,
-      hasPrevious: startIndex.value > 0,
-      isLoading: isLoading.value,
-    });
-
     // Load more at bottom
     if (
       distanceFromBottom < SCROLL_BOTTOM_THRESHOLD &&
       hasMore.value &&
       !isLoading.value
     ) {
-      console.log("Triggering loadMore!");
       loadMore();
     }
 
@@ -202,7 +160,6 @@ export function useInfiniteScroll(tweets, filterType, searchTerm) {
       startIndex.value > 0 &&
       !isLoading.value
     ) {
-      console.log("Triggering loadPrevious!");
       loadPrevious();
     }
   }

@@ -66,7 +66,7 @@ function reloadPage() {
                   :class="
                     filterType === 'all'
                       ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
-                      : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
                   "
                   href=""
                 >
@@ -82,7 +82,7 @@ function reloadPage() {
                   :class="
                     filterType === 'tweets'
                       ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
-                      : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
                   "
                   href=""
                 >
@@ -98,7 +98,7 @@ function reloadPage() {
                   :class="
                     filterType === 'replies'
                       ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
-                      : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
                   "
                   href=""
                 >
@@ -114,7 +114,7 @@ function reloadPage() {
                   :class="
                     filterType === 'retweets'
                       ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
-                      : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
                   "
                   href=""
                 >
@@ -130,7 +130,7 @@ function reloadPage() {
                   :class="
                     filterType === 'threads'
                       ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
-                      : 'block cursor-pointer py-4 text-xl font-bold hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
                   "
                   href=""
                 >
@@ -147,7 +147,7 @@ function reloadPage() {
           <div class="w-100 relative text-gray-300 dark:text-gray-500">
             <button
               type="submit"
-              class="absolute ml-4 mr-4 mt-3 text-white"
+              class="absolute ml-4 mr-4 mt-3 text-white dark:text-white"
             >
               <svg
                 class="h-4 w-4 fill-current"
