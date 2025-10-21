@@ -11,6 +11,22 @@ const validFile = ref(true);
 const dragOver = ref(false);
 const emit = defineEmits(["load", "payloadEvent"]);
 
+function extractFilesFromEvent(event) {
+  if (event?.type === "change" && event.target?.files) {
+    return Array.from(event.target.files);
+  }
+
+  if (event?.dataTransfer?.files?.length) {
+    return Array.from(event.dataTransfer.files);
+  }
+
+  if (event?.target?.files) {
+    return Array.from(event.target.files);
+  }
+
+  return [];
+}
+
 async function extractZipFile(e) {
   try {
     const arrayBuffer = e.target.result;
@@ -73,20 +89,21 @@ async function extractZipFile(e) {
   }
 }
 
-function changed(e) {
+function handleFileSelection(event) {
   const validFileTypes = ["application/zip", "application/x-zip-compressed"];
-  let file;
-  if (e.srcElement.files != undefined && [...e.srcElement.files].length) {
-    file = [...e.srcElement.files];
-  } else {
-    file = [...e.dataTransfer.files];
+  const files = extractFilesFromEvent(event);
+  const file = files[0];
+
+  dragOver.value = false;
+
+  if (!file) {
+    validFile.value = false;
+    return;
   }
 
-  file = file[0];
   const fileType = file.type;
   if (!validFileTypes.includes(fileType)) {
     validFile.value = false;
-    dragOver.value = false;
     return;
   }
 
@@ -97,13 +114,26 @@ function changed(e) {
   fileReader.readAsArrayBuffer(file);
 }
 
-function checkDrop(e) {
-  e.preventDefault();
+function handleDragOver(event) {
+  event.preventDefault();
 }
 
-function resetDrop(e) {
-  dragOver.value = !dragOver.value;
-  e.preventDefault();
+function handleDragEnter(event) {
+  dragOver.value = true;
+  event.preventDefault();
+}
+
+function handleDragLeave(event) {
+  if (
+    event.currentTarget &&
+    event.relatedTarget &&
+    event.currentTarget.contains(event.relatedTarget)
+  ) {
+    return;
+  }
+
+  dragOver.value = false;
+  event.preventDefault();
 }
 </script>
 
@@ -137,10 +167,10 @@ function resetDrop(e) {
     </div>
 
     <label
-      @dragenter="resetDrop"
-      @dragover="checkDrop"
-      @drop.prevent="changed"
-      @dragleave="resetDrop"
+      @dragenter="handleDragEnter"
+      @dragover="handleDragOver"
+      @drop.prevent="handleFileSelection"
+      @dragleave="handleDragLeave"
       for="dropzone-file"
       :class="
         validFile
@@ -198,7 +228,7 @@ function resetDrop(e) {
       </div>
 
       <input
-        @change="changed"
+        @change="handleFileSelection"
         id="dropzone-file"
         accept=".zip, application/zip"
         type="file"

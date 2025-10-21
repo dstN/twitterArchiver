@@ -9,6 +9,7 @@ const props = defineProps({
   selectionMode: Boolean,
   selectedCount: Number,
   showExportMenu: Boolean,
+  includeMedia: Boolean,
 });
 
 const emit = defineEmits([
@@ -18,6 +19,7 @@ const emit = defineEmits([
   "toggleSelectionMode",
   "selectAll",
   "deselectAll",
+  "toggleIncludeMedia",
   "exportJSON",
   "exportCSV",
   "printTweets",
@@ -277,9 +279,34 @@ function reloadPage() {
                   class="border-t border-gray-200 dark:border-gray-600"
                 ></div>
 
+                <!-- Include Media Toggle -->
+                <button
+                  @click="$emit('toggleIncludeMedia')"
+                  class="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 10l4.553-4.553a1.414 1.414 0 10-2-2L13 8m2 2l-6 6m6-6l-2-2m-4 8l-4 4"
+                    />
+                  </svg>
+                  <div class="flex items-center gap-2">
+                    <input type="checkbox" :checked="includeMedia" readonly />
+                    <div class="font-medium">Include media files (ZIP)</div>
+                  </div>
+                </button>
+
                 <!-- Export JSON -->
                 <button
-                  @click="$emit('exportJSON')"
+                  @click="$emit('exportJSON', includeMedia)"
                   :disabled="selectionMode && selectedCount === 0"
                   class="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-200 dark:hover:bg-gray-600"
                 >
@@ -313,7 +340,7 @@ function reloadPage() {
 
                 <!-- Export CSV -->
                 <button
-                  @click="$emit('exportCSV')"
+                  @click="$emit('exportCSV', includeMedia)"
                   :disabled="selectionMode && selectedCount === 0"
                   class="flex w-full items-center gap-3 border-t border-gray-200 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
                 >

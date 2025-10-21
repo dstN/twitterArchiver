@@ -130,7 +130,14 @@ const { threadView, threadTweets, getThread, exitThreadView } =
   useThreadView(data);
 
 // Export functionality
-const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
+const {
+  showExportMenu,
+  includeMedia,
+  toggleIncludeMedia,
+  exportAsJSON,
+  exportAsCSV,
+  printTweets,
+} = useExport(
   data,
   filteredData,
   selectedTweets,
@@ -152,9 +159,11 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
     :selection-mode="selectionMode"
     :selected-count="selectedTweets.size"
     @set-filter-type="handleFilterTypeChange"
+    :include-media="includeMedia"
+    @toggle-include-media="toggleIncludeMedia"
     @toggle-dark-mode="toggleDarkMode"
-    @export-j-s-o-n="exportAsJSON"
-    @export-c-s-v="exportAsCSV"
+    @export-j-s-o-n="(val) => exportAsJSON(val)"
+    @export-c-s-v="(val) => exportAsCSV(val)"
     @print="printTweets"
     @toggle-selection-mode="toggleSelectionModeLocal"
     @select-all="selectAllDisplayedTweets"
@@ -170,14 +179,16 @@ const { showExportMenu, exportAsJSON, exportAsCSV, printTweets } = useExport(
       :selection-mode="selectionMode"
       :selected-count="selectedTweets.size"
       :show-export-menu="showExportMenu"
+      :include-media="includeMedia"
       @set-filter-type="handleFilterTypeChange"
       @update-search-term="handleSearchTermUpdate"
       @toggle-export-menu="showExportMenu = !showExportMenu"
+      @toggle-include-media="toggleIncludeMedia"
       @toggle-selection-mode="toggleSelectionModeLocal"
       @select-all="selectAllDisplayedTweets"
       @deselect-all="deselectAllTweets"
-      @export-j-s-o-n="exportAsJSON"
-      @export-c-s-v="exportAsCSV"
+      @export-j-s-o-n="(val) => exportAsJSON(val)"
+      @export-c-s-v="(val) => exportAsCSV(val)"
       @print-tweets="printTweets"
       @reload-page="reloadPage"
     />

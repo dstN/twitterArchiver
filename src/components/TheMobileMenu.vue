@@ -10,6 +10,7 @@ const props = defineProps({
   tweetCounts: Object,
   selectionMode: Boolean,
   selectedCount: Number,
+  includeMedia: Boolean,
 });
 
 const emit = defineEmits([
@@ -22,6 +23,7 @@ const emit = defineEmits([
   "toggleSelectionMode",
   "selectAll",
   "deselectAll",
+  "toggleIncludeMedia",
 ]);
 
 const isOpen = ref(false);
@@ -64,13 +66,13 @@ function reloadPage() {
   window.location.reload();
 }
 
-function exportJSON() {
-  emit("exportJSON");
+function exportJSON(val) {
+  emit("exportJSON", val);
   close();
 }
 
-function exportCSV() {
-  emit("exportCSV");
+function exportCSV(val) {
+  emit("exportCSV", val);
   close();
 }
 
@@ -89,6 +91,10 @@ function selectAll() {
 
 function deselectAll() {
   emit("deselectAll");
+}
+
+function toggleIncludeMedia() {
+  emit("toggleIncludeMedia");
 }
 
 function handleKeydown(e) {
@@ -164,9 +170,11 @@ defineExpose({ open, close });
           <MobileMenuExportSection
             :selection-mode="selectionMode"
             :selected-count="selectedCount"
+            :include-media="includeMedia"
             @toggle-selection-mode="toggleSelectionMode"
             @select-all="selectAll"
             @deselect-all="deselectAll"
+            @toggle-include-media="toggleIncludeMedia"
             @export-j-s-o-n="exportJSON"
             @export-c-s-v="exportCSV"
             @print-tweets="printTweets"

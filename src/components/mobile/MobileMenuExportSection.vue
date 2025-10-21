@@ -2,12 +2,14 @@
 const props = defineProps({
   selectionMode: Boolean,
   selectedCount: Number,
+  includeMedia: Boolean,
 });
 
 const emit = defineEmits([
   "toggleSelectionMode",
   "selectAll",
   "deselectAll",
+  "toggleIncludeMedia",
   "exportJSON",
   "exportCSV",
   "printTweets",
@@ -26,11 +28,11 @@ function deselectAll() {
 }
 
 function exportJSON() {
-  emit("exportJSON");
+  emit("exportJSON", props.includeMedia);
 }
 
 function exportCSV() {
-  emit("exportCSV");
+  emit("exportCSV", props.includeMedia);
 }
 
 function printTweets() {
@@ -46,6 +48,31 @@ function printTweets() {
     >
       Export & Print
     </div>
+
+    <!-- Include Media Toggle -->
+    <button
+      @click="emit('toggleIncludeMedia')"
+      class="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 10l4.553-4.553a1.414 1.414 0 10-2-2L13 8m2 2l-6 6m6-6l-2-2m-4 8l-4 4"
+        />
+      </svg>
+      <div class="flex items-center gap-2">
+        <input type="checkbox" :checked="props.includeMedia" readonly />
+        <div class="font-medium">Include media files (ZIP)</div>
+      </div>
+    </button>
 
     <!-- Selection Mode Toggle -->
     <button

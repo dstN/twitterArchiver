@@ -12,8 +12,6 @@ import { getTweets } from "./TweetProcessor";
  */
 export async function ProcessData(zipData) {
   try {
-    ZIP_DATA = zipData;
-
     // Validate archive structure
     const validation = validateArchiveStructure(zipData);
 
@@ -29,10 +27,12 @@ export async function ProcessData(zipData) {
       );
     }
 
-    // Load user data and tweets
+    const user = await getUser(zipData);
+    const accountId = user.account?.accountId;
+
     return {
-      user: await getUser(),
-      tweets: await getTweets(zipData, ACCOUNT_ID),
+      user,
+      tweets: await getTweets(zipData, accountId),
     };
   } catch (error) {
     LOGGER.error("Failed to process ZIP data:", error);
@@ -41,18 +41,15 @@ export async function ProcessData(zipData) {
 }
 
 const LOGGER = new Logger("DataHandler");
-let ZIP_DATA;
-let ACCOUNT_ID;
 
 /**
  * Retrieves user account and profile data from the archive
  *
  * @returns {Promise<{account: Object, profile: Object}>} User data
  */
-async function getUser() {
-  const account = await getAccount();
-  ACCOUNT_ID = account.accountId;
-  const profile = await getProfile();
+async function getUser(zipData) {
+  const account = await getAccount(zipData);
+  const profile = await getProfile(zipData, account.accountId);
 
   return {
     account,
@@ -65,8 +62,8 @@ async function getUser() {
  *
  * @returns {Promise<Object>} Account information
  */
-async function getAccount() {
-  return await getFileFromZip(ZIP_DATA, "account.js");
+async function getAccount(zipData) {
+  return await getFileFromZip(zipData, "account.js");
 }
 
 /**
@@ -74,18 +71,42 @@ async function getAccount() {
  *
  * @returns {Promise<Object>} Profile information with image URL
  */
-async function getProfile() {
-  const profile = await getFileFromZip(ZIP_DATA, "profile.js");
-  const file = profile.avatarMediaUrl
-    .split("/")
-    .pop()
-    .split("#")[0]
-    .split("?")[0];
-  profile.Image = await getFileFromZip(
-    ZIP_DATA,
-    `profile_media/${ACCOUNT_ID}-${file}`,
-    "image/png",
+async function getProfile(zipData, accountId) {
+  const profile = await getFileFromZip(zipData, "profile.js");
+  const avatarMediaUrl = profile?.avatarMediaUrl;
+
+  if (typeof avatarMediaUrl !== "string" || avatarMediaUrl.trim() === "") {
+    return profile;
+  }
+
+  const file = avatarMediaUrl.split("/").pop().split("#")[0].split("?")[0];
+  const mimeType = determineAvatarMimeType(file);
+  const image = await getFileFromZip(
+    zipData,
+    `profile_media/${accountId}-${file}`,
+    mimeType,
+    true,
   );
 
+  if (image) {
+    profile.Image = image;
+  } else {
+    LOGGER.warn("Avatar image not found in archive for account", accountId);
+  }
+
   return profile;
+}
+
+function determineAvatarMimeType(fileName) {
+  const extension = fileName.split(".").pop()?.toLowerCase();
+
+  switch (extension) {
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "gif":
+      return "image/gif";
+    default:
+      return "image/png";
+  }
 }

@@ -23,6 +23,7 @@ export async function resolveMediaLinks(
   for await (const entity of mediaEntities) {
     let mediaName = "";
     let mediaType = "";
+    let exportFileName = "";
 
     switch (entity.type) {
       case "animated_gif":
@@ -32,11 +33,13 @@ export async function resolveMediaLinks(
           .pop()
           .split("?")[0];
         mediaType = "video/mp4";
+        exportFileName = `${tweetId}-${mediaName}`;
         break;
       case "photo":
       default:
         mediaName = entity.media_url.split("/").pop();
         mediaType = "image/png";
+        exportFileName = `${tweetId}-${mediaName}`;
         break;
     }
 
@@ -53,6 +56,8 @@ export async function resolveMediaLinks(
       resolvedMedia.push({
         type: entity.type,
         data: mediaData,
+        // Basename to use when exporting media in ZIP
+        filename: exportFileName,
       });
     } else {
       LOGGER.warn(`Skipping missing media for tweet ${tweetId}: ${mediaName}`);

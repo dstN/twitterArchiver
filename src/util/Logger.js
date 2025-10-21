@@ -39,7 +39,7 @@ export default class Logger {
    * @param {...any} args - Values to log
    */
   trace(...args) {
-    this.debug(args);
+    this.debug(...args);
   }
 
   /**
@@ -63,7 +63,7 @@ export default class Logger {
    * @param {...any} args - Values to log
    */
   log(...args) {
-    this.info(args);
+    this.info(...args);
   }
 
   /**
