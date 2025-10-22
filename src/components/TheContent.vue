@@ -77,7 +77,9 @@ function toggleSelectionModeLocal() {
 }
 
 function selectAllDisplayedTweets() {
-  const sourceTweets = threadView.value ? threadTweets.value : displayedTweets.value;
+  const sourceTweets = threadView.value
+    ? threadTweets.value
+    : displayedTweets.value;
   selectAllTweets(sourceTweets);
 }
 
@@ -173,9 +175,7 @@ const {
     @select-all="selectAllDisplayedTweets"
     @deselect-all="deselectAllTweets"
   />
-
-  <div class="mx-auto w-full max-w-6xl px-4 lg:px-6">
-    <div class="grid grid-cols-12 gap-4">
+  <div class="grid grid-cols-12 gap-4">
     <!-- Desktop Sidebar Component -->
     <DesktopSidebar
       :filter-type="filterType"
@@ -192,15 +192,15 @@ const {
       @toggle-selection-mode="toggleSelectionModeLocal"
       @select-all="selectAllDisplayedTweets"
       @deselect-all="deselectAllTweets"
-  @export-j-s-o-n="(val) => exportAsJSON(val)"
-  @export-c-s-v="(val) => exportAsCSV(val)"
-  @print-tweets="(val) => printTweets(val)"
+      @export-j-s-o-n="(val) => exportAsJSON(val)"
+      @export-c-s-v="(val) => exportAsCSV(val)"
+      @print-tweets="(val) => printTweets(val)"
       @reload-page="reloadPage"
     />
 
     <!-- Main Content - Full width on mobile, 7 cols on desktop -->
     <div
-      class="scroller col-span-12 bg-white shadow-2xl dark:bg-gray-800 lg:col-span-7 2xl:col-span-5"
+      class="scroller col-span-12 bg-white shadow-2xl lg:col-span-7 2xl:col-span-5 dark:bg-gray-800"
     >
       <div
         class="sticky top-0 z-20 w-full border-b border-solid border-orange-600 bg-white dark:border-orange-600 dark:bg-gray-800"
@@ -278,7 +278,7 @@ const {
               }}
             </button>
             <h2
-              class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
+              class="font-display mb-1 text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
               Thread View
             </h2>
@@ -292,7 +292,7 @@ const {
             class="hidden lg:block"
           >
             <h2
-              class="mb-6 font-display text-2xl tracking-widest text-orange-600 dark:text-orange-600"
+              class="font-display mb-6 text-2xl tracking-widest text-orange-600 dark:text-orange-600"
             >
               {{
                 filterType === "all"
@@ -422,43 +422,43 @@ const {
       </div>
 
       <!-- Thread View -->
-        <template v-if="threadView">
-          <div class="tweets-list">
+      <template v-if="threadView">
+        <div class="tweets-list">
+          <div
+            v-for="(item, index) in threadTweets"
+            :key="item.id"
+            class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+            :class="{
+              'bg-orange-50 dark:bg-orange-900/20':
+                item.id === threadView.originTweet.id,
+              'ring-2 ring-inset ring-orange-600':
+                selectionMode && isSelected(item.id),
+            }"
+          >
             <div
-              v-for="(item, index) in threadTweets"
-              :key="item.id"
-              class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
-              :class="{
-                'bg-orange-50 dark:bg-orange-900/20':
-                  item.id === threadView.originTweet.id,
-                'ring-2 ring-inset ring-orange-600':
-                  selectionMode && isSelected(item.id),
-              }"
+              v-if="selectionMode"
+              class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
             >
-              <div
-                v-if="selectionMode"
-                class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
-              >
-                <input
-                  type="checkbox"
-                  :checked="isSelected(item.id)"
-                  @change="toggleTweetSelection(item.id)"
-                  class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
-                />
-              </div>
+              <input
+                type="checkbox"
+                :checked="isSelected(item.id)"
+                @change="toggleTweetSelection(item.id)"
+                class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
+              />
+            </div>
 
-              <div :class="{ 'ml-12': selectionMode }">
-                <Tweet
-                  :data="item"
-                  :user="user"
-                  :thread-tweets="threadTweets"
-                  :in-thread-view="true"
-                  @get-thread="getThread"
-                />
-              </div>
+            <div :class="{ 'ml-12': selectionMode }">
+              <Tweet
+                :data="item"
+                :user="user"
+                :thread-tweets="threadTweets"
+                :in-thread-view="true"
+                @get-thread="getThread"
+              />
             </div>
           </div>
-        </template>
+        </div>
+      </template>
 
       <!-- Normal View -->
       <template v-else-if="displayedTweets.length > 0">
@@ -524,7 +524,7 @@ const {
         </h2>
       </template>
     </div>
-  </div></div>
+  </div>
 
   <!-- Mobile Search Button (Mobile only) -->
   <!-- Mobile Search Container (Fixed at bottom-right on small/medium screens, hidden on large) -->
