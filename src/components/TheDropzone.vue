@@ -239,6 +239,13 @@ async function handleFileSelection(event) {
   try {
     const data = await processArchiveFile(file);
     validFile.value = true;
+    emit("progress", {
+      percent: 97,
+      label: "Preparing timeline",
+      detail:
+        "Mounting filters and components… this can take a bit for very large archives.",
+    });
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
     emit("payloadEvent", data);
     emit("progress", {
       percent: 100,

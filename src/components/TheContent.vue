@@ -174,7 +174,8 @@ const {
     @deselect-all="deselectAllTweets"
   />
 
-  <div class="grid grid-cols-12 gap-4">
+  <div class="mx-auto w-full max-w-6xl px-4 lg:px-6">
+    <div class="grid grid-cols-12 gap-4">
     <!-- Desktop Sidebar Component -->
     <DesktopSidebar
       :filter-type="filterType"
@@ -523,7 +524,7 @@ const {
         </h2>
       </template>
     </div>
-  </div>
+  </div></div>
 
   <!-- Mobile Search Button (Mobile only) -->
   <!-- Mobile Search Container (Fixed at bottom-right on small/medium screens, hidden on large) -->
