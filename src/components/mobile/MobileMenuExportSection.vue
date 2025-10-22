@@ -36,7 +36,7 @@ function exportCSV() {
 }
 
 function printTweets() {
-  emit("printTweets");
+  emit("printTweets", props.includeMedia);
 }
 </script>
 

@@ -76,8 +76,8 @@ function exportCSV(val) {
   close();
 }
 
-function printTweets() {
-  emit("print");
+function printTweets(val) {
+  emit("print", val);
   close();
 }
 

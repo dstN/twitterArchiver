@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted, watch, nextTick } from "vue";
 
 const props = defineProps({
   media: Array,
@@ -25,13 +25,53 @@ const mediaGridClass = computed(() => {
   }
 });
 
-function openLightbox(media, index) {
-  if (!media || !media.data) {
+async function openLightbox(media, index) {
+  if (!media) return;
+
+  if (!media.data && typeof media.ensureDataUrl === "function") {
+    await ensureMediaLoaded(media);
+  }
+
+  if (!media.data) {
     console.error("Invalid media:", media);
     return;
   }
   emit("openLightbox", media, index);
 }
+
+async function ensureMediaLoaded(item) {
+  if (!item) return;
+  if (item.data) return;
+  if (item._loading) return;
+  if (typeof item.ensureDataUrl !== "function") return;
+
+  item._loading = true;
+  try {
+    await item.ensureDataUrl();
+  } catch (error) {
+    console.warn("Failed to hydrate media entry", error);
+  } finally {
+    item._loading = false;
+  }
+}
+
+function loadVisibleMedia() {
+  if (!Array.isArray(props.media)) return;
+  props.media.forEach((item) => ensureMediaLoaded(item));
+}
+
+onMounted(async () => {
+  await nextTick();
+  loadVisibleMedia();
+});
+
+watch(
+  () => props.media,
+  () => {
+    loadVisibleMedia();
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -48,7 +88,7 @@ function openLightbox(media, index) {
         v-for="(item, index) in media"
         :key="index"
         class="media-item"
-        @click="item && item.data ? openLightbox(item, index) : null"
+        @click="item ? openLightbox(item, index) : null"
       >
         <div
           v-if="item && item.data"
@@ -83,6 +123,31 @@ function openLightbox(media, index) {
               </div>
             </div>
           </div>
+        </div>
+        <div
+          v-else-if="item && typeof item.ensureDataUrl === 'function'"
+          class="media-container flex items-center justify-center"
+        >
+          <svg
+            class="h-8 w-8 animate-spin text-orange-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+            ></path>
+          </svg>
         </div>
         <div
           v-else

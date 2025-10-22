@@ -4,6 +4,7 @@ import TheDarkModeToggle from "./components/TheDarkModeToggle.vue";
 import { useDarkMode } from "./composables/useDarkMode";
 
 const loading = ref(false);
+const loadProgress = ref(null);
 const data = ref(null);
 const { isDarkMode, toggleDarkMode } = useDarkMode();
 
@@ -14,6 +15,10 @@ function changeLoading(loadValue) {
 function handleData(payload) {
   data.value = payload;
 }
+
+function handleProgress(update) {
+  loadProgress.value = update;
+}
 </script>
 
 <template>
@@ -22,7 +27,10 @@ function handleData(payload) {
   >
     <!-- Dark Mode Toggle - Always visible on Dropzone, hidden on mobile for Content -->
     <TheDarkModeToggle :class="data ? 'hidden lg:block' : ''" />
-    <TheSpinner v-if="loading" />
+    <TheSpinner
+      v-if="loading"
+      :progress="loadProgress"
+    />
     <TheContent
       v-if="data"
       :data="data"
@@ -33,6 +41,7 @@ function handleData(payload) {
       :isLoading="loading"
       @load="changeLoading"
       @payloadEvent="handleData"
+      @progress="handleProgress"
       v-else
     />
   </div>

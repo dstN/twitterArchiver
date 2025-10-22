@@ -9,7 +9,7 @@ const MEDIA_EXTENSIONS = ["jpg", "png", "gif", "jpeg", "jiff", "mp4"];
 /**
  * Reads and processes a file from the Twitter archive ZIP
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - Loaded ZipArchive instance
  * @param {string} fileName - Name of the file to read (relative to data/ folder)
  * @param {string} [mediaType] - MIME type for media files (e.g., 'image/png', 'video/mp4')
  * @param {boolean} [isOptional=false] - If true, returns null instead of throwing on missing files
@@ -27,7 +27,7 @@ export async function getFileFromZip(
     const extension = fileName.split(".").pop();
 
     // Check if file exists in ZIP
-    if (!zipData.files[fileLocation]) {
+    if (!zipData.has(fileLocation)) {
       if (isOptional) {
         LOGGER.warn(`Optional file not found in ZIP: ${fileLocation}`);
         return null;
@@ -41,13 +41,12 @@ export async function getFileFromZip(
 
     // Handle media files (images, videos)
     if (MEDIA_EXTENSIONS.includes(extension)) {
-      const untypedBlob = await zipData.files[fileLocation].async("blob");
-      const mediaBlob = new Blob([untypedBlob], { type: mediaType });
+      const mediaBlob = await zipData.readBlob(fileLocation, mediaType);
       return URL.createObjectURL(mediaBlob);
     }
 
     // Handle JSON files
-    const rawData = await zipData.files[fileLocation].async("string");
+    const rawData = await zipData.readText(fileLocation);
     return await fixJson(rawData, fileName);
   } catch (error) {
     LOGGER.error("Failed to get file from zip data", fileName, "Error", error);
@@ -69,20 +68,20 @@ export async function getFileFromZip(
 /**
  * Checks if a specific file exists in the ZIP archive
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - Loaded ZipArchive instance
  * @param {string} filePath - Full path of the file to check
  * @returns {boolean} True if file exists, false otherwise
  */
 export function fileExistsInZip(zipData, filePath) {
-  return zipData.file(filePath) !== null;
+  return zipData.has(filePath);
 }
 
 /**
  * Lists all files in the ZIP archive
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - Loaded ZipArchive instance
  * @returns {string[]} Array of file paths in the archive
  */
 export function listFilesInZip(zipData) {
-  return Object.keys(zipData.files);
+  return zipData.listFiles();
 }

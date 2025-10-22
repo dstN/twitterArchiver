@@ -3,16 +3,20 @@ import { validateArchiveStructure } from "./ArchiveValidator";
 import { getFileFromZip } from "./ZipFileReader";
 import { getTweets } from "./TweetProcessor";
 
+const LOGGER = new Logger("DataHandler");
+
 /**
  * Main entry point for processing a Twitter archive ZIP file
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - The loaded ZipArchive instance
+ * @param {{lazyMedia?: boolean, onProgress?: Function}} [options]
  * @returns {Promise<{user: Object, tweets: Array}>} Processed user data and tweets
  * @throws {Error} If archive is invalid or processing fails
  */
-export async function ProcessData(zipData) {
+export async function ProcessData(zipData, options = {}) {
+  const { lazyMedia = false, onProgress } = options;
+
   try {
-    // Validate archive structure
     const validation = validateArchiveStructure(zipData);
 
     if (!validation.isValid) {
@@ -27,20 +31,26 @@ export async function ProcessData(zipData) {
       );
     }
 
+    onProgress?.({ stage: "validation", status: "complete" });
+
     const user = await getUser(zipData);
     const accountId = user.account?.accountId;
 
-    return {
-      user,
-      tweets: await getTweets(zipData, accountId),
-    };
+    onProgress?.({ stage: "profile", status: "loaded" });
+
+    const tweets = await getTweets(zipData, accountId, {
+      lazyMedia,
+      onProgress,
+    });
+
+    return { user, tweets };
   } catch (error) {
     LOGGER.error("Failed to process ZIP data:", error);
     throw error;
+  } finally {
+    onProgress?.({ stage: "finalizing", status: "complete" });
   }
 }
-
-const LOGGER = new Logger("DataHandler");
 
 /**
  * Retrieves user account and profile data from the archive

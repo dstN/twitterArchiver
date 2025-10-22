@@ -1,9 +1,20 @@
 <script setup>
 import * as dataHandler from "../util/DataHandler";
 import { ZipValidator } from "../util/ZipValidator";
-import { ref } from "vue";
+import { ZipArchive } from "../util/ZipArchive";
+import { onBeforeUnmount, ref } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {
+  faMagnifyingGlass,
+  faFileArrowDown,
+  faShareNodes,
+  faShieldHalved,
+  faGaugeHigh,
+} from "@fortawesome/free-solid-svg-icons";
 
-const MAX_ARCHIVE_BYTES = 2 * 1024 * 1024 * 1024; // ~2GB browser ArrayBuffer limit
+const SOFT_ARCHIVE_WARNING_BYTES = 10 * 1024 * 1024 * 1024; // 10GB soft warning threshold
+const LAZY_MEDIA_THRESHOLD_BYTES = 750 * 1024 * 1024; // ~750MB - above this lazily hydrate media
+let currentArchive = null;
 
 const props = defineProps({
   isLoading: Boolean,
@@ -11,7 +22,14 @@ const props = defineProps({
 
 const validFile = ref(true);
 const dragOver = ref(false);
-const emit = defineEmits(["load", "payloadEvent"]);
+const emit = defineEmits(["load", "payloadEvent", "progress"]);
+const featureIcons = [
+  faMagnifyingGlass,
+  faFileArrowDown,
+  faShareNodes,
+  faShieldHalved,
+  faGaugeHigh,
+];
 
 function extractFilesFromEvent(event) {
   if (event?.type === "change" && event.target?.files) {
@@ -29,69 +47,164 @@ function extractFilesFromEvent(event) {
   return [];
 }
 
-async function extractZipFile(e) {
+async function processArchiveFile(file) {
+  if (!file || file.size === 0) {
+    throw new Error("Empty or invalid file content");
+  }
+
+  const validation = await ZipValidator.validateZipStructure(file);
+
+  if (!validation.isValid) {
+    throw new Error(`Invalid ZIP file: ${validation.errors.join(", ")}`);
+  }
+
+  if (validation.fileSize > SOFT_ARCHIVE_WARNING_BYTES) {
+    console.warn(
+      `Large archive detected (${(validation.fileSize / (1024 * 1024 * 1024)).toFixed(2)} GB). Processing may take a while.`,
+    );
+  }
+
+  const preferLazyMedia = validation.fileSize >= LAZY_MEDIA_THRESHOLD_BYTES;
+
+  const previousArchive = currentArchive;
+  const progressState = {
+    entry: 0,
+    tweets: 0,
+    media: 0,
+    finalize: 0,
+    label: "Loading archive",
+    detail: "Scanning entries...",
+  };
+
+  function publishProgress(overrides = {}) {
+    if (overrides.label) progressState.label = overrides.label;
+    if (overrides.detail) progressState.detail = overrides.detail;
+    const percent = Math.round(
+      progressState.entry * 45 +
+        progressState.tweets * 45 +
+        progressState.media * 5 +
+        progressState.finalize * 5,
+    );
+    emit("progress", {
+      percent: Math.min(99, Math.max(0, percent)),
+      label: progressState.label,
+      detail: progressState.detail,
+    });
+  }
+
+  const archive = await ZipArchive.fromBlob(file, {
+    onProgress(progress, total) {
+      const safeTotal = typeof total === "number" && total > 0 ? total : null;
+      const safeProgress =
+        typeof progress === "number" && progress >= 0 ? progress : 0;
+      if (safeTotal) {
+        progressState.entry = safeTotal
+          ? Math.min(1, safeProgress / safeTotal)
+          : progressState.entry;
+      } else {
+        progressState.entry = Math.min(1, safeProgress / 100);
+      }
+      publishProgress({
+        label: "Loading archive",
+        detail: safeTotal
+          ? `Reading entry ${Math.min(safeProgress + 1, safeTotal)} of ${safeTotal}`
+          : "Scanning entries...",
+      });
+    },
+  });
+  currentArchive = archive;
+
+  publishProgress({
+    label: "Processing timeline",
+    detail: "Preparing tweets...",
+  });
+
   try {
-    const arrayBuffer = e.target.result;
-
-    // Add validation for the array buffer
-    if (!arrayBuffer || arrayBuffer.byteLength === 0) {
-      throw new Error("Empty or invalid file content");
-    }
-
-    // Validate ZIP structure before processing
-    const validation = await ZipValidator.validateZipStructure(arrayBuffer);
-
-    if (!validation.isValid) {
-      throw new Error(`Invalid ZIP file: ${validation.errors.join(", ")}`);
-    }
-
-    // Lazy load JSZip only when needed (reduces initial bundle size)
-    const JSZip = (await import("jszip")).default;
-    const jszip = new JSZip();
-
-    // Try loading with different options for better compatibility
-    const zipData = await jszip.loadAsync(arrayBuffer, {
-      checkCRC32: false, // Disable CRC32 check which can cause issues with some zip files
-      optimizedBinaryString: false,
-      createFolders: false,
+    const dataset = await dataHandler.ProcessData(archive, {
+      lazyMedia: preferLazyMedia,
+      onProgress: ({ stage, current = 0, total = 0, media, status }) => {
+        switch (stage) {
+          case "profile": {
+            publishProgress({
+              label: "Loading profile",
+              detail: "Preparing account details...",
+            });
+            break;
+          }
+          case "tweets": {
+            progressState.tweets =
+              total > 0 ? Math.min(1, current / total) : current > 0 ? 1 : 0;
+            if (media && media.total) {
+              progressState.media = Math.min(
+                1,
+                media.total ? media.current / media.total : 1,
+              );
+            }
+            const tweetDetail =
+              total > 0
+                ? `Processing tweets ${Math.min(current, total)} / ${total}`
+                : "Processing tweets...";
+            const mediaDetail =
+              media && media.total
+                ? ` | Media ${Math.min(media.current, media.total)} / ${media.total}`
+                : preferLazyMedia
+                  ? " | Media will load on demand"
+                  : "";
+            const patienceNote = preferLazyMedia
+              ? " • Huge archive detected, this step can take a minute. Please keep the tab open."
+              : "";
+            publishProgress({
+              label: "Processing timeline",
+              detail: `${tweetDetail}${mediaDetail}${patienceNote}`,
+            });
+            break;
+          }
+          case "validation": {
+            publishProgress({
+              label: "Validating archive",
+              detail: "Structure looks good...",
+            });
+            break;
+          }
+          case "finalizing": {
+            progressState.finalize = 1;
+            publishProgress({
+              label: "Finalizing data",
+              detail: status === "complete" ? "Wrapping up..." : "Finalizing...",
+            });
+            break;
+          }
+          default:
+            break;
+        }
+      },
     });
 
-    const data = await dataHandler.ProcessData(zipData);
+    dataset.__archiveMetadata = {
+      lazyMedia: preferLazyMedia,
+      fileSize: validation.fileSize,
+    };
 
-    emit("load", false);
-    emit("payloadEvent", data);
-  } catch (error) {
-    console.error("Error processing ZIP file:", error);
-
-    // Provide user-friendly error messages
-    let errorMessage = "Failed to process the ZIP file. ";
-
-    if (
-      error.message.includes("Corrupted zip") ||
-      error.message.includes("central dir")
-    ) {
-      errorMessage +=
-        "The ZIP file appears to be corrupted or incomplete. Please try re-downloading your Twitter archive.";
-    } else if (error.message.includes("Can't find end of central directory")) {
-      errorMessage +=
-        "The ZIP file structure is invalid. This may happen if the download was interrupted.";
-    } else if (error.message.includes("Invalid ZIP file")) {
-      errorMessage +=
-        error.message +
-        " This might not be a valid ZIP file or it may be corrupted.";
-    } else {
-      errorMessage += error.message;
+    if (previousArchive) {
+      setTimeout(() => {
+        previousArchive
+          .close()
+          .catch((err) =>
+            console.warn("Failed to close previous archive instance", err),
+          );
+      }, 0);
     }
 
-    // Set invalid file state and show error
-    validFile.value = false;
-    alert(errorMessage);
-
-    emit("load", false);
+    return dataset;
+  } catch (error) {
+    await archive.close();
+    currentArchive = previousArchive ?? null;
+    emit("progress", null);
+    throw error;
   }
 }
 
-function handleFileSelection(event) {
+async function handleFileSelection(event) {
   const validFileTypes = ["application/zip", "application/x-zip-compressed"];
   const files = extractFilesFromEvent(event);
   const file = files[0];
@@ -104,25 +217,70 @@ function handleFileSelection(event) {
   }
 
   const fileType = file.type;
-  if (!validFileTypes.includes(fileType)) {
+  if (fileType && !validFileTypes.includes(fileType)) {
     validFile.value = false;
     return;
   }
 
-  if (file.size >= MAX_ARCHIVE_BYTES) {
-    validFile.value = false;
-    alert(
-      "This archive is larger than 2GB. Browsers cannot load such large files fully into memory, so please trim your export or split it before trying again."
+  if (file.size > SOFT_ARCHIVE_WARNING_BYTES) {
+    console.warn(
+      `Archive size ${(file.size / (1024 * 1024 * 1024)).toFixed(
+        2,
+      )} GB exceeds the soft limit. Extraction will continue but may take a while.`,
     );
-    return;
   }
 
-  validFile.value = true;
+  emit("progress", {
+    percent: 0,
+    label: "Starting import",
+    detail: "Validating archive...",
+  });
   emit("load", true);
-  const fileReader = new FileReader();
-  fileReader.addEventListener("loadend", extractZipFile);
-  fileReader.readAsArrayBuffer(file);
+  try {
+    const data = await processArchiveFile(file);
+    validFile.value = true;
+    emit("payloadEvent", data);
+    emit("progress", {
+      percent: 100,
+      label: "Archive ready",
+      detail: "Tweets loaded successfully.",
+    });
+  } catch (error) {
+    console.error("Error processing ZIP file:", error);
+
+    let errorMessage = "Failed to process the ZIP file. ";
+
+    if (
+      error.message?.includes("Corrupted zip") ||
+      error.message?.includes("central dir")
+    ) {
+      errorMessage +=
+        "The ZIP file appears to be corrupted or incomplete. Please try re-downloading your Twitter archive.";
+    } else if (error.message?.includes("Can't find end of central directory")) {
+      errorMessage +=
+        "The ZIP file structure is invalid. This may happen if the download was interrupted.";
+    } else if (error.message?.includes("Invalid ZIP file")) {
+      errorMessage +=
+        error.message +
+        " This might not be a valid ZIP file or it may be corrupted.";
+    } else {
+      errorMessage += error.message ?? "Unknown error.";
+    }
+
+    validFile.value = false;
+    alert(errorMessage);
+  } finally {
+    emit("load", false);
+    setTimeout(() => emit("progress", null), 400);
+  }
 }
+
+onBeforeUnmount(async () => {
+  if (currentArchive) {
+    await currentArchive.close();
+    currentArchive = null;
+  }
+});
 
 function handleDragOver(event) {
   event.preventDefault();
@@ -170,8 +328,15 @@ function handleDragLeave(event) {
         <li
           v-for="(feature, index) in $tm('dropzone.introduction.features')"
           :key="index"
+          class="flex items-start gap-3"
         >
-          {{ feature }}
+          <FontAwesomeIcon
+            :icon="featureIcons[index % featureIcons.length]"
+            class="mt-0.5 h-4 w-4 text-orange-600 dark:text-orange-600"
+          />
+          <span class="text-left">
+            {{ feature }}
+          </span>
         </li>
       </ul>
     </div>

@@ -28,7 +28,7 @@ locally with 100% privacy.
 - **Styling**: Tailwind CSS 3
 - **Internationalization**: vue-i18n
 - **Icons**: FontAwesome
-- **Archive Processing**: JSZip
+- **Archive Processing**: zip.js
 
 ## 🛠️ Development
 

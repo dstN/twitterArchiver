@@ -31,7 +31,7 @@ export default defineConfig({
         },
         manualChunks: {
           vendor: ["vue", "vue-i18n"],
-          "zip-handler": ["jszip"],
+          "zip-handler": ["@zip.js/zip.js"],
           icons: [
             "@fortawesome/fontawesome-svg-core",
             "@fortawesome/free-solid-svg-icons",

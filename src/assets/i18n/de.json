@@ -2,18 +2,18 @@
   "title": "twittr_Archivr",
   "dropzone": {
     "archive": "Twitter-Archiv",
-    "hint": "Wähle eine Datei aus oder ziehe sie hierher (nur ZIP).",
+    "hint": "W\u00e4hle eine Datei aus oder ziehe sie hierher (nur ZIP).",
     "drop": "JA bitte, lass es FALLEN! 🤤",
     "invalidFile": "Oh nein! Du hast eine falsche Datei ausgewählt. Bitte wähle die \u003cstrong\u003eZIP-Datei\u003c/strong\u003e, die du direkt von Twitter heruntergeladen hast, ohne sie zu verändern.",
     "introduction": {
       "title": "Dein privater Twitter-Archiv-Viewer",
-      "description": "Dieses Tool hilft dir, dein Twitter-Archiv lokal zu erkunden und zu organisieren—komplett privat und sicher.",
+      "description": "Dieses Tool hilft dir, dein Twitter-Archiv lokal zu erkunden und zu organisieren - komplett privat und sicher.",
       "features": [
-        "🔍 Durchsuche und filtere deine Tweets, Antworten und Threads",
-        "💾 Exportiere gefilterte Ergebnisse als JSON oder CSV",
-        "🌐 Teile Tweets auf anderen Plattformen (Bluesky, Mastodon, Threads)",
-        "🔒 100% lokale Verarbeitung—kein Server-Upload, deine Daten bleiben privat",
-        "🛠️ Browserverarbeitung funktioniert nur zuverlässig bis ~2GB"
+        "Suche und filtere deine Tweets, Antworten und Threads",
+        "Exportiere gefilterte Ergebnisse als JSON oder CSV",
+        "Teile Tweets auf anderen Plattformen (Bluesky, Mastodon, Threads)",
+        "100% lokale Verarbeitung - kein Server-Upload, deine Daten bleiben privat",
+        "Beste Leistung mit Archiven bis etwa 2 GB"
       ]
     }
   },

@@ -1,6 +1,7 @@
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faBottleWater } from "@fortawesome/free-solid-svg-icons";
 
 const props = defineProps({
   filterType: String,
@@ -374,7 +375,7 @@ function reloadPage() {
 
                 <!-- Print -->
                 <button
-                  @click="$emit('printTweets')"
+                  @click="$emit('printTweets', includeMedia)"
                   class="flex w-full items-center gap-3 border-t border-gray-200 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
                 >
                   <svg
@@ -413,7 +414,10 @@ function reloadPage() {
               rel="noopener noreferrer"
               class="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-3 text-white transition-all hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
-              <span class="text-lg">🥤</span>
+              <font-awesome-icon
+                :icon="faBottleWater"
+                class="h-5 w-5"
+              />
               <span class="font-medium">Buy me a Red Bull</span>
             </a>
           </div>

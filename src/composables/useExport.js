@@ -26,13 +26,20 @@
 
 import { ref } from "vue";
 
-// Lazy-load JSZip only when media export is requested to keep main bundle small
-let _JSZip = null;
-async function getJSZip() {
-  if (_JSZip) return _JSZip;
-  const mod = await import("jszip");
-  _JSZip = mod?.default ?? mod;
-  return _JSZip;
+// Lazy-load zip.js writers so we only pay the cost when a media export is requested.
+let zipWriters = null;
+async function getZipWriters() {
+  if (zipWriters) return zipWriters;
+  const mod = await import("@zip.js/zip.js");
+  if (typeof mod.configure === "function") {
+    mod.configure({ useWebWorkers: true });
+  }
+  zipWriters = {
+    ZipWriter: mod.ZipWriter,
+    BlobWriter: mod.BlobWriter,
+    BlobReader: mod.BlobReader,
+  };
+  return zipWriters;
 }
 
 function getTweetsForExport(
@@ -152,24 +159,39 @@ function inferExtensionByType(type, blobType) {
   return "png";
 }
 
-async function addMediaToZip(zip, tweets) {
-  const mediaFolder = zip.folder("media");
-  if (!mediaFolder) return;
-
+async function addMediaToZip(zipWriter, BlobReader, tweets) {
   for (const tweet of tweets) {
     const mediaItems = Array.isArray(tweet.media) ? tweet.media : [];
     for (let index = 0; index < mediaItems.length; index++) {
       const item = mediaItems[index];
-      if (!item || !item.data) continue;
+      if (!item) continue;
 
       try {
-        const response = await fetch(item.data);
-        const blob = await response.blob();
-        const ext = inferExtensionByType(item.type, blob.type);
+        let blob = null;
+        if (typeof item.getBlob === "function") {
+          blob = await item.getBlob();
+        } else if (item.data) {
+          const response = await fetch(item.data);
+          blob = await response.blob();
+        }
+
+        if (!blob) continue;
+
+        const ext = item.filename
+          ? item.filename.split(".").pop()
+          : inferExtensionByType(item.type, blob.type);
+
         const baseName = item.filename
           ? item.filename
           : `${tweet.id}-${index}.${ext}`;
-        mediaFolder.file(baseName, blob);
+        await zipWriter.add(
+          `media/${baseName}`,
+          new BlobReader(blob),
+          {
+            // Preserve the original file's MIME type if we can.
+            lastModDate: new Date(),
+          },
+        );
       } catch (err) {
         // Skip problematic media rather than failing the whole export
         // eslint-disable-next-line no-console
@@ -178,6 +200,127 @@ async function addMediaToZip(zip, tweets) {
     }
   }
 }
+
+async function createZipWithMedia(primaryFileName, primaryBlob, tweets) {
+  const { ZipWriter, BlobWriter, BlobReader } = await getZipWriters();
+  const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
+  try {
+    await zipWriter.add(primaryFileName, new BlobReader(primaryBlob), {
+      lastModDate: new Date(),
+    });
+    await addMediaToZip(zipWriter, BlobReader, tweets);
+    return await zipWriter.close();
+  } catch (error) {
+    try {
+      await zipWriter.close();
+    } catch (_) {
+      // Ignore close errors so we can bubble the original failure
+    }
+    throw error;
+  }
+}
+
+function determineExportSuffix(
+  selectionMode,
+  selectedTweets,
+  threadView,
+  filterType,
+) {
+  if (selectionMode.value && selectedTweets.value.size > 0) {
+    return `selected-${selectedTweets.value.size}`;
+  }
+  if (threadView.value) {
+    return `thread-${threadView.value.originTweet.id}`;
+  }
+  return filterType.value;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+  URL.revokeObjectURL(url);
+}
+
+async function ensureTweetsMediaLoaded(tweets) {
+  const loadingTasks = [];
+
+  for (const tweet of tweets) {
+    const mediaItems = Array.isArray(tweet.media) ? tweet.media : [];
+    for (const item of mediaItems) {
+      if (!item) continue;
+      if (item.data) continue;
+
+      if (typeof item.ensureDataUrl === "function") {
+        loadingTasks.push(
+          item.ensureDataUrl().catch((error) => {
+            console.warn("Skipping media data URL hydration", error);
+          }),
+        );
+      } else if (typeof item.getBlob === "function") {
+        loadingTasks.push(
+          item
+            .getBlob()
+            .then((blob) => {
+              if (!blob) return;
+              const objectUrl = URL.createObjectURL(blob);
+              item.data = objectUrl;
+              if (typeof item.release !== "function") {
+                item.release = () => {
+                  URL.revokeObjectURL(objectUrl);
+                  item.data = null;
+                };
+              }
+            })
+            .catch((error) => {
+              console.warn("Skipping media due to blob extraction failure", error);
+            }),
+        );
+      }
+    }
+  }
+
+  if (loadingTasks.length === 0) return;
+  await Promise.allSettled(loadingTasks);
+}
+
+function buildExportPayload(
+  tweetsToExport,
+  userRef,
+  selectionMode,
+  selectedTweets,
+  threadView,
+  filterType,
+) {
+  const cleanedTweets = tweetsToExport.map(sanitiseTweetForExport);
+  const sanitisedUser = sanitiseUserForExport(userRef.value);
+
+  return {
+    cleanedTweets,
+    data: {
+      user: sanitisedUser,
+      tweets: cleanedTweets,
+      exported_at: new Date().toISOString(),
+      filter: filterType.value,
+      total_count: cleanedTweets.length,
+      selection_mode:
+        selectionMode.value && selectedTweets.value.size > 0 ? true : false,
+      selected_count:
+        selectionMode.value && selectedTweets.value.size > 0
+          ? selectedTweets.value.size
+          : null,
+      thread_mode: Boolean(threadView.value),
+      thread_origin: threadView.value
+        ? threadView.value.originTweet.id
+        : null,
+    },
+  };
+}
+
 
 function sanitiseUserForExport(user) {
   if (!user) return null;
@@ -225,65 +368,44 @@ export function useExport(
       threadTweets,
     );
 
-    const cleanedTweets = tweetsToExport.map(sanitiseTweetForExport);
-    const sanitisedUser = sanitiseUserForExport(user.value);
+    const payload = buildExportPayload(
+      tweetsToExport,
+      user,
+      selectionMode,
+      selectedTweets,
+      threadView,
+      filterType,
+    );
 
-    const dataToExport = {
-      user: sanitisedUser,
-      tweets: cleanedTweets,
-      exported_at: new Date().toISOString(),
-      filter: filterType.value,
-      total_count: cleanedTweets.length,
-      selection_mode:
-        selectionMode.value && selectedTweets.value.size > 0 ? true : false,
-      selected_count:
-        selectionMode.value && selectedTweets.value.size > 0
-          ? selectedTweets.value.size
-          : null,
-      thread_mode: Boolean(threadView.value),
-      thread_origin: threadView.value
-        ? threadView.value.originTweet.id
-        : null,
-    };
-
-    const jsonBlob = new Blob([JSON.stringify(dataToExport, null, 2)], {
+    const jsonBlob = new Blob([JSON.stringify(payload.data, null, 2)], {
       type: "application/json",
     });
-    const a = document.createElement("a");
-    let suffix;
-    if (selectionMode.value && selectedTweets.value.size > 0) {
-      suffix = `selected-${selectedTweets.value.size}`;
-    } else if (threadView.value) {
-      suffix = `thread-${threadView.value.originTweet.id}`;
-    } else {
-      suffix = filterType.value;
-    }
+    const suffix = determineExportSuffix(
+      selectionMode,
+      selectedTweets,
+      threadView,
+      filterType,
+    );
+    const dateStamp = new Date().toISOString().split("T")[0];
+
     if (withMedia) {
-      const JSZip = await getJSZip();
-      const zip = new JSZip();
-      zip.file(`tweets.json`, jsonBlob);
-      await addMediaToZip(zip, tweetsToExport);
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      const url = URL.createObjectURL(zipBlob);
-      a.href = url;
-      a.download = `twitter-archive-${suffix}-${new Date()
-        .toISOString()
-        .split("T")[0]}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const zipBlob = await createZipWithMedia(
+        "tweets.json",
+        jsonBlob,
+        tweetsToExport,
+      );
+      downloadBlob(
+        zipBlob,
+        `twitter-archive-${suffix}-${dateStamp}.zip`,
+      );
       showExportMenu.value = false;
       return;
     }
 
-    const url = URL.createObjectURL(jsonBlob);
-    a.href = url;
-    a.download = `twitter-archive-${suffix}-${new Date().toISOString().split("T")[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadBlob(
+      jsonBlob,
+      `twitter-archive-${suffix}-${dateStamp}.json`,
+    );
     showExportMenu.value = false;
   }
 
@@ -299,10 +421,17 @@ export function useExport(
       threadTweets,
     );
 
-    const sanitisedTweets = tweetsToExport.map(sanitiseTweetForExport);
+    const payload = buildExportPayload(
+      tweetsToExport,
+      user,
+      selectionMode,
+      selectedTweets,
+      threadView,
+      filterType,
+    );
 
     const headers = ["Date", "Type", "Text", "Likes", "Retweets", "URL"];
-    const rows = sanitisedTweets.map((tweet) => [
+    const rows = payload.cleanedTweets.map((tweet) => [
       tweet.created_at ?? "",
       tweet.type,
       `"${(tweet.text || "").replace(/"/g, '""')}"`,
@@ -313,53 +442,100 @@ export function useExport(
 
     const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
     const csvBlob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    let suffix;
-    if (selectionMode.value && selectedTweets.value.size > 0) {
-      suffix = `selected-${selectedTweets.value.size}`;
-    } else if (threadView.value) {
-      suffix = `thread-${threadView.value.originTweet.id}`;
-    } else {
-      suffix = filterType.value;
-    }
+    const suffix = determineExportSuffix(
+      selectionMode,
+      selectedTweets,
+      threadView,
+      filterType,
+    );
+    const dateStamp = new Date().toISOString().split("T")[0];
+
     if (withMedia) {
-      const JSZip = await getJSZip();
-      const zip = new JSZip();
-      zip.file(`tweets.csv`, csvBlob);
-      await addMediaToZip(zip, tweetsToExport);
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      const url = URL.createObjectURL(zipBlob);
-      a.href = url;
-      a.download = `twitter-archive-${suffix}-${new Date()
-        .toISOString()
-        .split("T")[0]}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const zipBlob = await createZipWithMedia(
+        "tweets.csv",
+        csvBlob,
+        tweetsToExport,
+      );
+      downloadBlob(
+        zipBlob,
+        `twitter-archive-${suffix}-${dateStamp}.zip`,
+      );
       showExportMenu.value = false;
       return;
     }
 
-    const url = URL.createObjectURL(csvBlob);
-    a.href = url;
-    a.download = `twitter-archive-${suffix}-${new Date().toISOString().split("T")[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadBlob(
+      csvBlob,
+      `twitter-archive-${suffix}-${dateStamp}.csv`,
+    );
     showExportMenu.value = false;
   }
 
   /**
    * Print tweets (opens browser print dialog)
    */
-  function printTweets() {
+  async function printTweets(withMedia = includeMedia.value) {
+    const tweetsToExport = getTweetsForExport(
+      filteredData,
+      selectedTweets,
+      selectionMode,
+      threadView,
+      threadTweets,
+    );
+
+    await ensureTweetsMediaLoaded(tweetsToExport);
+
+    const suffix = determineExportSuffix(
+      selectionMode,
+      selectedTweets,
+      threadView,
+      filterType,
+    );
+    const dateStamp = new Date().toISOString().split("T")[0];
+
+    let archivePromise = null;
+
+    if (withMedia) {
+      const payload = buildExportPayload(
+        tweetsToExport,
+        user,
+        selectionMode,
+        selectedTweets,
+        threadView,
+        filterType,
+      );
+      const manifestBlob = new Blob(
+        [JSON.stringify(payload.data, null, 2)],
+        { type: "application/json" },
+      );
+
+      archivePromise = (async () => {
+        try {
+          const zipBlob = await createZipWithMedia(
+            "tweets.json",
+            manifestBlob,
+            tweetsToExport,
+          );
+          downloadBlob(
+            zipBlob,
+            `twitter-archive-${suffix}-${dateStamp}.zip`,
+          );
+        } catch (error) {
+          console.error("Failed to bundle media archive", error);
+        }
+      })();
+    }
+
     showExportMenu.value = false;
-    // Small delay to let the UI update before printing
     setTimeout(() => {
       window.print();
     }, 100);
+
+    if (archivePromise) {
+      archivePromise.catch((error) =>
+        console.error("Media archive download failed", error),
+      );
+    }
   }
 
   return {
