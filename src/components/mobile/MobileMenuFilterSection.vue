@@ -104,6 +104,64 @@ function selectFilter(type) {
           >
         </button>
       </li>
+      <li>
+        <button
+          @click="selectFilter('media')"
+          :class="
+            filterType === 'media' ||
+            filterType === 'mediaImages' ||
+            filterType === 'mediaVideos'
+              ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
+              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
+          "
+          class="w-full rounded-lg px-4 py-3 text-left text-lg font-bold transition-colors"
+        >
+          Only Media
+          <small
+            class="ml-2 text-sm opacity-70"
+            v-if="tweetCounts"
+            >({{ tweetCounts.media }})</small
+          >
+        </button>
+        <ul class="mt-1 space-y-1 border-l border-orange-200 pl-4 dark:border-orange-900/40">
+          <li>
+            <button
+              @click="selectFilter('mediaImages')"
+              :class="
+                filterType === 'mediaImages'
+                  ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
+                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
+              "
+              class="w-full rounded-lg px-3 py-2 text-left text-base font-semibold transition-colors"
+            >
+              Only Images
+              <small
+                class="ml-2 text-xs opacity-70"
+                v-if="tweetCounts"
+                >({{ tweetCounts.mediaImages }})</small
+              >
+            </button>
+          </li>
+          <li>
+            <button
+              @click="selectFilter('mediaVideos')"
+              :class="
+                filterType === 'mediaVideos'
+                  ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-600'
+                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600'
+              "
+              class="w-full rounded-lg px-3 py-2 text-left text-base font-semibold transition-colors"
+            >
+              Only Videos/GIFs
+              <small
+                class="ml-2 text-xs opacity-70"
+                v-if="tweetCounts"
+                >({{ tweetCounts.mediaVideos }})</small
+              >
+            </button>
+          </li>
+        </ul>
+      </li>
     </ul>
 
     <!-- Slot for export section -->

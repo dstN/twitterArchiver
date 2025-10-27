@@ -83,11 +83,6 @@ function selectAllDisplayedTweets() {
   selectAllTweets(sourceTweets);
 }
 
-function handleSearchTermUpdate(value) {
-  searchTerm.value = value;
-  onSearchTermChange();
-}
-
 function handleFilterTypeChange(type) {
   // Exit thread view when changing filters
   if (threadView.value) {
@@ -150,6 +145,36 @@ const {
   filterType,
   user,
 );
+
+const filterLabels = {
+  all: "All Tweets",
+  tweets: "Only Tweets",
+  replies: "Only Replies",
+  retweets: "Only Retweets",
+  threads: "Only Threads",
+  media: "Only Media",
+  mediaImages: "Only Images",
+  mediaVideos: "Only Videos/GIFs",
+};
+
+const filterDescriptions = {
+  all: "You are now seeing all tweets. Including Replies, Retweets and normal Tweets.",
+  tweets: "You are now seeing only original tweets (no replies or retweets).",
+  replies: "You are now seeing only replies to other tweets.",
+  retweets: "You are now seeing only retweets.",
+  threads: "You are now seeing only threads with multiple connected tweets.",
+  media: "You are now seeing only tweets that include media attachments.",
+  mediaImages: "You are now seeing only tweets that include images.",
+  mediaVideos: "You are now seeing only tweets that include videos or GIFs.",
+};
+
+const activeFilterLabel = computed(() => {
+  return filterLabels[filterType.value] || filterLabels.all;
+});
+
+const activeFilterDescription = computed(() => {
+  return filterDescriptions[filterType.value] || filterDescriptions.all;
+});
 </script>
 
 <template>
@@ -180,13 +205,11 @@ const {
     <DesktopSidebar
       :filter-type="filterType"
       :tweet-counts="tweetCounts"
-      :search-term="searchTerm"
       :selection-mode="selectionMode"
       :selected-count="selectedTweets.size"
       :show-export-menu="showExportMenu"
       :include-media="includeMedia"
       @set-filter-type="handleFilterTypeChange"
-      @update-search-term="handleSearchTermUpdate"
       @toggle-export-menu="showExportMenu = !showExportMenu"
       @toggle-include-media="toggleIncludeMedia"
       @toggle-selection-mode="toggleSelectionModeLocal"
@@ -200,7 +223,7 @@ const {
 
     <!-- Main Content - Full width on mobile, 7 cols on desktop -->
     <div
-      class="scroller col-span-12 bg-white shadow-2xl lg:col-span-7 2xl:col-span-5 dark:bg-gray-800"
+      class="scroller col-span-12 bg-white shadow-2xl dark:bg-gray-800 lg:col-span-7 2xl:col-span-5"
     >
       <div
         class="sticky top-0 z-20 w-full border-b border-solid border-orange-600 bg-white dark:border-orange-600 dark:bg-gray-800"
@@ -230,17 +253,7 @@ const {
             <h2
               class="font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              {{
-                filterType === "all"
-                  ? "All Tweets"
-                  : filterType === "tweets"
-                    ? "Only Tweets"
-                    : filterType === "replies"
-                      ? "Only Replies"
-                      : filterType === "threads"
-                        ? "Only Threads"
-                        : "Only Retweets"
-              }}
+              {{ activeFilterLabel }}
             </h2>
             <div class="w-10"></div>
             <!-- Spacer for centering -->
@@ -264,21 +277,10 @@ const {
                   clip-rule="evenodd"
                 />
               </svg>
-              Back to
-              {{
-                filterType === "all"
-                  ? "All Tweets"
-                  : filterType === "tweets"
-                    ? "Only Tweets"
-                    : filterType === "replies"
-                      ? "Only Replies"
-                      : filterType === "threads"
-                        ? "Only Threads"
-                        : "Only Retweets"
-              }}
+              Back to {{ activeFilterLabel }}
             </button>
             <h2
-              class="font-display mb-1 text-xl tracking-widest text-orange-600 dark:text-orange-600"
+              class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
               Thread View
             </h2>
@@ -292,32 +294,12 @@ const {
             class="hidden lg:block"
           >
             <h2
-              class="font-display mb-6 text-2xl tracking-widest text-orange-600 dark:text-orange-600"
+              class="mb-6 font-display text-2xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              {{
-                filterType === "all"
-                  ? "All Tweets"
-                  : filterType === "tweets"
-                    ? "Only Tweets"
-                    : filterType === "replies"
-                      ? "Only Replies"
-                      : filterType === "threads"
-                        ? "Only Threads"
-                        : "Only Retweets"
-              }}
+              {{ activeFilterLabel }}
             </h2>
             <p class="text-gray-900 dark:text-gray-300">
-              {{
-                filterType === "all"
-                  ? "You are now seeing all tweets. Including Replies, Retweets and normal Tweets."
-                  : filterType === "tweets"
-                    ? "You are now seeing only original tweets (no replies or retweets)."
-                    : filterType === "replies"
-                      ? "You are now seeing only replies to other tweets."
-                      : filterType === "threads"
-                        ? "You are now seeing only threads with multiple connected tweets."
-                        : "You are now seeing only retweets."
-              }}
+              {{ activeFilterDescription }}
             </p>
           </div>
           <!-- Sort buttons (only in normal view) -->
@@ -526,17 +508,16 @@ const {
     </div>
   </div>
 
-  <!-- Mobile Search Button (Mobile only) -->
-  <!-- Mobile Search Container (Fixed at bottom-right on small/medium screens, hidden on large) -->
+  <!-- Floating Search Button -->
   <div
-    class="fixed right-6 z-30 flex flex-col items-end gap-3 transition-all duration-300 lg:hidden"
-    :class="showScrollTop ? 'bottom-24' : 'bottom-6'"
+    class="fixed right-6 z-30 flex flex-col items-end gap-3 transition-all duration-300"
+    :class="[showScrollTop ? 'bottom-24' : 'bottom-6']"
   >
     <!-- Search Field (appears when toggled) -->
     <Transition name="slide-up">
       <div
         v-if="showMobileSearch"
-        class="mobile-search-container w-72 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800"
+        class="mobile-search-container w-72 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800 lg:w-96"
       >
         <div class="relative text-gray-300 dark:text-gray-500">
           <button
@@ -570,7 +551,7 @@ const {
     <!-- Search Toggle Button -->
     <button
       @click.stop="toggleMobileSearch()"
-      class="mobile-search-toggle rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-700 dark:hover:bg-gray-600"
+      class="mobile-search-toggle rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-700 dark:hover:bg-gray-600 lg:p-5"
       :class="{
         'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700':
           showMobileSearch,

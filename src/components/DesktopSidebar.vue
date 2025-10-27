@@ -6,7 +6,6 @@ import { faBottleWater } from "@fortawesome/free-solid-svg-icons";
 const props = defineProps({
   filterType: String,
   tweetCounts: Object,
-  searchTerm: String,
   selectionMode: Boolean,
   selectedCount: Number,
   showExportMenu: Boolean,
@@ -15,7 +14,6 @@ const props = defineProps({
 
 const emit = defineEmits([
   "setFilterType",
-  "updateSearchTerm",
   "toggleExportMenu",
   "toggleSelectionMode",
   "selectAll",
@@ -29,10 +27,6 @@ const emit = defineEmits([
 
 function setFilterType(type) {
   emit("setFilterType", type);
-}
-
-function onSearchInput(event) {
-  emit("updateSearchTerm", event.target.value);
 }
 
 function toggleExportMenu() {
@@ -51,7 +45,7 @@ function reloadPage() {
   >
     <div class="relative h-screen">
       <div class="fixed flex h-screen flex-col">
-        <div class="flex-1 px-4 py-6">
+        <div class="flex-1 overflow-y-auto px-4 py-6 pr-2 min-h-0">
           <!-- Header / Logo -->
           <h1
             @click="reloadPage"
@@ -142,43 +136,61 @@ function reloadPage() {
                     >({{ tweetCounts.threads }})</small
                   >
                 </a>
-              </li>
-            </ul>
-          </nav>
-
-          <!-- Search Input -->
-          <div class="w-100 relative text-gray-300 dark:text-gray-500">
-            <button
-              type="submit"
-              class="absolute ml-4 mr-4 mt-3 text-white dark:text-white"
-            >
-              <svg
-                class="h-4 w-4 fill-current"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                version="1.1"
-                id="Capa_1"
-                x="0px"
-                y="0px"
-                viewBox="0 0 56.966 56.966"
-                style="enable-background: new 0 0 56.966 56.966"
-                xml:space="preserve"
-                width="512px"
-                height="512px"
+            </li>
+            <li class="mt-2">
+              <a
+                @click.prevent="setFilterType('media')"
+                :class="
+                  filterType === 'media' ||
+                  filterType === 'mediaImages' ||
+                  filterType === 'mediaVideos'
+                    ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                    : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                "
+                href=""
               >
-                <path
-                  d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"
-                ></path>
-              </svg>
-            </button>
-            <input
-              class="h-10 w-full rounded-lg border-0 bg-orange-600 px-10 pr-5 text-sm text-white placeholder-white shadow focus:outline-none dark:bg-orange-600"
-              type="text"
-              :placeholder="$t('sidebar.search.placeholder')"
-              :value="searchTerm"
-              @input="onSearchInput"
-            />
-          </div>
+                {{ $t("sidebar.filters.media") }}
+                <small class="ml-2 text-sm opacity-70"
+                  >({{ tweetCounts.media }})</small
+                >
+              </a>
+              <ul class="ml-4 border-l border-orange-200 pl-4 dark:border-orange-900/40">
+                <li>
+                  <a
+                    @click.prevent="setFilterType('mediaImages')"
+                    :class="
+                      filterType === 'mediaImages'
+                        ? 'block cursor-pointer py-2 text-base font-semibold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-2 text-base font-semibold text-gray-700 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
+                    href=""
+                  >
+                    {{ $t("sidebar.filters.mediaImages") }}
+                    <small class="ml-2 text-xs opacity-70"
+                      >({{ tweetCounts.mediaImages }})</small
+                    >
+                  </a>
+                </li>
+                <li>
+                  <a
+                    @click.prevent="setFilterType('mediaVideos')"
+                    :class="
+                      filterType === 'mediaVideos'
+                        ? 'block cursor-pointer py-2 text-base font-semibold text-orange-600 dark:text-orange-600'
+                        : 'block cursor-pointer py-2 text-base font-semibold text-gray-700 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                    "
+                    href=""
+                  >
+                    {{ $t("sidebar.filters.mediaVideos") }}
+                    <small class="ml-2 text-xs opacity-70"
+                      >({{ tweetCounts.mediaVideos }})</small
+                    >
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
 
           <!-- Export & Print Actions -->
           <div class="relative mt-6">

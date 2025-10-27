@@ -40,7 +40,10 @@
       "tweets": "Tweets",
       "replies": "Antworten",
       "retweets": "Retweets",
-      "threads": "Threads"
+      "threads": "Threads",
+      "media": "Nur Medien",
+      "mediaImages": "Nur Bilder",
+      "mediaVideos": "Nur Videos/GIFs"
     },
     "reload": "Seite neu laden"
   },

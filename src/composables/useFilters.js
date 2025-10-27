@@ -7,7 +7,7 @@
  * @param {Ref<Object>} data - Reactive data object containing tweets array
  * @returns {Object} Filter state and actions
  * @returns {Ref<string>} searchTerm - Current search query
- * @returns {Ref<string>} filterType - Active filter ('all', 'tweets', 'replies', 'retweets', 'threads')
+ * @returns {Ref<string>} filterType - Active filter ('all', 'tweets', 'replies', 'retweets', 'threads', 'media', 'mediaImages', 'mediaVideos')
  * @returns {Ref<string>} sortBy - Sort field ('date', 'likes', 'retweets')
  * @returns {Ref<string>} sortDirection - Sort direction ('asc', 'desc')
  * @returns {Ref<Array>} filteredData - Filtered and sorted tweet array
@@ -31,7 +31,7 @@ const SEARCH_DEBOUNCE_MS = 150;
 
 export function useFilters(data) {
   const searchTerm = ref("");
-  const filterType = ref("all"); // 'all', 'tweets', 'replies', 'retweets', 'threads'
+  const filterType = ref("all"); // 'all', 'tweets', 'replies', 'retweets', 'threads', 'media', 'mediaImages', 'mediaVideos'
   const sortBy = ref("date"); // 'date', 'likes', 'retweets'
   const sortDirection = ref("desc"); // 'asc' or 'desc'
   const filteredData = ref([...data.value.tweets]);
@@ -98,6 +98,30 @@ export function useFilters(data) {
           // Only threads (tweets that are marked as threads)
           filtered = filtered.filter((tweet) => tweet.is_thread);
           break;
+        case "media":
+          // Tweets containing any media item
+          filtered = filtered.filter(
+            (tweet) => Array.isArray(tweet.media) && tweet.media.length > 0,
+          );
+          break;
+        case "mediaImages":
+          // Tweets containing at least one photo
+          filtered = filtered.filter(
+            (tweet) =>
+              Array.isArray(tweet.media) &&
+              tweet.media.some((item) => item?.type === "photo"),
+          );
+          break;
+        case "mediaVideos":
+          // Tweets containing video or animated GIF media
+          filtered = filtered.filter(
+            (tweet) =>
+              Array.isArray(tweet.media) &&
+              tweet.media.some(
+                (item) => item && item.type && item.type !== "photo",
+              ),
+          );
+          break;
         // 'all' - no filtering
       }
 
@@ -128,7 +152,7 @@ export function useFilters(data) {
 
   /**
    * Sets filter type and reapplies filters
-   * @param {string} type - Filter type ('all', 'tweets', 'replies', 'retweets', 'threads')
+   * @param {string} type - Filter type ('all', 'tweets', 'replies', 'retweets', 'threads', 'media', 'mediaImages', 'mediaVideos')
    */
   function setFilterType(type) {
     filterType.value = type;
@@ -185,6 +209,15 @@ export function useFilters(data) {
       (t) => t.in_reply_to_status_id && !t.full_text.startsWith("RT @"),
     );
     const retweets = all.filter((t) => t.full_text.startsWith("RT @"));
+    const mediaTweets = all.filter(
+      (t) => Array.isArray(t.media) && t.media.length > 0,
+    );
+    const mediaWithImages = mediaTweets.filter((t) =>
+      t.media.some((item) => item?.type === "photo"),
+    );
+    const mediaWithVideos = mediaTweets.filter((t) =>
+      t.media.some((item) => item && item.type && item.type !== "photo"),
+    );
 
     // Count threads: Find root tweets that start threads
     const threadRoots = all.filter((t) => {
@@ -202,6 +235,9 @@ export function useFilters(data) {
       replies: replies.length,
       retweets: retweets.length,
       threads: threadRoots.length,
+      media: mediaTweets.length,
+      mediaImages: mediaWithImages.length,
+      mediaVideos: mediaWithVideos.length,
     };
   });
 
