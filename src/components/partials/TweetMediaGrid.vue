@@ -181,7 +181,7 @@ watch(
                 y2="16"
               ></line>
             </svg>
-            <p>Media not available</p>
+            <p>{{ $t('tweet.mediaUnavailable') }}</p>
           </div>
         </div>
       </div>

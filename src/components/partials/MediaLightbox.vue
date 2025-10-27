@@ -160,7 +160,7 @@ onUnmounted(() => {
           v-else
           class="lightbox-content"
         >
-          <p class="text-white">Error: Media not found</p>
+          <p class="text-white">{{ $t('mediaLightbox.errorNotFound') }}</p>
         </div>
 
         <!-- Navigation arrows for multiple media -->

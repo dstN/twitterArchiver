@@ -1,7 +1,9 @@
 <script setup>
+import { computed } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faBottleWater } from "@fortawesome/free-solid-svg-icons";
+import { faBottleWater, faImages } from "@fortawesome/free-solid-svg-icons";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   filterType: String,
@@ -36,6 +38,8 @@ function toggleExportMenu() {
 function reloadPage() {
   emit("reloadPage");
 }
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -44,8 +48,8 @@ function reloadPage() {
     class="hidden lg:col-span-4 lg:col-start-1 lg:block xl:col-span-3 xl:col-start-2"
   >
     <div class="relative h-screen">
-      <div class="fixed flex h-screen flex-col">
-        <div class="flex-1 overflow-y-auto px-4 py-6 pr-2 min-h-0">
+      <div class="fixed z-50 flex h-screen flex-col">
+        <div class="flex-1 px-4 py-6">
           <!-- Header / Logo -->
           <h1
             @click="reloadPage"
@@ -136,64 +140,66 @@ function reloadPage() {
                     >({{ tweetCounts.threads }})</small
                   >
                 </a>
-            </li>
-            <li class="mt-2">
-              <a
-                @click.prevent="setFilterType('media')"
-                :class="
-                  filterType === 'media' ||
-                  filterType === 'mediaImages' ||
-                  filterType === 'mediaVideos'
-                    ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
-                    : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
-                "
-                href=""
-              >
-                {{ $t("sidebar.filters.media") }}
-                <small class="ml-2 text-sm opacity-70"
-                  >({{ tweetCounts.media }})</small
+              </li>
+              <li class="mt-2">
+                <a
+                  @click.prevent="setFilterType('media')"
+                  :class="
+                    filterType === 'media' ||
+                    filterType === 'mediaImages' ||
+                    filterType === 'mediaVideos'
+                      ? 'block cursor-pointer py-4 text-xl font-bold text-orange-600 dark:text-orange-600'
+                      : 'block cursor-pointer py-4 text-xl font-bold text-gray-900 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                  "
+                  href=""
                 >
-              </a>
-              <ul class="ml-4 border-l border-orange-200 pl-4 dark:border-orange-900/40">
-                <li>
-                  <a
-                    @click.prevent="setFilterType('mediaImages')"
-                    :class="
-                      filterType === 'mediaImages'
-                        ? 'block cursor-pointer py-2 text-base font-semibold text-orange-600 dark:text-orange-600'
-                        : 'block cursor-pointer py-2 text-base font-semibold text-gray-700 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
-                    "
-                    href=""
+                  {{ $t("sidebar.filters.media") }}
+                  <small class="ml-2 text-sm opacity-70"
+                    >({{ tweetCounts.media }})</small
                   >
-                    {{ $t("sidebar.filters.mediaImages") }}
-                    <small class="ml-2 text-xs opacity-70"
-                      >({{ tweetCounts.mediaImages }})</small
+                </a>
+                <ul
+                  class="ml-4 border-l-2 border-orange-600 pl-4 dark:border-orange-600"
+                >
+                  <li>
+                    <a
+                      @click.prevent="setFilterType('mediaImages')"
+                      :class="
+                        filterType === 'mediaImages'
+                          ? 'block cursor-pointer py-2 text-base font-semibold text-orange-600 dark:text-orange-600'
+                          : 'block cursor-pointer py-2 text-base font-semibold text-gray-700 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      "
+                      href=""
                     >
-                  </a>
-                </li>
-                <li>
-                  <a
-                    @click.prevent="setFilterType('mediaVideos')"
-                    :class="
-                      filterType === 'mediaVideos'
-                        ? 'block cursor-pointer py-2 text-base font-semibold text-orange-600 dark:text-orange-600'
-                        : 'block cursor-pointer py-2 text-base font-semibold text-gray-700 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
-                    "
-                    href=""
-                  >
-                    {{ $t("sidebar.filters.mediaVideos") }}
-                    <small class="ml-2 text-xs opacity-70"
-                      >({{ tweetCounts.mediaVideos }})</small
+                      {{ $t("sidebar.filters.mediaImages") }}
+                      <small class="ml-2 text-xs opacity-70"
+                        >({{ tweetCounts.mediaImages }})</small
+                      >
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      @click.prevent="setFilterType('mediaVideos')"
+                      :class="
+                        filterType === 'mediaVideos'
+                          ? 'block cursor-pointer py-2 text-base font-semibold text-orange-600 dark:text-orange-600'
+                          : 'block cursor-pointer py-2 text-base font-semibold text-gray-700 hover:text-orange-600 dark:text-gray-300 dark:hover:text-orange-600'
+                      "
+                      href=""
                     >
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
+                      {{ $t("sidebar.filters.mediaVideos") }}
+                      <small class="ml-2 text-xs opacity-70"
+                        >({{ tweetCounts.mediaVideos }})</small
+                      >
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
 
           <!-- Export & Print Actions -->
-          <div class="relative mt-6">
+          <div class="mt-6">
             <button
               @click="toggleExportMenu"
               class="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-3 text-white transition-all hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
@@ -220,199 +226,6 @@ function reloadPage() {
                 {{ selectedCount }}
               </span>
             </button>
-
-            <!-- Dropdown Menu -->
-            <Transition name="fade-scale">
-              <div
-                v-if="showExportMenu"
-                class="absolute left-0 right-0 top-full z-10 mt-2 overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-700"
-              >
-                <!-- Selection Mode Toggle -->
-                <button
-                  @click="$emit('toggleSelectionMode')"
-                  class="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
-                  :class="
-                    selectionMode
-                      ? 'bg-orange-50 text-orange-600 dark:bg-orange-900/20'
-                      : 'text-gray-700 dark:text-gray-200'
-                  "
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                    />
-                  </svg>
-                  <div class="flex-1">
-                    <div class="font-medium">
-                      {{
-                        selectionMode
-                          ? $t("sidebar.export.selectionMode")
-                          : $t("sidebar.export.selectTweets")
-                      }}
-                    </div>
-                    <div class="text-xs opacity-70">
-                      {{
-                        selectionMode
-                          ? $t("sidebar.export.selectedCount", [selectedCount])
-                          : $t("sidebar.export.clickToSelect")
-                      }}
-                    </div>
-                  </div>
-                </button>
-
-                <!-- Select All/Deselect All (only in selection mode) -->
-                <div
-                  v-if="selectionMode"
-                  class="flex border-t border-gray-200 dark:border-gray-600"
-                >
-                  <button
-                    @click="$emit('selectAll')"
-                    class="flex-1 border-r border-gray-200 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
-                  >
-                    {{ $t("sidebar.export.selectAll") }}
-                  </button>
-                  <button
-                    @click="$emit('deselectAll')"
-                    class="flex-1 px-3 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
-                  >
-                    {{ $t("sidebar.export.deselectAll") }}
-                  </button>
-                </div>
-
-                <div
-                  class="border-t border-gray-200 dark:border-gray-600"
-                ></div>
-
-                <!-- Include Media Toggle -->
-                <button
-                  @click="$emit('toggleIncludeMedia')"
-                  class="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 10l4.553-4.553a1.414 1.414 0 10-2-2L13 8m2 2l-6 6m6-6l-2-2m-4 8l-4 4"
-                    />
-                  </svg>
-                  <div class="flex items-center gap-2">
-                    <input type="checkbox" :checked="includeMedia" readonly />
-                    <div class="font-medium">Include media files (ZIP)</div>
-                  </div>
-                </button>
-
-                <!-- Export JSON -->
-                <button
-                  @click="$emit('exportJSON', includeMedia)"
-                  :disabled="selectionMode && selectedCount === 0"
-                  class="flex w-full items-center gap-3 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-200 dark:hover:bg-gray-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <div>
-                    <div class="font-medium">
-                      {{ $t("sidebar.export.exportJSON") }}
-                    </div>
-                    <div class="text-xs opacity-70">
-                      {{
-                        selectionMode && selectedCount > 0
-                          ? $t("sidebar.export.selectedCount", [selectedCount])
-                          : $t("sidebar.filters.all")
-                      }}
-                    </div>
-                  </div>
-                </button>
-
-                <!-- Export CSV -->
-                <button
-                  @click="$emit('exportCSV', includeMedia)"
-                  :disabled="selectionMode && selectedCount === 0"
-                  class="flex w-full items-center gap-3 border-t border-gray-200 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  <div>
-                    <div class="font-medium">
-                      {{ $t("sidebar.export.exportCSV") }}
-                    </div>
-                    <div class="text-xs opacity-70">
-                      {{
-                        selectionMode && selectedCount > 0
-                          ? $t("sidebar.export.selectedCount", [selectedCount])
-                          : $t("sidebar.filters.all")
-                      }}
-                    </div>
-                  </div>
-                </button>
-
-                <!-- Print -->
-                <button
-                  @click="$emit('printTweets', includeMedia)"
-                  class="flex w-full items-center gap-3 border-t border-gray-200 px-4 py-3 text-left text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                    />
-                  </svg>
-                  <div>
-                    <div class="font-medium">
-                      {{ $t("sidebar.export.print") }}
-                    </div>
-                    <div class="text-xs opacity-70">Print or save as PDF</div>
-                  </div>
-                </button>
-              </div>
-            </Transition>
           </div>
         </div>
 
@@ -430,7 +243,9 @@ function reloadPage() {
                 :icon="faBottleWater"
                 class="h-5 w-5"
               />
-              <span class="font-medium">Buy me a Red Bull</span>
+              <span class="font-medium">
+                {{ $t("sidebar.support.buyMeCoffee") }}
+              </span>
             </a>
           </div>
           <!-- GitHub Link -->
@@ -445,10 +260,315 @@ function reloadPage() {
                 :icon="faGithub"
                 class="h-5 w-5"
               />
-              <span class="font-medium">View on GitHub</span>
+              <span class="font-medium">
+                {{ $t("sidebar.support.viewOnGitHub") }}
+              </span>
             </a>
           </div>
         </div>
+
+        <!-- Export Overlay -->
+        <Transition name="fade-scale">
+          <div
+            v-if="showExportMenu"
+            class="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm"
+            @click.self="toggleExportMenu"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              class="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-800"
+            >
+              <div
+                class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-700"
+              >
+                <h3
+                  class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                >
+                  {{ $t("sidebar.export.button") }}
+                </h3>
+                <button
+                  type="button"
+                  @click="toggleExportMenu"
+                  class="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                  aria-label="Close export menu"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="space-y-4 px-6 py-6">
+                <div
+                  class="flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors"
+                  :class="
+                    selectionMode
+                      ? 'border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-900/20 dark:text-orange-300'
+                      : 'border-gray-200 text-gray-700 hover:border-orange-400 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-200 dark:hover:border-orange-500 dark:hover:bg-orange-900/20'
+                  "
+                >
+                  <button
+                    type="button"
+                    class="flex flex-1 items-start gap-3 text-left"
+                    :disabled="selectionMode"
+                    @click="selectionMode ? null : $emit('toggleSelectionMode')"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="mt-1 h-5 w-5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                      />
+                    </svg>
+                    <div class="flex-1 pr-2">
+                      <div class="font-semibold">
+                        {{
+                          selectionMode
+                            ? $t("sidebar.export.selectionMode")
+                            : $t("sidebar.export.selectTweets")
+                        }}
+                      </div>
+                      <div class="text-sm opacity-80">
+                        {{
+                          selectionMode
+                            ? $t("sidebar.export.selectedCount", [
+                                selectedCount,
+                              ])
+                            : $t("sidebar.export.clickToSelect")
+                        }}
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    v-if="selectionMode"
+                    type="button"
+                    @click="$emit('toggleSelectionMode')"
+                    class="ml-auto flex h-9 w-9 items-center justify-center self-center rounded-full text-orange-600 transition-colors hover:bg-orange-100 dark:text-orange-300 dark:hover:bg-orange-900/40"
+                    :aria-label="$t('sidebar.export.closeSelectionMode')"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div
+                  v-if="selectionMode"
+                  class="flex gap-3 rounded-xl bg-gray-50 p-3 dark:bg-gray-700/40"
+                >
+                  <button
+                    type="button"
+                    @click="$emit('selectAll')"
+                    class="flex-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    {{ $t("sidebar.export.selectAll") }}
+                  </button>
+                  <button
+                    type="button"
+                    @click="$emit('deselectAll')"
+                    class="flex-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
+                    {{ $t("sidebar.export.deselectAll") }}
+                  </button>
+                </div>
+
+                <div
+                  class="flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors"
+                  :class="
+                    includeMedia
+                      ? 'border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-900/20 dark:text-orange-300'
+                      : 'border-gray-200 text-gray-700 hover:border-orange-400 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-200 dark:hover:border-orange-500 dark:hover:bg-orange-900/20'
+                  "
+                >
+                  <button
+                    type="button"
+                    class="flex flex-1 items-start gap-3 text-left"
+                    :disabled="includeMedia"
+                    @click="includeMedia ? null : $emit('toggleIncludeMedia')"
+                  >
+                    <font-awesome-icon
+                      :icon="faImages"
+                      :class="
+                        includeMedia
+                          ? 'mt-1 h-5 w-5 flex-shrink-0 text-orange-600 dark:text-orange-300'
+                          : 'mt-1 h-5 w-5 flex-shrink-0 text-gray-500 dark:text-gray-300'
+                      "
+                    />
+                    <div class="flex-1 pr-2">
+                      <div class="font-semibold">
+                        {{ $t("sidebar.export.includeMedia") }}
+                      </div>
+                      <div class="text-sm opacity-80">
+                        {{ $t("sidebar.export.includeMediaDescription") }}
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    v-if="includeMedia"
+                    type="button"
+                    @click="$emit('toggleIncludeMedia')"
+                    class="ml-auto flex h-9 w-9 items-center justify-center self-center rounded-full text-orange-600 transition-colors hover:bg-orange-100 dark:text-orange-300 dark:hover:bg-orange-900/40"
+                    :aria-label="$t('sidebar.export.disableIncludeMedia')"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="space-y-3">
+                  <button
+                    type="button"
+                    @click="$emit('exportJSON', includeMedia)"
+                    :disabled="selectionMode && selectedCount === 0"
+                    class="flex w-full items-center gap-3 rounded-xl border border-gray-200 px-4 py-4 text-left text-gray-800 transition-colors hover:border-orange-500 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-100 dark:hover:border-orange-500 dark:hover:bg-orange-900/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <div>
+                      <div class="font-semibold">
+                        {{ $t("sidebar.export.exportJSON") }}
+                      </div>
+                      <div class="text-sm opacity-70">
+                        {{
+                          selectionMode && selectedCount > 0
+                            ? $t("sidebar.export.selectedCount", [
+                                selectedCount,
+                              ])
+                            : $t("sidebar.filters.all")
+                        }}
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="$emit('exportCSV', includeMedia)"
+                    :disabled="selectionMode && selectedCount === 0"
+                    class="flex w-full items-center gap-3 rounded-xl border border-gray-200 px-4 py-4 text-left text-gray-800 transition-colors hover:border-orange-500 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-600 dark:text-gray-100 dark:hover:border-orange-500 dark:hover:bg-orange-900/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    <div>
+                      <div class="font-semibold">
+                        {{ $t("sidebar.export.exportCSV") }}
+                      </div>
+                      <div class="text-sm opacity-70">
+                        {{
+                          selectionMode && selectedCount > 0
+                            ? $t("sidebar.export.selectedCount", [
+                                selectedCount,
+                              ])
+                            : $t("sidebar.filters.all")
+                        }}
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="$emit('printTweets', includeMedia)"
+                    class="flex w-full items-center gap-3 rounded-xl border border-gray-200 px-4 py-4 text-left text-gray-800 transition-colors hover:border-orange-500 hover:bg-orange-50 dark:border-gray-600 dark:text-gray-100 dark:hover:border-orange-500 dark:hover:bg-orange-900/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                      />
+                    </svg>
+                    <div>
+                      <div class="font-semibold">
+                        {{ $t("sidebar.export.print") }}
+                      </div>
+                      <div class="text-sm opacity-70">
+                        {{
+                          selectionMode && selectedCount > 0
+                            ? $t("sidebar.export.selectedCount", [
+                                selectedCount,
+                              ])
+                            : $t("sidebar.export.printDescription")
+                        }}
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Transition>
       </div>
     </div>
   </div>

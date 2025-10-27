@@ -32,7 +32,12 @@
       "deselectAll": "Alle abwählen",
       "exportJSON": "Als JSON exportieren",
       "exportCSV": "Als CSV exportieren",
-      "print": "Tweets drucken"
+      "print": "Tweets drucken",
+      "includeMedia": "Medien-Dateien hinzufügen (ZIP)",
+      "includeMediaDescription": "Fügt Bilder, Videos und GIFs den Exporten hinzu.",
+      "disableIncludeMedia": "Medienanhänge entfernen",
+      "closeSelectionMode": "Auswahlmodus deaktivieren",
+      "printDescription": "Drucken oder als PDF speichern"
     },
     "filters": {
       "title": "Filter",
@@ -45,7 +50,40 @@
       "mediaImages": "Nur Bilder",
       "mediaVideos": "Nur Videos/GIFs"
     },
-    "reload": "Seite neu laden"
+    "reload": "Seite neu laden",
+    "support": {
+      "buyMeCoffee": "Spendier mir einen Red Bull",
+      "viewOnGitHub": "Auf GitHub ansehen",
+      "languageToggle": "Sprache wechseln (aktuell: {locale})"
+    }
+  },
+  "mobile": {
+    "bottomBar": {
+      "lightMode": "In den hellen Modus wechseln",
+      "darkMode": "In den dunklen Modus wechseln",
+      "languageToggle": "Sprache wechseln (aktuell: {locale})",
+      "languageCurrent": "Aktuelle Sprache: {locale}"
+    }
+  },
+  "toolbar": {
+    "darkModeLight": "In den hellen Modus wechseln",
+    "darkModeDark": "In den dunklen Modus wechseln",
+    "languageToggle": "Sprache wechseln (aktuell: {locale})"
+  },
+  "export": {
+    "types": {
+      "tweet": "Tweet",
+      "retweet": "Retweet",
+      "reply": "Antwort"
+    },
+    "headers": {
+      "date": "Datum",
+      "type": "Typ",
+      "text": "Text",
+      "likes": "Likes",
+      "retweets": "Retweets",
+      "url": "URL"
+    }
   },
   "content": {
     "case-sensitive": "Groß-/Kleinschreibung beachten",
@@ -54,6 +92,27 @@
       "dateAsc": "nach Datum aufsteigend",
       "likes": "nach Likes",
       "retweets": "nach Retweets"
+    },
+    "sortLabels": {
+      "date": "Datum",
+      "likes": "Likes",
+      "retweets": "Retweets",
+      "retweetsShort": "RTs"
+    },
+    "filterDescriptions": {
+      "all": "Du siehst jetzt alle Tweets, inklusive Antworten, Retweets und normaler Tweets.",
+      "tweets": "Du siehst jetzt nur originale Tweets (keine Antworten oder Retweets).",
+      "replies": "Du siehst jetzt nur Antworten auf andere Tweets.",
+      "retweets": "Du siehst jetzt nur Retweets.",
+      "threads": "Du siehst jetzt nur Threads mit mehreren verbundenen Tweets.",
+      "media": "Du siehst jetzt nur Tweets mit Medienanhängen.",
+      "mediaImages": "Du siehst jetzt nur Tweets mit Bildern.",
+      "mediaVideos": "Du siehst jetzt nur Tweets mit Videos oder GIFs."
+    },
+    "thread": {
+      "title": "Thread-Ansicht",
+      "backTo": "Zurück zu {filter}",
+      "viewingCount": "Du siehst {count} Tweets in diesem Thread"
     },
     "notFound": "Keine Tweets für den Suchbegriff gefunden: {0}",
     "allLoaded": "Du hast das Ende erreicht! Alle Tweets geladen."
@@ -71,8 +130,24 @@
       "linkCopied": "Link kopiert!",
       "bluesky": "Auf Bluesky teilen",
       "mastodon": "Auf Mastodon teilen",
-      "threads": "Auf Threads teilen"
-    }
+      "threads": "Auf Threads teilen",
+      "copyTweet": "Tweet kopieren",
+      "copyText": "Text kopieren",
+      "copyThread": "Gesamten Thread kopieren ({count} Tweets)",
+      "shareToPlatform": "Auf Plattform teilen:",
+      "platforms": {
+        "bluesky": "Bluesky",
+        "threads": "Threads",
+        "mastodon": "Mastodon",
+        "linkedin": "LinkedIn"
+      },
+      "openMenu": "Tweet teilen",
+      "mastodonReminder": "Text kopiert! Füge ihn in deiner Mastodon-Instanz ein."
+    },
+    "mediaUnavailable": "Medien nicht verfügbar"
+  },
+  "mediaLightbox": {
+    "errorNotFound": "Fehler: Medium nicht gefunden"
   },
   "aria": {
     "toggleDarkMode": "Dunkelmodus umschalten",

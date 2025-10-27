@@ -1,5 +1,6 @@
 <script setup>
 import { ref, toRefs, computed, onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 import Tweet from "./partials/Tweet.vue";
 import TheMobileMenu from "./TheMobileMenu.vue";
 import DesktopSidebar from "./DesktopSidebar.vue";
@@ -146,34 +147,39 @@ const {
   user,
 );
 
-const filterLabels = {
-  all: "All Tweets",
-  tweets: "Only Tweets",
-  replies: "Only Replies",
-  retweets: "Only Retweets",
-  threads: "Only Threads",
-  media: "Only Media",
-  mediaImages: "Only Images",
-  mediaVideos: "Only Videos/GIFs",
+const { t } = useI18n();
+
+const filterLabelKeyMap = {
+  all: "sidebar.filters.all",
+  tweets: "sidebar.filters.tweets",
+  replies: "sidebar.filters.replies",
+  retweets: "sidebar.filters.retweets",
+  threads: "sidebar.filters.threads",
+  media: "sidebar.filters.media",
+  mediaImages: "sidebar.filters.mediaImages",
+  mediaVideos: "sidebar.filters.mediaVideos",
 };
 
-const filterDescriptions = {
-  all: "You are now seeing all tweets. Including Replies, Retweets and normal Tweets.",
-  tweets: "You are now seeing only original tweets (no replies or retweets).",
-  replies: "You are now seeing only replies to other tweets.",
-  retweets: "You are now seeing only retweets.",
-  threads: "You are now seeing only threads with multiple connected tweets.",
-  media: "You are now seeing only tweets that include media attachments.",
-  mediaImages: "You are now seeing only tweets that include images.",
-  mediaVideos: "You are now seeing only tweets that include videos or GIFs.",
+const filterDescriptionKeyMap = {
+  all: "content.filterDescriptions.all",
+  tweets: "content.filterDescriptions.tweets",
+  replies: "content.filterDescriptions.replies",
+  retweets: "content.filterDescriptions.retweets",
+  threads: "content.filterDescriptions.threads",
+  media: "content.filterDescriptions.media",
+  mediaImages: "content.filterDescriptions.mediaImages",
+  mediaVideos: "content.filterDescriptions.mediaVideos",
 };
 
 const activeFilterLabel = computed(() => {
-  return filterLabels[filterType.value] || filterLabels.all;
+  const key = filterLabelKeyMap[filterType.value] || filterLabelKeyMap.all;
+  return t(key);
 });
 
 const activeFilterDescription = computed(() => {
-  return filterDescriptions[filterType.value] || filterDescriptions.all;
+  const key =
+    filterDescriptionKeyMap[filterType.value] || filterDescriptionKeyMap.all;
+  return t(key);
 });
 </script>
 
@@ -277,15 +283,15 @@ const activeFilterDescription = computed(() => {
                   clip-rule="evenodd"
                 />
               </svg>
-              Back to {{ activeFilterLabel }}
+              {{ t('content.thread.backTo', { filter: activeFilterLabel }) }}
             </button>
             <h2
               class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              Thread View
+              {{ t('content.thread.title') }}
             </h2>
             <p class="text-gray-900 dark:text-gray-300">
-              Viewing {{ threadTweets.length }} tweets in this thread
+              {{ t('content.thread.viewingCount', { count: threadTweets.length }) }}
             </p>
           </div>
           <!-- Normal View Header (Desktop only) -->
@@ -321,7 +327,7 @@ const activeFilterDescription = computed(() => {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
             >
-              <span>Date</span>
+              <span>{{ t('content.sortLabels.date') }}</span>
               <svg
                 v-if="sortBy === 'date'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -350,7 +356,7 @@ const activeFilterDescription = computed(() => {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
             >
-              <span>Likes</span>
+              <span>{{ t('content.sortLabels.likes') }}</span>
               <svg
                 v-if="sortBy === 'likes'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -378,10 +384,10 @@ const activeFilterDescription = computed(() => {
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
-              title="Retweets"
+              :title="t('content.sortLabels.retweets')"
             >
-              <span class="sm:hidden">RTs</span>
-              <span class="hidden sm:inline">Retweets</span>
+              <span class="sm:hidden">{{ t('content.sortLabels.retweetsShort') }}</span>
+              <span class="hidden sm:inline">{{ t('content.sortLabels.retweets') }}</span>
               <svg
                 v-if="sortBy === 'retweets'"
                 xmlns="http://www.w3.org/2000/svg"

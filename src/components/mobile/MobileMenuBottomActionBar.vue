@@ -1,7 +1,9 @@
 <script setup>
+import { computed } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faBottleWater } from "@fortawesome/free-solid-svg-icons";
+import { faBottleWater, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   isDarkMode: Boolean,
@@ -11,6 +13,20 @@ const emit = defineEmits(["toggleDarkMode"]);
 
 function toggleDarkMode() {
   emit("toggleDarkMode");
+}
+
+const { t, locale } = useI18n();
+
+const availableLocales = ["en", "de"];
+
+const currentLocaleLabel = computed(() => locale.value.toUpperCase());
+
+function toggleLocale() {
+  const currentIndex = availableLocales.indexOf(locale.value);
+  const nextLocale =
+    availableLocales[(currentIndex + 1) % availableLocales.length];
+  locale.value = nextLocale;
+  localStorage.setItem("locale", nextLocale);
 }
 </script>
 
@@ -22,7 +38,8 @@ function toggleDarkMode() {
       <button
         @click="toggleDarkMode"
         class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-colors hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
-        :title="isDarkMode ? 'Light Mode' : 'Dark Mode'"
+        :title="isDarkMode ? t('mobile.bottomBar.lightMode') : t('mobile.bottomBar.darkMode')"
+        :aria-label="isDarkMode ? t('mobile.bottomBar.lightMode') : t('mobile.bottomBar.darkMode')"
       >
         <svg
           v-if="!isDarkMode"
@@ -50,13 +67,28 @@ function toggleDarkMode() {
         </svg>
       </button>
 
+      <!-- Language Toggle -->
+      <button
+        @click="toggleLocale"
+        class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-colors hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
+        :title="t('mobile.bottomBar.languageToggle', { locale: currentLocaleLabel })"
+        :aria-label="t('mobile.bottomBar.languageToggle', { locale: currentLocaleLabel })"
+      >
+        <font-awesome-icon
+          :icon="faGlobe"
+          class="h-5 w-5"
+        />
+        <span class="sr-only">{{ t('mobile.bottomBar.languageCurrent', { locale: currentLocaleLabel }) }}</span>
+      </button>
+
       <!-- Ko-fi Link -->
       <a
         href="https://ko-fi.com/dstn"
         target="_blank"
         rel="noopener noreferrer"
         class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-all hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
-        title="Buy me a Red Bull"
+        :title="t('sidebar.support.buyMeCoffee')"
+        :aria-label="t('sidebar.support.buyMeCoffee')"
       >
         <font-awesome-icon
           :icon="faBottleWater"
@@ -70,7 +102,8 @@ function toggleDarkMode() {
         target="_blank"
         rel="noopener noreferrer"
         class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-all hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
-        title="View on GitHub"
+        :title="t('sidebar.support.viewOnGitHub')"
+        :aria-label="t('sidebar.support.viewOnGitHub')"
       >
         <font-awesome-icon
           :icon="faGithub"

@@ -25,6 +25,7 @@
  */
 
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 // Lazy-load zip.js writers so we only pay the cost when a media export is requested.
 let zipWriters = null;
@@ -86,18 +87,18 @@ function stripHtml(html) {
     .trim();
 }
 
-function determineTweetType(tweet) {
-  if (!tweet) return "Tweet";
+function determineTweetTypeKey(tweet) {
+  if (!tweet) return "tweet";
 
   if (typeof tweet.full_text === "string" && tweet.full_text.startsWith("RT @")) {
-    return "Retweet";
+    return "retweet";
   }
 
   if (tweet.in_reply_to_status_id) {
-    return "Reply";
+    return "reply";
   }
 
-  return "Tweet";
+  return "tweet";
 }
 
 function sanitiseMedia(media) {
@@ -124,15 +125,16 @@ function stripBlobUrls(record) {
   );
 }
 
-function sanitiseTweetForExport(tweet) {
+function sanitiseTweetForExport(tweet, translate) {
   const htmlText = tweet.full_text || "";
   const plainText = stripHtml(htmlText);
   const media = sanitiseMedia(tweet.media);
+  const typeKey = determineTweetTypeKey(tweet);
 
   return {
     id: tweet.id,
     created_at: toISODate(tweet.created_at),
-    type: determineTweetType(tweet),
+    type: translate(`export.types.${typeKey}`),
     text: plainText,
     html: htmlText,
     likes: normaliseCount(tweet.likes),
@@ -296,7 +298,9 @@ function buildExportPayload(
   threadView,
   filterType,
 ) {
-  const cleanedTweets = tweetsToExport.map(sanitiseTweetForExport);
+  const cleanedTweets = tweetsToExport.map((tweet) =>
+    sanitiseTweetForExport(tweet, t),
+  );
   const sanitisedUser = sanitiseUserForExport(userRef.value);
 
   return {
@@ -349,8 +353,10 @@ export function useExport(
   filterType,
   user,
 ) {
-  const showExportMenu = ref(false);
-  const includeMedia = ref(false);
+const showExportMenu = ref(false);
+const includeMedia = ref(false);
+
+const { t } = useI18n();
 
   function toggleIncludeMedia() {
     includeMedia.value = !includeMedia.value;
@@ -430,7 +436,14 @@ export function useExport(
       filterType,
     );
 
-    const headers = ["Date", "Type", "Text", "Likes", "Retweets", "URL"];
+    const headers = [
+      t("export.headers.date"),
+      t("export.headers.type"),
+      t("export.headers.text"),
+      t("export.headers.likes"),
+      t("export.headers.retweets"),
+      t("export.headers.url"),
+    ];
     const rows = payload.cleanedTweets.map((tweet) => [
       tweet.created_at ?? "",
       tweet.type,

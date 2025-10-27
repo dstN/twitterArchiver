@@ -26,7 +26,7 @@ function handleProgress(update) {
     class="relative min-h-full bg-slate-300 transition-colors duration-200 dark:bg-gray-900"
   >
     <!-- Dark Mode Toggle - Always visible on Dropzone, hidden on mobile for Content -->
-    <TheDarkModeToggle :class="data ? 'hidden lg:block' : ''" />
+    <TheDarkModeToggle :class="data ? 'hidden lg:inline-flex' : ''" />
     <TheSpinner
       v-if="loading"
       :progress="loadProgress"
