@@ -21,8 +21,8 @@
 
 - **Web Worker Pipeline**: Move heavy filtering/sorting into a worker to keep
   the UI responsive with very large archives.
-- **Streaming Archive Handling**: Explore JSZip’s lazy modes or alternative
-  libraries to stream large archives and reduce memory peaks.
+- **Streaming Archive Handling**: Leverage zip.js streaming APIs to handle
+  large archives without exhausting browser memory.
 
 ## UX Extras
 

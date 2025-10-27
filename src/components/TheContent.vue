@@ -77,7 +77,8 @@ function toggleSelectionModeLocal() {
 }
 
 function selectAllDisplayedTweets() {
-  selectAllTweets(displayedTweets.value);
+  const sourceTweets = threadView.value ? threadTweets.value : displayedTweets.value;
+  selectAllTweets(sourceTweets);
 }
 
 function handleSearchTermUpdate(value) {
@@ -167,7 +168,7 @@ const {
     @toggle-dark-mode="toggleDarkMode"
     @export-j-s-o-n="(val) => exportAsJSON(val)"
     @export-c-s-v="(val) => exportAsCSV(val)"
-    @print="printTweets"
+    @print="(val) => printTweets(val)"
     @toggle-selection-mode="toggleSelectionModeLocal"
     @select-all="selectAllDisplayedTweets"
     @deselect-all="deselectAllTweets"
@@ -190,9 +191,9 @@ const {
       @toggle-selection-mode="toggleSelectionModeLocal"
       @select-all="selectAllDisplayedTweets"
       @deselect-all="deselectAllTweets"
-      @export-j-s-o-n="(val) => exportAsJSON(val)"
-      @export-c-s-v="(val) => exportAsCSV(val)"
-      @print-tweets="printTweets"
+  @export-j-s-o-n="(val) => exportAsJSON(val)"
+  @export-c-s-v="(val) => exportAsCSV(val)"
+  @print-tweets="(val) => printTweets(val)"
       @reload-page="reloadPage"
     />
 
@@ -420,27 +421,43 @@ const {
       </div>
 
       <!-- Thread View -->
-      <template v-if="threadView">
-        <div class="tweets-list">
-          <div
-            v-for="(item, index) in threadTweets"
-            :key="item.id"
-            class="border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
-            :class="{
-              'bg-orange-50 dark:bg-orange-900/20':
-                item.id === threadView.originTweet.id,
-            }"
-          >
-            <Tweet
-              :data="item"
-              :user="user"
-              :thread-tweets="threadTweets"
-              :in-thread-view="true"
-              @get-thread="getThread"
-            />
+        <template v-if="threadView">
+          <div class="tweets-list">
+            <div
+              v-for="(item, index) in threadTweets"
+              :key="item.id"
+              class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+              :class="{
+                'bg-orange-50 dark:bg-orange-900/20':
+                  item.id === threadView.originTweet.id,
+                'ring-2 ring-inset ring-orange-600':
+                  selectionMode && isSelected(item.id),
+              }"
+            >
+              <div
+                v-if="selectionMode"
+                class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
+              >
+                <input
+                  type="checkbox"
+                  :checked="isSelected(item.id)"
+                  @change="toggleTweetSelection(item.id)"
+                  class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
+                />
+              </div>
+
+              <div :class="{ 'ml-12': selectionMode }">
+                <Tweet
+                  :data="item"
+                  :user="user"
+                  :thread-tweets="threadTweets"
+                  :in-thread-view="true"
+                  @get-thread="getThread"
+                />
+              </div>
+            </div>
           </div>
-        </div>
-      </template>
+        </template>
 
       <!-- Normal View -->
       <template v-else-if="displayedTweets.length > 0">

@@ -1,7 +1,7 @@
 <script setup>
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faMugHot } from "@fortawesome/free-solid-svg-icons";
+import { faBottleWater } from "@fortawesome/free-solid-svg-icons";
 
 const props = defineProps({
   isDarkMode: Boolean,
@@ -59,7 +59,7 @@ function toggleDarkMode() {
         title="Buy me a Red Bull"
       >
         <font-awesome-icon
-          :icon="faMugHot"
+          :icon="faBottleWater"
           class="h-5 w-5"
         />
       </a>

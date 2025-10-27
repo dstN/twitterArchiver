@@ -7,12 +7,15 @@ const LOGGER = new Logger("TweetProcessor");
 /**
  * Extracts and processes all tweets from the archive
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - The loaded ZipArchive instance
  * @param {string} accountId - User's account ID for thread detection
+ * @param {{lazyMedia?: boolean, onProgress?: Function}} [options]
  * @returns {Promise<Array>} Array of processed tweet objects
  * @throws {Error} If tweet file not found or data is invalid
  */
-export async function getTweets(zipData, accountId) {
+export async function getTweets(zipData, accountId, options = {}) {
+  const { lazyMedia = false, onProgress } = options;
+
   // Check for both possible tweet file names
   const tweetFileExists = fileExistsInZip(zipData, "data/tweet.js");
   const tweetsFileExists = fileExistsInZip(zipData, "data/tweets.js");
@@ -24,13 +27,36 @@ export async function getTweets(zipData, accountId) {
   }
 
   const tweetsFile = tweetFileExists ? "tweet.js" : "tweets.js";
-
   const fileName = tweetsFile.substring(0, tweetsFile.lastIndexOf("."));
   const tweets = await getFileFromZip(zipData, tweetsFile);
 
   if (!Array.isArray(tweets)) {
     throw new Error("Tweet data is not in expected array format");
   }
+
+  const totalTweets = tweets.length;
+  const totalMedia = tweets.reduce(
+    (sum, tweet) => sum + (tweet.extended_entities?.media?.length || 0),
+    0,
+  );
+
+  let processedTweets = 0;
+  let processedMedia = 0;
+
+  const emitProgress = () => {
+    if (typeof onProgress !== "function") return;
+    onProgress({
+      stage: "tweets",
+      current: processedTweets,
+      total: totalTweets,
+      media: {
+        current: processedMedia,
+        total: totalMedia,
+      },
+    });
+  };
+
+  emitProgress();
 
   // Process each tweet
   for (let tweet of tweets) {
@@ -55,6 +81,18 @@ export async function getTweets(zipData, accountId) {
         tweet.id,
         tweet.extended_entities.media,
         fileName,
+        {
+          lazy: lazyMedia,
+          onMediaProcessed: () => {
+            processedMedia += 1;
+            if (
+              typeof onProgress === "function" &&
+              (processedMedia === totalMedia || processedMedia % 25 === 0)
+            ) {
+              emitProgress();
+            }
+          },
+        },
       );
       // Remove media URL from tweet text
       tweet.full_text = tweet.full_text.replaceAll(
@@ -65,7 +103,21 @@ export async function getTweets(zipData, accountId) {
 
     // Check if tweet is part of a thread
     tweet.is_thread = checkForThread(tweets, tweet, accountId);
+
+    processedTweets += 1;
+    if (
+      typeof onProgress === "function" &&
+      (processedTweets === totalTweets || processedTweets % 50 === 0)
+    ) {
+      emitProgress();
+    }
+
+    if (lazyMedia && processedTweets % 250 === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
   }
+
+  emitProgress();
 
   // Return normalized tweet objects
   return tweets.map((tweet) => ({

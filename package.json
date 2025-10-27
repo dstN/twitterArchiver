@@ -14,7 +14,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/vue-fontawesome": "^3.1.2",
     "debug": "^4.3.4",
-    "jszip": "^3.10.1",
+    "@zip.js/zip.js": "^2.7.34",
     "twemoji": "^14.0.2",
     "vue": "^3.4.27",
     "vue-i18n": "9.13.1"

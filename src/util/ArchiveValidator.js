@@ -6,7 +6,7 @@ const LOGGER = new Logger("ArchiveValidator");
 /**
  * Validates the structure of a Twitter archive ZIP file
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - The loaded ZipArchive instance
  * @returns {{isValid: boolean, errors: string[], warnings: string[]}} Validation result
  */
 export function validateArchiveStructure(zipData) {
@@ -14,12 +14,12 @@ export function validateArchiveStructure(zipData) {
   const warnings = [];
 
   // Basic structure validation
-  if (!zipData || !zipData.files) {
+  if (!zipData) {
     errors.push("Invalid ZIP data structure");
     return { isValid: false, errors, warnings };
   }
 
-  const fileList = Object.keys(zipData.files);
+  const fileList = zipData.listFiles();
 
   // Check for data directory
   const dataFiles = fileList.filter((f) => f.startsWith("data/"));
@@ -59,7 +59,7 @@ export function validateArchiveStructure(zipData) {
 /**
  * Throws an error if archive validation fails
  *
- * @param {JSZip} zipData - The loaded JSZip instance
+ * @param {import("./ZipArchive").ZipArchive} zipData - The loaded ZipArchive instance
  * @throws {ArchiveValidationError} If archive structure is invalid
  */
 export function assertValidArchive(zipData) {

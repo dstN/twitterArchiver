@@ -7,13 +7,13 @@
     "invalidFile": "Oh Dang! You picked a falsy file. Please pick the \u003cstrong\u003eZIP-File\u003c/strong\u003e you downloaded from Twitter directly without touching it.",
     "introduction": {
       "title": "Your Private Twitter Archive Viewer",
-      "description": "This tool helps you explore and organize your Twitter archive locally—completely private and secure.",
+      "description": "This tool helps you explore and organize your Twitter archive locally - completely private and secure.",
       "features": [
-        "🔍 Search and filter your tweets, replies, and threads",
-        "💾 Export filtered results as JSON or CSV",
-        "🌐 Share tweets to other platforms (Bluesky, Mastodon, Threads)",
-        "🔒 100% local processing—no server uploads, your data stays private",
-        "🛠️ Browser processing works best with archives under 2GB"
+        "Search and filter your tweets, replies, and threads",
+        "Export filtered results as JSON or CSV",
+        "Share tweets to other platforms (Bluesky, Mastodon, Threads)",
+        "100% local processing - no server uploads, your data stays private",
+        "Best performance with archives under 2 GB"
       ]
     }
   },
