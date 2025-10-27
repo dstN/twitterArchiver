@@ -69,7 +69,7 @@ function openShareMenu() {
       <button
         @click="openShareMenu"
         class="group -mr-2 rounded-full p-2 transition-all hover:bg-orange-50 dark:hover:bg-orange-900/20"
-        title="Share tweet"
+        :title="$t('tweet.share.openMenu')"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

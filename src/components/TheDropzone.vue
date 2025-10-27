@@ -170,7 +170,8 @@ async function processArchiveFile(file) {
             progressState.finalize = 1;
             publishProgress({
               label: "Finalizing data",
-              detail: status === "complete" ? "Wrapping up..." : "Finalizing...",
+              detail:
+                status === "complete" ? "Wrapping up..." : "Finalizing...",
             });
             break;
           }
@@ -239,6 +240,13 @@ async function handleFileSelection(event) {
   try {
     const data = await processArchiveFile(file);
     validFile.value = true;
+    emit("progress", {
+      percent: 97,
+      label: "Preparing timeline",
+      detail:
+        "Mounting filters and components… this can take a bit for very large archives.",
+    });
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
     emit("payloadEvent", data);
     emit("progress", {
       percent: 100,
@@ -318,7 +326,7 @@ function handleDragLeave(event) {
     <div
       class="mb-1 w-full max-w-lg rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
-      <h2 class="mb-3 font-display text-lg text-gray-300">
+      <h2 class="mb-3 font-display text-lg text-gray-900 dark:text-gray-300">
         {{ $t("dropzone.introduction.title") }}
       </h2>
       <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">

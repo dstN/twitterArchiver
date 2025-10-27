@@ -1,5 +1,6 @@
 <script setup>
 import { ref, toRefs, computed, onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
 import Tweet from "./partials/Tweet.vue";
 import TheMobileMenu from "./TheMobileMenu.vue";
 import DesktopSidebar from "./DesktopSidebar.vue";
@@ -77,13 +78,10 @@ function toggleSelectionModeLocal() {
 }
 
 function selectAllDisplayedTweets() {
-  const sourceTweets = threadView.value ? threadTweets.value : displayedTweets.value;
+  const sourceTweets = threadView.value
+    ? threadTweets.value
+    : displayedTweets.value;
   selectAllTweets(sourceTweets);
-}
-
-function handleSearchTermUpdate(value) {
-  searchTerm.value = value;
-  onSearchTermChange();
 }
 
 function handleFilterTypeChange(type) {
@@ -148,6 +146,41 @@ const {
   filterType,
   user,
 );
+
+const { t } = useI18n();
+
+const filterLabelKeyMap = {
+  all: "sidebar.filters.all",
+  tweets: "sidebar.filters.tweets",
+  replies: "sidebar.filters.replies",
+  retweets: "sidebar.filters.retweets",
+  threads: "sidebar.filters.threads",
+  media: "sidebar.filters.media",
+  mediaImages: "sidebar.filters.mediaImages",
+  mediaVideos: "sidebar.filters.mediaVideos",
+};
+
+const filterDescriptionKeyMap = {
+  all: "content.filterDescriptions.all",
+  tweets: "content.filterDescriptions.tweets",
+  replies: "content.filterDescriptions.replies",
+  retweets: "content.filterDescriptions.retweets",
+  threads: "content.filterDescriptions.threads",
+  media: "content.filterDescriptions.media",
+  mediaImages: "content.filterDescriptions.mediaImages",
+  mediaVideos: "content.filterDescriptions.mediaVideos",
+};
+
+const activeFilterLabel = computed(() => {
+  const key = filterLabelKeyMap[filterType.value] || filterLabelKeyMap.all;
+  return t(key);
+});
+
+const activeFilterDescription = computed(() => {
+  const key =
+    filterDescriptionKeyMap[filterType.value] || filterDescriptionKeyMap.all;
+  return t(key);
+});
 </script>
 
 <template>
@@ -173,27 +206,24 @@ const {
     @select-all="selectAllDisplayedTweets"
     @deselect-all="deselectAllTweets"
   />
-
   <div class="grid grid-cols-12 gap-4">
     <!-- Desktop Sidebar Component -->
     <DesktopSidebar
       :filter-type="filterType"
       :tweet-counts="tweetCounts"
-      :search-term="searchTerm"
       :selection-mode="selectionMode"
       :selected-count="selectedTweets.size"
       :show-export-menu="showExportMenu"
       :include-media="includeMedia"
       @set-filter-type="handleFilterTypeChange"
-      @update-search-term="handleSearchTermUpdate"
       @toggle-export-menu="showExportMenu = !showExportMenu"
       @toggle-include-media="toggleIncludeMedia"
       @toggle-selection-mode="toggleSelectionModeLocal"
       @select-all="selectAllDisplayedTweets"
       @deselect-all="deselectAllTweets"
-  @export-j-s-o-n="(val) => exportAsJSON(val)"
-  @export-c-s-v="(val) => exportAsCSV(val)"
-  @print-tweets="(val) => printTweets(val)"
+      @export-j-s-o-n="(val) => exportAsJSON(val)"
+      @export-c-s-v="(val) => exportAsCSV(val)"
+      @print-tweets="(val) => printTweets(val)"
       @reload-page="reloadPage"
     />
 
@@ -229,17 +259,7 @@ const {
             <h2
               class="font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              {{
-                filterType === "all"
-                  ? "All Tweets"
-                  : filterType === "tweets"
-                    ? "Only Tweets"
-                    : filterType === "replies"
-                      ? "Only Replies"
-                      : filterType === "threads"
-                        ? "Only Threads"
-                        : "Only Retweets"
-              }}
+              {{ activeFilterLabel }}
             </h2>
             <div class="w-10"></div>
             <!-- Spacer for centering -->
@@ -263,26 +283,15 @@ const {
                   clip-rule="evenodd"
                 />
               </svg>
-              Back to
-              {{
-                filterType === "all"
-                  ? "All Tweets"
-                  : filterType === "tweets"
-                    ? "Only Tweets"
-                    : filterType === "replies"
-                      ? "Only Replies"
-                      : filterType === "threads"
-                        ? "Only Threads"
-                        : "Only Retweets"
-              }}
+              {{ t('content.thread.backTo', { filter: activeFilterLabel }) }}
             </button>
             <h2
               class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              Thread View
+              {{ t('content.thread.title') }}
             </h2>
             <p class="text-gray-900 dark:text-gray-300">
-              Viewing {{ threadTweets.length }} tweets in this thread
+              {{ t('content.thread.viewingCount', { count: threadTweets.length }) }}
             </p>
           </div>
           <!-- Normal View Header (Desktop only) -->
@@ -293,30 +302,10 @@ const {
             <h2
               class="mb-6 font-display text-2xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              {{
-                filterType === "all"
-                  ? "All Tweets"
-                  : filterType === "tweets"
-                    ? "Only Tweets"
-                    : filterType === "replies"
-                      ? "Only Replies"
-                      : filterType === "threads"
-                        ? "Only Threads"
-                        : "Only Retweets"
-              }}
+              {{ activeFilterLabel }}
             </h2>
             <p class="text-gray-900 dark:text-gray-300">
-              {{
-                filterType === "all"
-                  ? "You are now seeing all tweets. Including Replies, Retweets and normal Tweets."
-                  : filterType === "tweets"
-                    ? "You are now seeing only original tweets (no replies or retweets)."
-                    : filterType === "replies"
-                      ? "You are now seeing only replies to other tweets."
-                      : filterType === "threads"
-                        ? "You are now seeing only threads with multiple connected tweets."
-                        : "You are now seeing only retweets."
-              }}
+              {{ activeFilterDescription }}
             </p>
           </div>
           <!-- Sort buttons (only in normal view) -->
@@ -338,7 +327,7 @@ const {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
             >
-              <span>Date</span>
+              <span>{{ t('content.sortLabels.date') }}</span>
               <svg
                 v-if="sortBy === 'date'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -367,7 +356,7 @@ const {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
             >
-              <span>Likes</span>
+              <span>{{ t('content.sortLabels.likes') }}</span>
               <svg
                 v-if="sortBy === 'likes'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -395,10 +384,10 @@ const {
                   ? 'bg-orange-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
-              title="Retweets"
+              :title="t('content.sortLabels.retweets')"
             >
-              <span class="sm:hidden">RTs</span>
-              <span class="hidden sm:inline">Retweets</span>
+              <span class="sm:hidden">{{ t('content.sortLabels.retweetsShort') }}</span>
+              <span class="hidden sm:inline">{{ t('content.sortLabels.retweets') }}</span>
               <svg
                 v-if="sortBy === 'retweets'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -421,43 +410,43 @@ const {
       </div>
 
       <!-- Thread View -->
-        <template v-if="threadView">
-          <div class="tweets-list">
+      <template v-if="threadView">
+        <div class="tweets-list">
+          <div
+            v-for="(item, index) in threadTweets"
+            :key="item.id"
+            class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+            :class="{
+              'bg-orange-50 dark:bg-orange-900/20':
+                item.id === threadView.originTweet.id,
+              'ring-2 ring-inset ring-orange-600':
+                selectionMode && isSelected(item.id),
+            }"
+          >
             <div
-              v-for="(item, index) in threadTweets"
-              :key="item.id"
-              class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
-              :class="{
-                'bg-orange-50 dark:bg-orange-900/20':
-                  item.id === threadView.originTweet.id,
-                'ring-2 ring-inset ring-orange-600':
-                  selectionMode && isSelected(item.id),
-              }"
+              v-if="selectionMode"
+              class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
             >
-              <div
-                v-if="selectionMode"
-                class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
-              >
-                <input
-                  type="checkbox"
-                  :checked="isSelected(item.id)"
-                  @change="toggleTweetSelection(item.id)"
-                  class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
-                />
-              </div>
+              <input
+                type="checkbox"
+                :checked="isSelected(item.id)"
+                @change="toggleTweetSelection(item.id)"
+                class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
+              />
+            </div>
 
-              <div :class="{ 'ml-12': selectionMode }">
-                <Tweet
-                  :data="item"
-                  :user="user"
-                  :thread-tweets="threadTweets"
-                  :in-thread-view="true"
-                  @get-thread="getThread"
-                />
-              </div>
+            <div :class="{ 'ml-12': selectionMode }">
+              <Tweet
+                :data="item"
+                :user="user"
+                :thread-tweets="threadTweets"
+                :in-thread-view="true"
+                @get-thread="getThread"
+              />
             </div>
           </div>
-        </template>
+        </div>
+      </template>
 
       <!-- Normal View -->
       <template v-else-if="displayedTweets.length > 0">
@@ -525,17 +514,16 @@ const {
     </div>
   </div>
 
-  <!-- Mobile Search Button (Mobile only) -->
-  <!-- Mobile Search Container (Fixed at bottom-right on small/medium screens, hidden on large) -->
+  <!-- Floating Search Button -->
   <div
-    class="fixed right-6 z-30 flex flex-col items-end gap-3 transition-all duration-300 lg:hidden"
-    :class="showScrollTop ? 'bottom-24' : 'bottom-6'"
+    class="fixed right-6 z-30 flex flex-col items-end gap-3 transition-all duration-300"
+    :class="[showScrollTop ? 'bottom-24' : 'bottom-6']"
   >
     <!-- Search Field (appears when toggled) -->
     <Transition name="slide-up">
       <div
         v-if="showMobileSearch"
-        class="mobile-search-container w-72 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800"
+        class="mobile-search-container w-72 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800 lg:w-96"
       >
         <div class="relative text-gray-300 dark:text-gray-500">
           <button
@@ -569,7 +557,7 @@ const {
     <!-- Search Toggle Button -->
     <button
       @click.stop="toggleMobileSearch()"
-      class="mobile-search-toggle rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-700 dark:hover:bg-gray-600"
+      class="mobile-search-toggle rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-700 dark:hover:bg-gray-600 lg:p-5"
       :class="{
         'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700':
           showMobileSearch,

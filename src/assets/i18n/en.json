@@ -32,7 +32,12 @@
       "deselectAll": "Deselect All",
       "exportJSON": "Export as JSON",
       "exportCSV": "Export as CSV",
-      "print": "Print Tweets"
+      "print": "Print Tweets",
+      "includeMedia": "Include media files (ZIP)",
+      "includeMediaDescription": "Adds images, videos, and GIFs to export packages.",
+      "disableIncludeMedia": "Remove media attachments",
+      "closeSelectionMode": "Deactivate selection mode",
+      "printDescription": "Print or save as PDF"
     },
     "filters": {
       "title": "Filters",
@@ -40,9 +45,45 @@
       "tweets": "Tweets",
       "replies": "Replies",
       "retweets": "Retweets",
-      "threads": "Threads"
+      "threads": "Threads",
+      "media": "Only Media",
+      "mediaImages": "Only Images",
+      "mediaVideos": "Only Videos/GIFs"
     },
-    "reload": "Reload Page"
+    "reload": "Reload Page",
+    "support": {
+      "buyMeCoffee": "Buy me a Red Bull",
+      "viewOnGitHub": "View on GitHub",
+      "languageToggle": "Change language (current: {locale})"
+    }
+  },
+  "mobile": {
+    "bottomBar": {
+      "lightMode": "Switch to light mode",
+      "darkMode": "Switch to dark mode",
+      "languageToggle": "Change language (current: {locale})",
+      "languageCurrent": "Current language: {locale}"
+    }
+  },
+  "toolbar": {
+    "darkModeLight": "Switch to light mode",
+    "darkModeDark": "Switch to dark mode",
+    "languageToggle": "Change language (current: {locale})"
+  },
+  "export": {
+    "types": {
+      "tweet": "Tweet",
+      "retweet": "Retweet",
+      "reply": "Reply"
+    },
+    "headers": {
+      "date": "Date",
+      "type": "Type",
+      "text": "Text",
+      "likes": "Likes",
+      "retweets": "Retweets",
+      "url": "URL"
+    }
   },
   "content": {
     "case-sensitive": "Case-Sensitive",
@@ -51,6 +92,27 @@
       "dateAsc": "by date asc",
       "likes": "by likes",
       "retweets": "by retweets"
+    },
+    "sortLabels": {
+      "date": "Date",
+      "likes": "Likes",
+      "retweets": "Retweets",
+      "retweetsShort": "RTs"
+    },
+    "filterDescriptions": {
+      "all": "You are now seeing all tweets, including replies, retweets, and original tweets.",
+      "tweets": "You are now seeing only original tweets (no replies or retweets).",
+      "replies": "You are now seeing only replies to other tweets.",
+      "retweets": "You are now seeing only retweets.",
+      "threads": "You are now seeing only threads with multiple connected tweets.",
+      "media": "You are now seeing only tweets that include media attachments.",
+      "mediaImages": "You are now seeing only tweets that include images.",
+      "mediaVideos": "You are now seeing only tweets that include videos or GIFs."
+    },
+    "thread": {
+      "title": "Thread View",
+      "backTo": "Back to {filter}",
+      "viewingCount": "Viewing {count} tweets in this thread"
     },
     "notFound": "No tweets found by given search term: {0}",
     "allLoaded": "You\u0027ve reached the end! All tweets loaded."
@@ -68,8 +130,24 @@
       "linkCopied": "Link copied!",
       "bluesky": "Share on Bluesky",
       "mastodon": "Share on Mastodon",
-      "threads": "Share on Threads"
-    }
+      "threads": "Share on Threads",
+      "copyTweet": "Copy Tweet",
+      "copyText": "Copy Text",
+      "copyThread": "Copy entire thread ({count} tweets)",
+      "shareToPlatform": "Share to platform:",
+      "platforms": {
+        "bluesky": "Bluesky",
+        "threads": "Threads",
+        "mastodon": "Mastodon",
+        "linkedin": "LinkedIn"
+      },
+      "openMenu": "Share tweet",
+      "mastodonReminder": "Text copied! Paste it into your Mastodon instance."
+    },
+    "mediaUnavailable": "Media not available"
+  },
+  "mediaLightbox": {
+    "errorNotFound": "Error: Media not found"
   },
   "aria": {
     "toggleDarkMode": "Toggle dark mode",

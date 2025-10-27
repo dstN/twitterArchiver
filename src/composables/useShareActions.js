@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 /**
  * Composable for sharing and copying tweet content
@@ -25,6 +26,7 @@ import { ref } from "vue";
  */
 export function useShareActions() {
   const showCopiedFeedback = ref(false);
+  const { t } = useI18n();
 
   /**
    * Copies text to clipboard and shows visual feedback
@@ -112,7 +114,7 @@ export function useShareActions() {
    */
   async function shareToMastodon(text, onComplete) {
     await copyToClipboard(text);
-    alert("Text copied! Paste it into your Mastodon instance.");
+    alert(t("tweet.share.mastodonReminder"));
     if (onComplete) onComplete();
   }
 

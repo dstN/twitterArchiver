@@ -17,17 +17,17 @@
     "@zip.js/zip.js": "^2.7.34",
     "twemoji": "^14.0.2",
     "vue": "^3.4.27",
-    "vue-i18n": "9.13.1"
+    "vue-i18n": "11.1.12"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue": "^6.0",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.31",
     "postcss-import": "^16.1.0",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.14",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "tailwindcss": "^3.4.3",
     "terser": "^5.44.0",
-    "vite": "^5.2.11"
+    "vite": "^7.0"
   }
 }

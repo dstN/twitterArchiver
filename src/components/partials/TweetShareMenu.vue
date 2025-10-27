@@ -7,6 +7,7 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 import { useShareActions } from "../../composables/useShareActions";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({
   tweetText: String,
@@ -26,6 +27,8 @@ const {
   shareToMastodon,
   shareToLinkedIn,
 } = useShareActions();
+
+const { t } = useI18n();
 
 function copyTweet() {
   copyTweetText(props.tweetText);
@@ -129,9 +132,13 @@ function close() {
               d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
             />
           </svg>
-          <span class="font-medium text-gray-900 dark:text-gray-100"
-            >Copy {{ isThread ? "Tweet" : "Text" }}</span
-          >
+          <span class="font-medium text-gray-900 dark:text-gray-100">
+            {{
+              isThread
+                ? t("tweet.share.copyTweet")
+                : t("tweet.share.copyText")
+            }}
+          </span>
         </button>
 
         <button
@@ -153,16 +160,16 @@ function close() {
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          <span class="font-medium text-gray-900 dark:text-gray-100"
-            >Copy Entire Thread ({{ threadTweets.length }} tweets)</span
-          >
+          <span class="font-medium text-gray-900 dark:text-gray-100">
+            {{ t("tweet.share.copyThread", { count: threadTweets.length }) }}
+          </span>
         </button>
       </div>
 
       <!-- Share to Platforms -->
       <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
         <p class="mb-3 text-sm text-gray-600 dark:text-gray-400">
-          Share to platform:
+          {{ t("tweet.share.shareToPlatform") }}
         </p>
         <div class="grid grid-cols-2 gap-2">
           <button
@@ -173,7 +180,7 @@ function close() {
               :icon="faBluesky"
               class="h-5 w-5"
             />
-            <span class="font-medium">Bluesky</span>
+            <span class="font-medium">{{ t("tweet.share.platforms.bluesky") }}</span>
           </button>
 
           <button
@@ -184,7 +191,7 @@ function close() {
               :icon="faThreads"
               class="h-5 w-5"
             />
-            <span class="font-medium">Threads</span>
+            <span class="font-medium">{{ t("tweet.share.platforms.threads") }}</span>
           </button>
 
           <button
@@ -195,7 +202,7 @@ function close() {
               :icon="faMastodon"
               class="h-5 w-5"
             />
-            <span class="font-medium">Mastodon</span>
+            <span class="font-medium">{{ t("tweet.share.platforms.mastodon") }}</span>
           </button>
 
           <button
@@ -206,7 +213,7 @@ function close() {
               :icon="faLinkedin"
               class="h-5 w-5"
             />
-            <span class="font-medium">LinkedIn</span>
+            <span class="font-medium">{{ t("tweet.share.platforms.linkedin") }}</span>
           </button>
         </div>
       </div>

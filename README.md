@@ -24,7 +24,7 @@ locally with 100% privacy.
 ## 📦 Tech Stack
 
 - **Framework**: Vue 3 with Composition API
-- **Build Tool**: Vite 5
+- **Build Tool**: Vite 7
 - **Styling**: Tailwind CSS 3
 - **Internationalization**: vue-i18n
 - **Icons**: FontAwesome
