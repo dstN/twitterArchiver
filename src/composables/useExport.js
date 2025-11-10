@@ -355,6 +355,7 @@ export function useExport(
 ) {
 const showExportMenu = ref(false);
 const includeMedia = ref(false);
+const printableTweetIds = ref(new Set());
 
 const { t } = useI18n();
 
@@ -496,6 +497,9 @@ const { t } = useI18n();
       threadTweets,
     );
 
+    // Set printable tweet IDs
+    printableTweetIds.value = new Set(tweetsToExport.map(t => t.id));
+
     await ensureTweetsMediaLoaded(tweetsToExport);
 
     const suffix = determineExportSuffix(
@@ -542,6 +546,10 @@ const { t } = useI18n();
     showExportMenu.value = false;
     setTimeout(() => {
       window.print();
+      // Clear printable IDs after print dialog closes (or user cancels)
+      setTimeout(() => {
+        printableTweetIds.value = new Set();
+      }, 1000);
     }, 100);
 
     if (archivePromise) {
@@ -554,6 +562,7 @@ const { t } = useI18n();
   return {
     showExportMenu,
     includeMedia,
+    printableTweetIds,
     toggleIncludeMedia,
     exportAsJSON,
     exportAsCSV,

@@ -132,6 +132,7 @@ const { threadView, threadTweets, getThread, exitThreadView } =
 const {
   showExportMenu,
   includeMedia,
+  printableTweetIds,
   toggleIncludeMedia,
   exportAsJSON,
   exportAsCSV,
@@ -415,6 +416,7 @@ const activeFilterDescription = computed(() => {
           <div
             v-for="(item, index) in threadTweets"
             :key="item.id"
+            :data-printable="printableTweetIds.size === 0 || printableTweetIds.has(item.id)"
             class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
             :class="{
               'bg-orange-50 dark:bg-orange-900/20':
@@ -455,6 +457,7 @@ const activeFilterDescription = computed(() => {
             v-for="item in displayedTweets"
             :key="item.id"
             :data-tweet-id="item.id"
+            :data-printable="printableTweetIds.size === 0 || printableTweetIds.has(item.id)"
             class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
             :class="{
               'ring-2 ring-inset ring-orange-600':

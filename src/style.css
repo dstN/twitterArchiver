@@ -43,6 +43,11 @@ html {
     display: none !important;
   }
 
+  /* Hide tweets that are not marked as printable (when selection is active) */
+  .tweets-list > div[data-printable="false"] {
+    display: none !important;
+  }
+
   /* Prevent page breaks inside tweets */
   .tweets-list > div {
     page-break-inside: avoid !important;
@@ -106,5 +111,31 @@ html {
 
   * {
     box-shadow: none !important;
+  }
+
+  /* Tweet separator lines - must be AFTER the * selector to override it */
+  /* Using border-top instead of border-bottom works better with page breaks */
+  .tweets-list > div {
+    border: none !important;
+    border-top: 1px solid #ea580c !important;
+    background: white !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+
+  /* First tweet should not have a top border */
+  .tweets-list > div:first-child {
+    border-top: none !important;
+  }
+
+  /* Add bottom border to tweets that break to next page */
+  .tweets-list > div {
+    border-bottom: 1px solid #ea580c !important;
+    page-break-after: auto !important;
+  }
+
+  /* Remove double borders by using margin overlap */
+  .tweets-list > div + div {
+    margin-top: -1px !important;
   }
 }
