@@ -12,8 +12,7 @@
         "Search and filter your tweets, replies, and threads",
         "Export filtered results as JSON or CSV",
         "Share tweets to other platforms (Bluesky, Mastodon, Threads)",
-        "100% local processing - no server uploads, your data stays private",
-        "Best performance with archives under 2 GB"
+        "100% local processing - no server uploads, your data stays private"
       ]
     }
   },
@@ -68,7 +67,8 @@
   "toolbar": {
     "darkModeLight": "Switch to light mode",
     "darkModeDark": "Switch to dark mode",
-    "languageToggle": "Change language (current: {locale})"
+    "languageToggle": "Change language (current: {locale})",
+    "settingsGroup": "Settings"
   },
   "export": {
     "types": {
@@ -155,5 +155,30 @@
     "scrollToTop": "Scroll to top",
     "toggleSearch": "Toggle search",
     "closeMenu": "Close menu"
+  },
+  "legal": {
+    "title": "Legal Information",
+    "button": "Legal",
+    "close": "Close",
+    "imprint": {
+      "title": "Imprint",
+      "responsible": "Information according to § 5 DDG:",
+      "country": "Germany",
+      "email": "Email",
+      "emailAriaLabel": "Send email to abuse at yinside dot de",
+      "disclaimer": "This tool is provided for personal use. All data processing happens locally in your browser."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "This application is designed with privacy in mind. Your Twitter archive is processed entirely in your browser. We do not collect, store, or transmit any personal data.",
+      "hosting": {
+        "title": "Hosting & Server Logs",
+        "content": "This website is hosted by Vercel. The hosting provider automatically collects information in server log files (IP address, browser type, time). This is technically necessary to display the site securely."
+      },
+      "logs": {
+        "title": "Log Retention",
+        "content": "Server logs are collected for security and diagnostic purposes."
+      }
+    }
   }
 }

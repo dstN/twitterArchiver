@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const SOFT_ARCHIVE_WARNING_BYTES = 10 * 1024 * 1024 * 1024; // 10GB soft warning threshold
-const LAZY_MEDIA_THRESHOLD_BYTES = 750 * 1024 * 1024; // ~750MB - above this lazily hydrate media
+const LAZY_MEDIA_THRESHOLD_BYTES = 10 * 1024 * 1024; // ~10MB - above this lazily hydrate media
 let currentArchive = null;
 
 const props = defineProps({
@@ -28,7 +28,6 @@ const featureIcons = [
   faFileArrowDown,
   faShareNodes,
   faShieldHalved,
-  faGaugeHigh,
 ];
 
 function extractFilesFromEvent(event) {
@@ -315,7 +314,7 @@ function handleDragLeave(event) {
 
 <template>
   <main
-    class="flex min-h-screen flex-col items-center justify-center gap-5 p-6 font-sans"
+    class="flex min-h-screen flex-col items-center justify-center gap-5 px-6 pb-6 pt-16 font-sans"
     :class="isLoading ? 'blur-sm' : ''"
   >
     <h1 class="font-display text-gray-900 dark:text-orange-600">
@@ -324,7 +323,7 @@ function handleDragLeave(event) {
 
     <!-- Introduction Section -->
     <div
-      class="mb-1 w-full max-w-lg rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+      class="w-full max-w-lg rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
       <h2 class="mb-3 font-display text-lg text-gray-900 dark:text-gray-300">
         {{ $t("dropzone.introduction.title") }}
@@ -332,7 +331,7 @@ function handleDragLeave(event) {
       <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
         {{ $t("dropzone.introduction.description") }}
       </p>
-      <ul class="mb-4 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+      <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
         <li
           v-for="(feature, index) in $tm('dropzone.introduction.features')"
           :key="index"

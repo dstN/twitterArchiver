@@ -1,9 +1,14 @@
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faBottleWater, faGlobe } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBottleWater,
+  faGlobe,
+  faScaleBalanced,
+} from "@fortawesome/free-solid-svg-icons";
 import { useI18n } from "vue-i18n";
+import LegalModal from "../partials/LegalModal.vue";
 
 const props = defineProps({
   isDarkMode: Boolean,
@@ -28,6 +33,17 @@ function toggleLocale() {
   locale.value = nextLocale;
   localStorage.setItem("locale", nextLocale);
 }
+
+// Legal modal state
+const showLegalModal = ref(false);
+
+function openLegalModal() {
+  showLegalModal.value = true;
+}
+
+function closeLegalModal() {
+  showLegalModal.value = false;
+}
 </script>
 
 <template>
@@ -38,8 +54,16 @@ function toggleLocale() {
       <button
         @click="toggleDarkMode"
         class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-colors hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
-        :title="isDarkMode ? t('mobile.bottomBar.lightMode') : t('mobile.bottomBar.darkMode')"
-        :aria-label="isDarkMode ? t('mobile.bottomBar.lightMode') : t('mobile.bottomBar.darkMode')"
+        :title="
+          isDarkMode
+            ? t('mobile.bottomBar.lightMode')
+            : t('mobile.bottomBar.darkMode')
+        "
+        :aria-label="
+          isDarkMode
+            ? t('mobile.bottomBar.lightMode')
+            : t('mobile.bottomBar.darkMode')
+        "
       >
         <svg
           v-if="!isDarkMode"
@@ -71,14 +95,20 @@ function toggleLocale() {
       <button
         @click="toggleLocale"
         class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 text-white transition-colors hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
-        :title="t('mobile.bottomBar.languageToggle', { locale: currentLocaleLabel })"
-        :aria-label="t('mobile.bottomBar.languageToggle', { locale: currentLocaleLabel })"
+        :title="
+          t('mobile.bottomBar.languageToggle', { locale: currentLocaleLabel })
+        "
+        :aria-label="
+          t('mobile.bottomBar.languageToggle', { locale: currentLocaleLabel })
+        "
       >
         <font-awesome-icon
           :icon="faGlobe"
           class="h-5 w-5"
         />
-        <span class="sr-only">{{ t('mobile.bottomBar.languageCurrent', { locale: currentLocaleLabel }) }}</span>
+        <span class="sr-only">{{
+          t("mobile.bottomBar.languageCurrent", { locale: currentLocaleLabel })
+        }}</span>
       </button>
 
       <!-- Ko-fi Link -->
@@ -111,5 +141,21 @@ function toggleLocale() {
         />
       </a>
     </div>
+
+    <!-- Legal Link below icons -->
+    <div class="mt-3 flex justify-center">
+      <button
+        @click="openLegalModal"
+        class="text-xs text-gray-500 transition-colors hover:text-orange-600 dark:text-gray-400 dark:hover:text-orange-500"
+      >
+        {{ t("legal.title") }}
+      </button>
+    </div>
   </div>
+
+  <!-- Legal Modal -->
+  <LegalModal
+    :show="showLegalModal"
+    @close="closeLegalModal"
+  />
 </template>

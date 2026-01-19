@@ -12,8 +12,7 @@
         "Suche und filtere deine Tweets, Antworten und Threads",
         "Exportiere gefilterte Ergebnisse als JSON oder CSV",
         "Teile Tweets auf anderen Plattformen (Bluesky, Mastodon, Threads)",
-        "100% lokale Verarbeitung - kein Server-Upload, deine Daten bleiben privat",
-        "Beste Leistung mit Archiven bis etwa 2 GB"
+        "100% lokale Verarbeitung - kein Server-Upload, deine Daten bleiben privat"
       ]
     }
   },
@@ -68,7 +67,8 @@
   "toolbar": {
     "darkModeLight": "In den hellen Modus wechseln",
     "darkModeDark": "In den dunklen Modus wechseln",
-    "languageToggle": "Sprache wechseln (aktuell: {locale})"
+    "languageToggle": "Sprache wechseln (aktuell: {locale})",
+    "settingsGroup": "Einstellungen"
   },
   "export": {
     "types": {
@@ -155,5 +155,30 @@
     "scrollToTop": "Nach oben scrollen",
     "toggleSearch": "Suche umschalten",
     "closeMenu": "Menü schließen"
+  },
+  "legal": {
+    "title": "Rechtliche Informationen",
+    "button": "Recht",
+    "close": "Schließen",
+    "imprint": {
+      "title": "Impressum",
+      "responsible": "Angaben gemäß § 5 DDG:",
+      "country": "Deutschland",
+      "email": "E-Mail",
+      "emailAriaLabel": "E-Mail senden an abuse at yinside punkt de",
+      "disclaimer": "Dieses Tool wird für den privaten Gebrauch bereitgestellt. Alle Datenverarbeitung erfolgt lokal in deinem Browser."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet. Wir erheben, speichern oder übertragen keine personenbezogenen Daten.",
+      "hosting": {
+        "title": "Hosting & Server-Logs",
+        "content": "Diese Website wird von Vercel gehostet. Der Hosting-Anbieter erhebt automatisch Informationen in Server-Logdateien (IP-Adresse, Browsertyp, Zeitpunkt). Dies ist technisch notwendig, um die Website sicher anzuzeigen."
+      },
+      "logs": {
+        "title": "Log-Aufbewahrung",
+        "content": "Server-Logs werden zu Sicherheits- und Diagnosezwecken erhoben."
+      }
+    }
   }
 }

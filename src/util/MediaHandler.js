@@ -31,12 +31,23 @@ export async function resolveMediaLinks(
     switch (entity.type) {
       case "animated_gif":
       case "video":
-        mediaName = entity.video_info.variants[0].url
-          .split("/")
-          .pop()
-          .split("?")[0];
-        mediaType = "video/mp4";
-        exportFileName = `${tweetId}-${mediaName}`;
+        if (
+          entity.video_info &&
+          entity.video_info.variants &&
+          entity.video_info.variants.length > 0
+        ) {
+          // Find the best variant: prefer 'video/mp4' content type and highest bitrate
+          const bestVariant = entity.video_info.variants
+            .filter((v) => v.content_type === "video/mp4")
+            .sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
+
+          // Fallback to first variant if no suitable MP4 found
+          const selectedVariant = bestVariant || entity.video_info.variants[0];
+
+          mediaName = selectedVariant.url.split("/").pop().split("?")[0];
+          mediaType = "video/mp4";
+          exportFileName = `${tweetId}-${mediaName}`;
+        }
         break;
       case "photo":
       default:

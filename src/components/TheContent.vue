@@ -284,15 +284,17 @@ const activeFilterDescription = computed(() => {
                   clip-rule="evenodd"
                 />
               </svg>
-              {{ t('content.thread.backTo', { filter: activeFilterLabel }) }}
+              {{ t("content.thread.backTo", { filter: activeFilterLabel }) }}
             </button>
             <h2
               class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
-              {{ t('content.thread.title') }}
+              {{ t("content.thread.title") }}
             </h2>
             <p class="text-gray-900 dark:text-gray-300">
-              {{ t('content.thread.viewingCount', { count: threadTweets.length }) }}
+              {{
+                t("content.thread.viewingCount", { count: threadTweets.length })
+              }}
             </p>
           </div>
           <!-- Normal View Header (Desktop only) -->
@@ -328,7 +330,7 @@ const activeFilterDescription = computed(() => {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
             >
-              <span>{{ t('content.sortLabels.date') }}</span>
+              <span>{{ t("content.sortLabels.date") }}</span>
               <svg
                 v-if="sortBy === 'date'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -357,7 +359,7 @@ const activeFilterDescription = computed(() => {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
               "
             >
-              <span>{{ t('content.sortLabels.likes') }}</span>
+              <span>{{ t("content.sortLabels.likes") }}</span>
               <svg
                 v-if="sortBy === 'likes'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -387,8 +389,12 @@ const activeFilterDescription = computed(() => {
               "
               :title="t('content.sortLabels.retweets')"
             >
-              <span class="sm:hidden">{{ t('content.sortLabels.retweetsShort') }}</span>
-              <span class="hidden sm:inline">{{ t('content.sortLabels.retweets') }}</span>
+              <span class="sm:hidden">{{
+                t("content.sortLabels.retweetsShort")
+              }}</span>
+              <span class="hidden sm:inline">{{
+                t("content.sortLabels.retweets")
+              }}</span>
               <svg
                 v-if="sortBy === 'retweets'"
                 xmlns="http://www.w3.org/2000/svg"
@@ -416,7 +422,9 @@ const activeFilterDescription = computed(() => {
           <div
             v-for="(item, index) in threadTweets"
             :key="item.id"
-            :data-printable="printableTweetIds.size === 0 || printableTweetIds.has(item.id)"
+            :data-printable="
+              printableTweetIds.size === 0 || printableTweetIds.has(item.id)
+            "
             class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
             :class="{
               'bg-orange-50 dark:bg-orange-900/20':
@@ -457,7 +465,9 @@ const activeFilterDescription = computed(() => {
             v-for="item in displayedTweets"
             :key="item.id"
             :data-tweet-id="item.id"
-            :data-printable="printableTweetIds.size === 0 || printableTweetIds.has(item.id)"
+            :data-printable="
+              printableTweetIds.size === 0 || printableTweetIds.has(item.id)
+            "
             class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
             :class="{
               'ring-2 ring-inset ring-orange-600':
@@ -600,7 +610,7 @@ const activeFilterDescription = computed(() => {
     <button
       v-if="showScrollTop"
       @click="scrollToTop"
-      class="fixed bottom-6 right-6 z-30 rounded-full bg-orange-600 p-4 text-white shadow-lg transition-all hover:bg-orange-700 hover:shadow-xl dark:bg-orange-600 dark:hover:bg-orange-700"
+      class="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-orange-600 text-white shadow-lg transition-all hover:bg-orange-700 hover:shadow-xl dark:bg-orange-600 dark:hover:bg-orange-700 lg:h-16 lg:w-16"
       aria-label="Scroll to top"
     >
       <svg

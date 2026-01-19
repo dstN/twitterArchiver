@@ -1,11 +1,20 @@
 <script setup>
-import { computed, onMounted, watch, nextTick } from "vue";
+import { computed, onMounted, watch, nextTick, reactive } from "vue";
 
 const props = defineProps({
   media: Array,
 });
 
 const emit = defineEmits(["openLightbox"]);
+
+// Local reactive state to ensure UI updates when media finishes loading
+const loadedMedia = reactive({});
+
+function getMediaUrl(item) {
+  if (!item) return null;
+  // Prioritize local state (reactive), fallback to item.data (pre-loaded/raw)
+  return item.data || loadedMedia[item.archivePath];
+}
 
 const mediaGridClass = computed(() => {
   if (!props.media?.length) return "";
@@ -28,11 +37,13 @@ const mediaGridClass = computed(() => {
 async function openLightbox(media, index) {
   if (!media) return;
 
-  if (!media.data && typeof media.ensureDataUrl === "function") {
+  // Ensure media is loaded before opening light box
+  if (!getMediaUrl(media) && typeof media.ensureDataUrl === "function") {
     await ensureMediaLoaded(media);
   }
 
-  if (!media.data) {
+  // Double check if loading succeeded
+  if (!getMediaUrl(media) && !media.data) {
     console.error("Invalid media:", media);
     return;
   }
@@ -41,13 +52,16 @@ async function openLightbox(media, index) {
 
 async function ensureMediaLoaded(item) {
   if (!item) return;
-  if (item.data) return;
+  if (getMediaUrl(item)) return;
   if (item._loading) return;
   if (typeof item.ensureDataUrl !== "function") return;
 
   item._loading = true;
   try {
-    await item.ensureDataUrl();
+    const url = await item.ensureDataUrl();
+    if (item.archivePath) {
+      loadedMedia[item.archivePath] = url;
+    }
   } catch (error) {
     console.warn("Failed to hydrate media entry", error);
   } finally {
@@ -91,12 +105,12 @@ watch(
         @click="item ? openLightbox(item, index) : null"
       >
         <div
-          v-if="item && item.data"
+          v-if="item && getMediaUrl(item)"
           class="media-container"
         >
           <img
             v-if="item.type === 'photo'"
-            :src="item.data"
+            :src="getMediaUrl(item)"
             loading="lazy"
             alt="Tweet media"
           />
@@ -105,7 +119,7 @@ watch(
             class="video-preview"
           >
             <video
-              :src="item.data"
+              :src="getMediaUrl(item)"
               preload="metadata"
             ></video>
             <!-- Play button overlay -->
@@ -126,62 +140,51 @@ watch(
         </div>
         <div
           v-else-if="item && typeof item.ensureDataUrl === 'function'"
-          class="media-container flex items-center justify-center"
+          class="media-container relative"
         >
-          <svg
-            class="h-8 w-8 animate-spin text-orange-600"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              class="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              class="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-            ></path>
-          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div
+              class="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-orange-600 dark:border-orange-600"
+            ></div>
+          </div>
         </div>
         <div
           v-else
-          class="media-container media-error"
+          class="media-container relative"
         >
-          <div class="error-message">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-              ></circle>
-              <line
-                x1="12"
-                y1="8"
-                x2="12"
-                y2="12"
-              ></line>
-              <line
-                x1="12"
-                y1="16"
-                x2="12.01"
-                y2="16"
-              ></line>
-            </svg>
-            <p>{{ $t('tweet.mediaUnavailable') }}</p>
+          <div
+            class="absolute inset-0 flex items-center justify-center bg-red-50 dark:bg-red-900/20"
+          >
+            <div class="error-message">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                ></circle>
+                <line
+                  x1="12"
+                  y1="8"
+                  x2="12"
+                  y2="12"
+                ></line>
+                <line
+                  x1="12"
+                  y1="16"
+                  x2="12.01"
+                  y2="16"
+                ></line>
+              </svg>
+              <p>{{ $t("tweet.mediaUnavailable") }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -265,10 +268,6 @@ watch(
 .media-container {
   @apply relative w-full overflow-hidden bg-slate-100 dark:bg-slate-800;
   contain: strict;
-}
-
-.media-container.media-error {
-  @apply flex items-center justify-center bg-red-50 dark:bg-red-900/20;
 }
 
 .error-message {

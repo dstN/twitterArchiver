@@ -1,7 +1,19 @@
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faScaleBalanced } from "@fortawesome/free-solid-svg-icons";
 import { useDarkMode } from "../composables/useDarkMode";
+import LegalModal from "./partials/LegalModal.vue";
+
+const props = defineProps({
+  // When true, buttons are in a row (for dropzone/start screen)
+  // When false, buttons are in a column (for content view on desktop)
+  isDropzone: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 const { isDarkMode: isDark, toggleDarkMode } = useDarkMode();
 const { t, locale } = useI18n();
@@ -16,11 +28,28 @@ function toggleLocale() {
   locale.value = nextLocale;
   localStorage.setItem("locale", nextLocale);
 }
+
+// Legal modal state
+const showLegalModal = ref(false);
+
+function openLegalModal() {
+  showLegalModal.value = true;
+}
+
+function closeLegalModal() {
+  showLegalModal.value = false;
+}
 </script>
 
 <template>
   <div
-    class="fixed right-6 top-4 z-50 flex items-center gap-2 md:right-8 lg:right-6 lg:top-6"
+    class="fixed right-6 top-4 z-50 gap-2 md:right-8 lg:right-6 lg:top-6"
+    :class="[
+      'lg:flex lg:flex-col lg:items-end',
+      isDropzone ? 'flex flex-row items-center' : 'hidden',
+    ]"
+    role="group"
+    :aria-label="t('toolbar.settingsGroup')"
   >
     <button
       @click="toggleLocale"
@@ -70,5 +99,21 @@ function toggleLocale() {
         />
       </svg>
     </button>
+    <button
+      @click="openLegalModal"
+      class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white shadow-lg transition-all duration-200 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800"
+      :aria-label="t('legal.button')"
+    >
+      <font-awesome-icon
+        :icon="faScaleBalanced"
+        class="h-5 w-5 text-gray-900 dark:text-orange-600 sm:h-6 sm:w-6"
+      />
+    </button>
   </div>
+
+  <!-- Legal Modal -->
+  <LegalModal
+    :show="showLegalModal"
+    @close="closeLegalModal"
+  />
 </template>
