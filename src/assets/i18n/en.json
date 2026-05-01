@@ -163,6 +163,10 @@
     "imprint": {
       "title": "Imprint",
       "responsible": "Information according to § 5 DDG:",
+      "name": "Dustin Tramm",
+      "company": "c/o Impressumservice Dein-Impressum",
+      "street": "Stettiner Str. 41",
+      "postalCity": "35410 Hungen",
       "country": "Germany",
       "email": "Email",
       "emailAriaLabel": "Send email to abuse at yinside dot de",

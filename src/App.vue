@@ -6,7 +6,7 @@ import { useDarkMode } from "./composables/useDarkMode";
 // ============================================
 // MAINTENANCE MODE - Set to false when ready to go live
 // ============================================
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 const loading = ref(false);
 const loadProgress = ref(null);

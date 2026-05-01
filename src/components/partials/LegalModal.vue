@@ -159,12 +159,12 @@ onUnmounted(() => {
                 class="space-y-1 not-italic text-gray-700 dark:text-gray-300"
               >
                 <p class="font-medium">{{ t("legal.imprint.responsible") }}</p>
-                <p>Dustin Tramm</p>
-                <p>Impressums-Service Impressum4u</p>
-                <p>c/o LEADERLY UG (haftungsbeschränkt)</p>
-                <p>Amtstraße 22</p>
-                <p>44575 Castrop-Rauxel</p>
-                <p>Deutschland</p>
+                <p>{{ t("legal.imprint.name") }}</p>
+                <p>{{ t("legal.imprint.company") }}</p>
+                <p>{{ t("legal.imprint.street") }}</p>
+                <p>{{ t("legal.imprint.postalCity") }}</p>
+                <p>{{ t("legal.imprint.country") }}</p>
+
                 <p class="mt-4">
                   <span class="font-medium"
                     >{{ t("legal.imprint.email") }}:</span
