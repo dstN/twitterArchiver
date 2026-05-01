@@ -231,7 +231,7 @@ async function submitForm() {
                     type="email"
                     class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
                     v-model="form.email"
-                    :placeholder="t('contact.placeholders.email')"
+                    :placeholder="t('contact.placeholders.email', { at: '@' })"
                     autocomplete="email"
                   />
                   <p
@@ -255,7 +255,7 @@ async function submitForm() {
                     class="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
                     v-model="form.message"
                     :placeholder="t('contact.placeholders.message')"
-                  />
+                  ></textarea>
                   <p
                     v-if="errors.message"
                     class="mt-2 text-xs text-red-600 dark:text-red-400"

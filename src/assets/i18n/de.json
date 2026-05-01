@@ -194,7 +194,7 @@
   "message": "Nachricht",
   "placeholders": {
     "name": "Dein Name",
-    "email": "deine@email.de",
+    "email": "deine{at}email.de",
     "message": "Was möchtest du uns mitteilen?"
   },
   "privacyNote": "Wir verwenden diese Daten nur zur Beantwortung deiner Anfrage.",

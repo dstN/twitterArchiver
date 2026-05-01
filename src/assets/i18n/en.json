@@ -194,7 +194,7 @@
     "message": "Message",
     "placeholders": {
       "name": "Your name",
-      "email": "you@example.com",
+      "email": "you{at}example.com",
       "message": "What would you like to tell us?"
     },
     "privacyNote": "We only use this data to respond to your request.",
