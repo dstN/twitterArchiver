@@ -184,5 +184,33 @@
         "content": "Server logs are collected for security and diagnostic purposes."
       }
     }
+  },
+  "contact": {
+    "title": "Contact Form",
+    "button": "Open contact form",
+    "description": "Send us a message directly through this form!",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "placeholders": {
+      "name": "Your name",
+      "email": "you@example.com",
+      "message": "What would you like to tell us?"
+    },
+    "privacyNote": "We only use this data to respond to your request.",
+    "sending": "Sending message...",
+    "submit": "Send message",
+    "success": "Your message was sent!",
+    "error": "An error occurred while sending.",
+    "validation": {
+      "name": "Please enter your name.",
+      "emailRequired": "Please enter your email address.",
+      "emailInvalid": "Please enter a valid email address.",
+      "message": "Please enter a message.",
+      "messageShort": "The message is too short.",
+      "spam": "It looks like you are a bot.",
+      "wait": "Please wait a moment before sending the form."
+    }
   }
 }
+

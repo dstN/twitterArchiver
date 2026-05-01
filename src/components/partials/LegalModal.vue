@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import ContactModal from "./ContactModal.vue";
 
 const props = defineProps({
   show: Boolean,
@@ -29,6 +30,16 @@ const obfuscatedEmail = computed(() => {
 const mailtoHref = computed(() => {
   return `mailto:${emailParts.user}@${emailParts.domain}.${emailParts.tld}`;
 });
+
+const showContactModal = ref(false);
+
+function openContactModal() {
+  showContactModal.value = true;
+}
+
+function closeContactModal() {
+  showContactModal.value = false;
+}
 
 function close() {
   emit("close");
@@ -142,7 +153,7 @@ onUnmounted(() => {
           <!-- Content -->
           <main
             id="legal-modal-description"
-            class="max-h-[70vh] overflow-y-auto px-6 py-6 text-sm"
+            class="max-h-[80vh] overflow-y-auto px-6 py-6 text-sm"
           >
             <!-- Imprint Section -->
             <section
@@ -155,34 +166,47 @@ onUnmounted(() => {
               >
                 {{ t("legal.imprint.title") }}
               </h3>
-              <address
-                class="space-y-1 not-italic text-gray-700 dark:text-gray-300"
-              >
-                <p class="font-medium">{{ t("legal.imprint.responsible") }}</p>
-                <p>{{ t("legal.imprint.name") }}</p>
-                <p>{{ t("legal.imprint.company") }}</p>
-                <p>{{ t("legal.imprint.street") }}</p>
-                <p>{{ t("legal.imprint.postalCity") }}</p>
-                <p>{{ t("legal.imprint.country") }}</p>
+              <address class="not-italic text-gray-700 dark:text-gray-300">
+                <div class="space-y-1">
+                  <p class="font-medium">
+                    {{ t("legal.imprint.responsible") }}
+                  </p>
+                  <p>{{ t("legal.imprint.name") }}</p>
+                  <p>{{ t("legal.imprint.company") }}</p>
+                  <p>{{ t("legal.imprint.street") }}</p>
+                  <p>{{ t("legal.imprint.postalCity") }}</p>
+                  <p>{{ t("legal.imprint.country") }}</p>
+                </div>
 
-                <p class="mt-4">
-                  <span class="font-medium"
-                    >{{ t("legal.imprint.email") }}:</span
-                  >
-                  <a
-                    :href="mailtoHref"
-                    class="ml-1 text-orange-600 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 dark:text-orange-500 dark:focus:ring-offset-gray-800"
-                    :aria-label="t('legal.imprint.emailAriaLabel')"
-                  >
-                    <!-- Obfuscated email display -->
-                    <span aria-hidden="true">{{ emailParts.user }}</span>
-                    <span aria-hidden="true">@</span>
-                    <span aria-hidden="true">{{ emailParts.domain }}</span>
-                    <span aria-hidden="true">.</span>
-                    <span aria-hidden="true">{{ emailParts.tld }}</span>
-                    <span class="sr-only">{{ obfuscatedEmail }}</span>
-                  </a>
-                </p>
+                <div class="space-y-3">
+                  <p class="mt-4">
+                    <span class="font-medium"
+                      >{{ t("legal.imprint.email") }}:</span
+                    >
+                    <a
+                      :href="mailtoHref"
+                      class="ml-1 text-orange-600 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 dark:text-orange-500 dark:focus:ring-offset-gray-800"
+                      :aria-label="t('legal.imprint.emailAriaLabel')"
+                    >
+                      <span aria-hidden="true">{{ emailParts.user }}</span>
+                      <span aria-hidden="true">@</span>
+                      <span aria-hidden="true">{{ emailParts.domain }}</span>
+                      <span aria-hidden="true">.</span>
+                      <span aria-hidden="true">{{ emailParts.tld }}</span>
+                      <span class="sr-only">{{ obfuscatedEmail }}</span>
+                    </a>
+                  </p>
+
+                  <div>
+                    <button
+                      type="button"
+                      @click="openContactModal"
+                      class="rounded-2xl border border-orange-600 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-700 shadow-sm transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 dark:border-orange-500 dark:bg-orange-900/10 dark:text-orange-300 dark:hover:bg-orange-800"
+                    >
+                      {{ t("contact.button") }}
+                    </button>
+                  </div>
+                </div>
               </address>
               <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
                 {{ t("legal.imprint.disclaimer") }}
@@ -219,6 +243,10 @@ onUnmounted(() => {
         </div>
       </div>
     </Transition>
+    <ContactModal
+      :show="showContactModal"
+      @close="closeContactModal"
+    />
   </Teleport>
 </template>
 

@@ -31,3 +31,8 @@ node_modules
 # OS files
 .DS_Store
 Thumbs.db
+
+phpmailer.confix.example.php
+phpmailer.config.php
+phpmailer.php
+composer.json

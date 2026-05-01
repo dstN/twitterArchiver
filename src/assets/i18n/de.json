@@ -174,7 +174,7 @@
     },
     "privacy": {
       "title": "Datenschutzerklärung",
-      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet. Wir erheben, speichern oder übertragen keine personenbezogenen Daten.",
+      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet. Wir erheben, speichern oder übertragen keine personenbezogene Daten.",
       "hosting": {
         "title": "Hosting & Server-Logs",
         "content": "Diese Website wird von Vercel gehostet. Der Hosting-Anbieter erhebt automatisch Informationen in Server-Logdateien (IP-Adresse, Browsertyp, Zeitpunkt). Dies ist technisch notwendig, um die Website sicher anzuzeigen."
@@ -184,5 +184,33 @@
         "content": "Server-Logs werden zu Sicherheits- und Diagnosezwecken erhoben."
       }
     }
+  },
+  "contact": {
+    "title": "Kontaktformular",
+  "button": "Kontaktformular öffnen",
+  "description": "Sende uns eine Nachricht direkt über dieses Formular!",
+  "name": "Name",
+  "email": "E-Mail",
+  "message": "Nachricht",
+  "placeholders": {
+    "name": "Dein Name",
+    "email": "deine@email.de",
+    "message": "Was möchtest du uns mitteilen?"
+  },
+  "privacyNote": "Wir verwenden diese Daten nur zur Beantwortung deiner Anfrage.",
+  "sending": "Sende Nachricht...",
+  "submit": "Nachricht senden",
+  "success": "Deine Nachricht wurde gesendet!",
+  "error": "Beim Senden ist ein Fehler aufgetreten.",
+  "validation": {
+    "name": "Bitte gib deinen Namen ein.",
+    "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
+    "emailInvalid": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "message": "Bitte gib eine Nachricht ein.",
+    "messageShort": "Die Nachricht ist zu kurz.",
+    "spam": "Es sieht aus, als wärst du ein Bot.",
+    "wait": "Bitte warte einen Moment, bevor du das Formular absendest."
   }
 }
+}
+

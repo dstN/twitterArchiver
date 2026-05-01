@@ -1,0 +1,11 @@
+{
+  "name": "twitterarchiver/phpmailer-endpoint",
+  "description": "Minimal composer setup for the PHPMailer endpoint",
+  "type": "project",
+  "require": {
+    "phpmailer/phpmailer": "^6.10"
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
