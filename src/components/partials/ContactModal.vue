@@ -50,8 +50,9 @@ function close() {
 watch(
   () => props.show,
   (visible) => {
-    if (visible) {
+    if (!visible) {
       resetForm();
+      resetStatus();
     }
   },
 );
@@ -300,7 +301,7 @@ async function submitForm() {
                 type="button"
                 @click="submitForm"
                 :disabled="isSending"
-                class="inline-flex items-center justify-center rounded-2xl bg-orange-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60"
+                class="flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-3 text-white transition-all hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-orange-600 dark:hover:bg-orange-700"
               >
                 {{ isSending ? t("contact.sending") : t("contact.submit") }}
               </button>

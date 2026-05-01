@@ -1,10 +1,7 @@
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faScaleBalanced } from "@fortawesome/free-solid-svg-icons";
 import { useDarkMode } from "../composables/useDarkMode";
-import LegalModal from "./partials/LegalModal.vue";
 
 const props = defineProps({
   // When true, buttons are in a row (for dropzone/start screen)
@@ -27,17 +24,6 @@ function toggleLocale() {
     availableLocales[(currentIndex + 1) % availableLocales.length];
   locale.value = nextLocale;
   localStorage.setItem("locale", nextLocale);
-}
-
-// Legal modal state
-const showLegalModal = ref(false);
-
-function openLegalModal() {
-  showLegalModal.value = true;
-}
-
-function closeLegalModal() {
-  showLegalModal.value = false;
 }
 </script>
 
@@ -99,21 +85,5 @@ function closeLegalModal() {
         />
       </svg>
     </button>
-    <button
-      @click="openLegalModal"
-      class="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white shadow-lg transition-all duration-200 hover:shadow-xl dark:border-gray-700 dark:bg-gray-800"
-      :aria-label="t('legal.button')"
-    >
-      <font-awesome-icon
-        :icon="faScaleBalanced"
-        class="h-5 w-5 text-gray-900 dark:text-orange-600 sm:h-6 sm:w-6"
-      />
-    </button>
   </div>
-
-  <!-- Legal Modal -->
-  <LegalModal
-    :show="showLegalModal"
-    @close="closeLegalModal"
-  />
 </template>

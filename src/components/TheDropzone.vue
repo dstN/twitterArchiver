@@ -10,7 +10,11 @@ import {
   faShareNodes,
   faShieldHalved,
   faGaugeHigh,
+  faScaleBalanced,
+  faBottleWater,
 } from "@fortawesome/free-solid-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import LegalModal from "./partials/LegalModal.vue";
 
 const SOFT_ARCHIVE_WARNING_BYTES = 10 * 1024 * 1024 * 1024; // 10GB soft warning threshold
 const LAZY_MEDIA_THRESHOLD_BYTES = 10 * 1024 * 1024; // ~10MB - above this lazily hydrate media
@@ -22,6 +26,7 @@ const props = defineProps({
 
 const validFile = ref(true);
 const dragOver = ref(false);
+const showLegalModal = ref(false);
 const emit = defineEmits(["load", "payloadEvent", "progress"]);
 const featureIcons = [
   faMagnifyingGlass,
@@ -310,11 +315,19 @@ function handleDragLeave(event) {
   dragOver.value = false;
   event.preventDefault();
 }
+
+function openLegalModal() {
+  showLegalModal.value = true;
+}
+
+function closeLegalModal() {
+  showLegalModal.value = false;
+}
 </script>
 
 <template>
   <main
-    class="flex min-h-screen flex-col items-center justify-center gap-5 px-6 pb-6 pt-16 font-sans"
+    class="flex min-h-screen flex-col items-center justify-center gap-5 px-6 pb-20 pt-16 font-sans"
     :class="isLoading ? 'blur-sm' : ''"
   >
     <h1 class="font-display text-gray-900 dark:text-orange-600">
@@ -418,4 +431,45 @@ function handleDragLeave(event) {
       />
     </label>
   </main>
+
+  <div
+    class="fixed inset-x-0 bottom-0 z-40 py-3 text-center text-[0.65rem] text-gray-500 dark:bg-gray-900/90 dark:text-gray-400 md:text-xs"
+  >
+    <div
+      class="mx-auto inline-flex items-center gap-4 px-3 py-2 text-gray-500 dark:text-gray-400"
+    >
+      <a
+        href="https://github.com/dstN/twitterArchiver"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-3 py-2 text-gray-500 transition hover:border-orange-300 hover:text-orange-600 dark:border-gray-700 dark:text-gray-400 dark:hover:border-orange-500 dark:hover:text-orange-500"
+      >
+        <FontAwesomeIcon
+          :icon="faGithub"
+          class="h-4 w-4"
+        />
+        <span>GitHub</span>
+      </a>
+      <button
+        type="button"
+        @click="openLegalModal"
+        class="inline-flex items-center gap-2 px-3 py-2 text-gray-500 transition hover:border-orange-300 hover:text-orange-600 dark:border-gray-700 dark:text-gray-400 dark:hover:border-orange-500 dark:hover:text-orange-500"
+      >
+        <span>{{ $t("sidebar.support.legalAndContact") }}</span>
+      </button>
+      <a
+        href="https://ko-fi.com/dstn"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 px-3 py-2 text-gray-500 transition hover:border-orange-300 hover:text-orange-600 dark:border-gray-700 dark:text-gray-400 dark:hover:border-orange-500 dark:hover:text-orange-500"
+      >
+        <span>{{ $t("sidebar.support.buyMeCoffee") }}</span>
+      </a>
+    </div>
+  </div>
+
+  <LegalModal
+    :show="showLegalModal"
+    @close="closeLegalModal"
+  />
 </template>

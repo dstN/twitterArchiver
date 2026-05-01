@@ -51,8 +51,9 @@
     },
     "reload": "Seite neu laden",
     "support": {
-      "buyMeCoffee": "Spendier mir einen Red Bull",
+      "buyMeCoffee": "Supporte mich",
       "viewOnGitHub": "Auf GitHub ansehen",
+      "legalAndContact": "Legal & Contact",
       "languageToggle": "Sprache wechseln (aktuell: {locale})"
     }
   },

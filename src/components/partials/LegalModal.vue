@@ -201,7 +201,7 @@ onUnmounted(() => {
                     <button
                       type="button"
                       @click="openContactModal"
-                      class="rounded-2xl border border-orange-600 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-700 shadow-sm transition hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 dark:border-orange-500 dark:bg-orange-900/10 dark:text-orange-300 dark:hover:bg-orange-800"
+                      class="flex items-center justify-center gap-2 rounded-lg bg-orange-600 px-4 py-3 text-white transition-all hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700"
                     >
                       {{ t("contact.button") }}
                     </button>

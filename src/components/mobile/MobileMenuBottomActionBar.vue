@@ -148,7 +148,7 @@ function closeLegalModal() {
         @click="openLegalModal"
         class="text-xs text-gray-500 transition-colors hover:text-orange-600 dark:text-gray-400 dark:hover:text-orange-500"
       >
-        {{ t("legal.title") }}
+        {{ t("sidebar.support.legalAndContact") }}
       </button>
     </div>
   </div>

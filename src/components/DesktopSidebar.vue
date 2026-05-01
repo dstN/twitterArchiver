@@ -1,9 +1,14 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faBottleWater, faImages } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBottleWater,
+  faImages,
+  faScaleBalanced,
+} from "@fortawesome/free-solid-svg-icons";
 import { useI18n } from "vue-i18n";
+import LegalModal from "./partials/LegalModal.vue";
 
 const props = defineProps({
   filterType: String,
@@ -26,6 +31,16 @@ const emit = defineEmits([
   "printTweets",
   "reloadPage",
 ]);
+
+const showLegalModal = ref(false);
+
+function openLegalModal() {
+  showLegalModal.value = true;
+}
+
+function closeLegalModal() {
+  showLegalModal.value = false;
+}
 
 function setFilterType(type) {
   emit("setFilterType", type);
@@ -265,7 +280,25 @@ const { t } = useI18n();
               </span>
             </a>
           </div>
+          <div class="mt-3">
+            <button
+              type="button"
+              @click="openLegalModal"
+              class="flex w-full items-center gap-2 rounded-lg bg-gray-800 px-4 py-3 text-white transition-all hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
+            >
+              <font-awesome-icon
+                :icon="faScaleBalanced"
+                class="h-4 w-4"
+              />
+              {{ $t("sidebar.support.legalAndContact") }}
+            </button>
+          </div>
         </div>
+
+        <LegalModal
+          :show="showLegalModal"
+          @close="closeLegalModal"
+        />
 
         <!-- Export Overlay -->
         <Transition name="fade-scale">
