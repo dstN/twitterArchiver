@@ -24,8 +24,8 @@ locally with 100% privacy.
 ## 📦 Tech Stack
 
 - **Framework**: Vue 3 with Composition API
-- **Build Tool**: Vite 7
-- **Styling**: Tailwind CSS 3
+- **Build Tool**: Vite 8 (Rolldown-based)
+- **Styling**: Tailwind CSS 4 (CSS-first config, no `tailwind.config.js`)
 - **Internationalization**: vue-i18n
 - **Icons**: FontAwesome
 - **Archive Processing**: zip.js
@@ -34,7 +34,7 @@ locally with 100% privacy.
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22.12+
 - npm
 
 ### Local Setup
