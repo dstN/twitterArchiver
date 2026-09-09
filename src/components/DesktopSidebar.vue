@@ -68,7 +68,7 @@ const { t } = useI18n();
           <!-- Header / Logo -->
           <h1
             @click="reloadPage"
-            class="cursor-pointer font-display text-2xl tracking-widest text-gray-900 transition-colors hover:text-orange-600 dark:text-orange-600 dark:hover:text-orange-700"
+            class="font-display cursor-pointer text-2xl tracking-widest text-gray-900 transition-colors hover:text-orange-600 dark:text-orange-600 dark:hover:text-orange-700"
           >
             twittr archivr
           </h1>
@@ -304,7 +304,7 @@ const { t } = useI18n();
         <Transition name="fade-scale">
           <div
             v-if="showExportMenu"
-            class="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm"
+            class="fixed inset-0 z-80 flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-xs"
             @click.self="toggleExportMenu"
             role="dialog"
             aria-modal="true"
@@ -360,7 +360,7 @@ const { t } = useI18n();
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="mt-1 h-5 w-5 flex-shrink-0"
+                      class="mt-1 h-5 w-5 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -422,14 +422,14 @@ const { t } = useI18n();
                   <button
                     type="button"
                     @click="$emit('selectAll')"
-                    class="flex-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                    class="flex-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                   >
                     {{ $t("sidebar.export.selectAll") }}
                   </button>
                   <button
                     type="button"
                     @click="$emit('deselectAll')"
-                    class="flex-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                    class="flex-1 rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
                   >
                     {{ $t("sidebar.export.deselectAll") }}
                   </button>
@@ -453,8 +453,8 @@ const { t } = useI18n();
                       :icon="faImages"
                       :class="
                         includeMedia
-                          ? 'mt-1 h-5 w-5 flex-shrink-0 text-orange-600 dark:text-orange-300'
-                          : 'mt-1 h-5 w-5 flex-shrink-0 text-gray-500 dark:text-gray-300'
+                          ? 'mt-1 h-5 w-5 shrink-0 text-orange-600 dark:text-orange-300'
+                          : 'mt-1 h-5 w-5 shrink-0 text-gray-500 dark:text-gray-300'
                       "
                     />
                     <div class="flex-1 pr-2">
@@ -499,7 +499,7 @@ const { t } = useI18n();
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 flex-shrink-0"
+                      class="h-5 w-5 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -535,7 +535,7 @@ const { t } = useI18n();
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 flex-shrink-0"
+                      class="h-5 w-5 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -570,7 +570,7 @@ const { t } = useI18n();
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5 flex-shrink-0"
+                      class="h-5 w-5 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

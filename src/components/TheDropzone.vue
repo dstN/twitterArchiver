@@ -327,8 +327,8 @@ function closeLegalModal() {
 
 <template>
   <main
-    class="flex min-h-screen flex-col items-center justify-center gap-5 px-6 pb-20 pt-16 font-sans"
-    :class="isLoading ? 'blur-sm' : ''"
+    class="flex min-h-screen flex-col items-center justify-center gap-5 px-6 pt-16 pb-20 font-sans"
+    :class="isLoading ? 'blur-xs' : ''"
   >
     <h1 class="font-display text-gray-900 dark:text-orange-600">
       {{ $t("title") }}
@@ -338,7 +338,7 @@ function closeLegalModal() {
     <div
       class="w-full max-w-lg rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
-      <h2 class="mb-3 font-display text-lg text-gray-900 dark:text-gray-300">
+      <h2 class="font-display mb-3 text-lg text-gray-900 dark:text-gray-300">
         {{ $t("dropzone.introduction.title") }}
       </h2>
       <p class="mb-4 text-sm text-gray-600 dark:text-gray-300">
@@ -433,7 +433,7 @@ function closeLegalModal() {
   </main>
 
   <div
-    class="fixed inset-x-0 bottom-0 z-40 py-3 text-center text-[0.65rem] text-gray-500 dark:bg-gray-900/90 dark:text-gray-400 md:text-xs"
+    class="fixed inset-x-0 bottom-0 z-40 py-3 text-center text-[0.65rem] text-gray-500 md:text-xs dark:bg-gray-900/90 dark:text-gray-400"
   >
     <div
       class="mx-auto inline-flex items-center gap-4 px-3 py-2 text-gray-500 dark:text-gray-400"

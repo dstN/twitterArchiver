@@ -146,7 +146,7 @@ async function submitForm() {
     <Transition name="fade-scale">
       <div
         v-if="show"
-        class="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-110 flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-xs"
         @click.self="close"
         role="dialog"
         aria-modal="true"
@@ -167,7 +167,7 @@ async function submitForm() {
             <button
               type="button"
               @click="close"
-              class="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-offset-gray-800"
+              class="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-hidden dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-offset-gray-800"
               :aria-label="t('legal.close')"
             >
               <svg
@@ -207,7 +207,7 @@ async function submitForm() {
                   <input
                     id="contact-name"
                     type="text"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
+                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-xs transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
                     v-model="form.name"
                     :placeholder="t('contact.placeholders.name')"
                     autocomplete="name"
@@ -230,7 +230,7 @@ async function submitForm() {
                   <input
                     id="contact-email"
                     type="email"
-                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
+                    class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-xs transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
                     v-model="form.email"
                     :placeholder="t('contact.placeholders.email', { at: '@' })"
                     autocomplete="email"
@@ -253,7 +253,7 @@ async function submitForm() {
                   <textarea
                     id="contact-message"
                     rows="5"
-                    class="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
+                    class="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 shadow-xs transition focus:border-orange-500 focus:ring-2 focus:ring-orange-200 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-orange-400"
                     v-model="form.message"
                     :placeholder="t('contact.placeholders.message')"
                   ></textarea>

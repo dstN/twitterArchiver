@@ -144,7 +144,7 @@ watch(
         >
           <div class="absolute inset-0 flex items-center justify-center">
             <div
-              class="h-8 w-8 animate-spin rounded-full border-b-2 border-t-2 border-orange-600 dark:border-orange-600"
+              class="h-8 w-8 animate-spin rounded-full border-t-2 border-b-2 border-orange-600 dark:border-orange-600"
             ></div>
           </div>
         </div>
@@ -193,9 +193,12 @@ watch(
 </template>
 
 <style scoped>
+/* v4 requires @reference for scoped styles to see theme utilities in @apply */
+@reference "../../style.css";
+
 /* Twitter-like Media Grid System - Only grid layouts that Tailwind can't handle easily */
 .tweet-media-grid {
-  @apply relative z-0 mb-0 mt-0 w-full overflow-hidden rounded-2xl border border-orange-600;
+  @apply relative z-0 mt-0 mb-0 w-full overflow-hidden rounded-2xl border border-orange-600;
   /* Prevent layout shift and force GPU rendering */
   contain: layout style paint;
   transform: translateZ(0);
@@ -207,7 +210,7 @@ watch(
 }
 
 .media-item:hover .media-container::after {
-  @apply pointer-events-none absolute inset-0 bg-black bg-opacity-10;
+  @apply pointer-events-none absolute inset-0 bg-black/10;
   content: "";
 }
 
@@ -296,7 +299,7 @@ watch(
 }
 
 .video-play-overlay {
-  @apply pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black bg-opacity-30;
+  @apply pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-black/30;
 }
 
 .play-button {

@@ -119,13 +119,13 @@ defineExpose({ open, close });
   <div
     v-if="isOpen"
     @click="close"
-    class="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+    class="fixed inset-0 z-40 bg-black/50 lg:hidden"
   ></div>
 
   <!-- Sidebar Menu -->
   <div
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
-    class="fixed left-0 top-0 z-50 h-full w-80 transform bg-white shadow-2xl transition-transform duration-300 ease-in-out dark:bg-gray-800 lg:hidden"
+    class="fixed top-0 left-0 z-50 h-full w-80 transform bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden dark:bg-gray-800"
   >
     <div class="flex h-full flex-col">
       <!-- Header with Close Button -->
@@ -134,7 +134,7 @@ defineExpose({ open, close });
       >
         <h1
           @click="reloadPage"
-          class="cursor-pointer font-display text-2xl tracking-widest text-gray-900 transition-colors hover:text-orange-600 dark:text-orange-600 dark:hover:text-orange-700"
+          class="font-display cursor-pointer text-2xl tracking-widest text-gray-900 transition-colors hover:text-orange-600 dark:text-orange-600 dark:hover:text-orange-700"
         >
           twittr archivr
         </h1>

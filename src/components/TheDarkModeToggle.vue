@@ -29,7 +29,7 @@ function toggleLocale() {
 
 <template>
   <div
-    class="fixed right-6 top-4 z-50 gap-2 md:right-8 lg:right-6 lg:top-6"
+    class="fixed top-4 right-6 z-50 gap-2 md:right-8 lg:top-6 lg:right-6"
     :class="[
       'lg:flex lg:flex-col lg:items-end',
       isDropzone ? 'flex flex-row items-center' : 'hidden',

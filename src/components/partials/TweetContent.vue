@@ -33,7 +33,7 @@ onUpdated(() => {
     <p
       ref="tweetTextRef"
       v-html="text"
-      class="tweet-text break-words text-base text-gray-700 dark:text-gray-300"
+      class="tweet-text text-base wrap-break-word text-gray-700 dark:text-gray-300"
       :class="{ 'mb-3': hasMedia }"
     ></p>
   </div>

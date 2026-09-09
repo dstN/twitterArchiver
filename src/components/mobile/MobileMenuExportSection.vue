@@ -47,7 +47,7 @@ function printTweets() {
   <!-- Export & Print Section -->
   <div class="mt-6 space-y-3">
     <div
-      class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+      class="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400"
     >
       {{ $t("sidebar.export.button") }}
     </div>
@@ -69,7 +69,7 @@ function printTweets() {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="mt-1 h-5 w-5 flex-shrink-0"
+          class="mt-1 h-5 w-5 shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -158,7 +158,11 @@ function printTweets() {
       >
         <font-awesome-icon
           :icon="faImages"
-          :class="props.includeMedia ? 'mt-1 h-5 w-5 flex-shrink-0 text-orange-600 dark:text-orange-300' : 'mt-1 h-5 w-5 flex-shrink-0 text-gray-500 dark:text-gray-300'"
+          :class="
+            props.includeMedia
+              ? 'mt-1 h-5 w-5 shrink-0 text-orange-600 dark:text-orange-300'
+              : 'mt-1 h-5 w-5 shrink-0 text-gray-500 dark:text-gray-300'
+          "
         />
         <div class="flex-1 pr-2">
           <div class="font-medium">

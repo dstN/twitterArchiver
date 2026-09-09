@@ -34,11 +34,11 @@ function handleProgress(update) {
   >
     <div class="mb-8">
       <div
-        class="mx-auto h-16 w-16 animate-spin rounded-full border-b-4 border-t-4 border-orange-600"
+        class="mx-auto h-16 w-16 animate-spin rounded-full border-t-4 border-b-4 border-orange-600"
       ></div>
     </div>
     <h1
-      class="mb-4 font-display text-3xl font-bold text-orange-600 md:text-4xl"
+      class="font-display mb-4 text-3xl font-bold text-orange-600 md:text-4xl"
     >
       Under Maintenance
     </h1>

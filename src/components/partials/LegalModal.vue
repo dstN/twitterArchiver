@@ -103,7 +103,7 @@ onUnmounted(() => {
     <Transition name="fade-scale">
       <div
         v-if="show"
-        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-sm"
+        class="fixed inset-0 z-100 flex items-center justify-center bg-black/40 px-4 py-8 backdrop-blur-xs"
         @click.self="close"
         role="dialog"
         aria-modal="true"
@@ -129,7 +129,7 @@ onUnmounted(() => {
               ref="closeButtonRef"
               type="button"
               @click="close"
-              class="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-offset-gray-800"
+              class="rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:outline-hidden dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-offset-gray-800"
               :aria-label="t('legal.close')"
             >
               <svg
@@ -166,7 +166,7 @@ onUnmounted(() => {
               >
                 {{ t("legal.imprint.title") }}
               </h3>
-              <address class="not-italic text-gray-700 dark:text-gray-300">
+              <address class="text-gray-700 not-italic dark:text-gray-300">
                 <div class="space-y-1">
                   <p class="font-medium">
                     {{ t("legal.imprint.responsible") }}
@@ -185,7 +185,7 @@ onUnmounted(() => {
                     >
                     <a
                       :href="mailtoHref"
-                      class="ml-1 text-orange-600 hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 dark:text-orange-500 dark:focus:ring-offset-gray-800"
+                      class="ml-1 text-orange-600 hover:underline focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 focus:outline-hidden dark:text-orange-500 dark:focus:ring-offset-gray-800"
                       :aria-label="t('legal.imprint.emailAriaLabel')"
                     >
                       <span aria-hidden="true">{{ emailParts.user }}</span>

@@ -29,7 +29,7 @@ function getThread() {
   <!-- Tweet Header - Flex wrap for mobile -->
   <div class="mb-3 flex items-center gap-3">
     <!-- Avatar -->
-    <div class="flex-shrink-0">
+    <div class="shrink-0">
       <a
         :href="`https://twitter.com/i/user/${account.accountId}`"
         target="_blank"

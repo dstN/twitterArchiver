@@ -123,7 +123,9 @@ function selectFilter(type) {
             >({{ tweetCounts.media }})</small
           >
         </button>
-        <ul class="mt-1 space-y-1 border-l border-orange-200 pl-4 dark:border-orange-900/40">
+        <ul
+          class="mt-1 space-y-1 border-l border-orange-200 pl-4 dark:border-orange-900/40"
+        >
           <li>
             <button
               @click="selectFilter('mediaImages')"

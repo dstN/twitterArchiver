@@ -134,9 +134,7 @@ function close() {
           </svg>
           <span class="font-medium text-gray-900 dark:text-gray-100">
             {{
-              isThread
-                ? t("tweet.share.copyTweet")
-                : t("tweet.share.copyText")
+              isThread ? t("tweet.share.copyTweet") : t("tweet.share.copyText")
             }}
           </span>
         </button>
@@ -180,7 +178,9 @@ function close() {
               :icon="faBluesky"
               class="h-5 w-5"
             />
-            <span class="font-medium">{{ t("tweet.share.platforms.bluesky") }}</span>
+            <span class="font-medium">{{
+              t("tweet.share.platforms.bluesky")
+            }}</span>
           </button>
 
           <button
@@ -191,7 +191,9 @@ function close() {
               :icon="faThreads"
               class="h-5 w-5"
             />
-            <span class="font-medium">{{ t("tweet.share.platforms.threads") }}</span>
+            <span class="font-medium">{{
+              t("tweet.share.platforms.threads")
+            }}</span>
           </button>
 
           <button
@@ -202,7 +204,9 @@ function close() {
               :icon="faMastodon"
               class="h-5 w-5"
             />
-            <span class="font-medium">{{ t("tweet.share.platforms.mastodon") }}</span>
+            <span class="font-medium">{{
+              t("tweet.share.platforms.mastodon")
+            }}</span>
           </button>
 
           <button
@@ -213,7 +217,9 @@ function close() {
               :icon="faLinkedin"
               class="h-5 w-5"
             />
-            <span class="font-medium">{{ t("tweet.share.platforms.linkedin") }}</span>
+            <span class="font-medium">{{
+              t("tweet.share.platforms.linkedin")
+            }}</span>
           </button>
         </div>
       </div>

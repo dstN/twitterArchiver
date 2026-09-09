@@ -230,7 +230,7 @@ const activeFilterDescription = computed(() => {
 
     <!-- Main Content - Full width on mobile, 7 cols on desktop -->
     <div
-      class="scroller col-span-12 bg-white shadow-2xl dark:bg-gray-800 lg:col-span-7 2xl:col-span-5"
+      class="scroller col-span-12 bg-white shadow-2xl lg:col-span-7 2xl:col-span-5 dark:bg-gray-800"
     >
       <div
         class="sticky top-0 z-20 w-full border-b border-solid border-orange-600 bg-white dark:border-orange-600 dark:bg-gray-800"
@@ -287,7 +287,7 @@ const activeFilterDescription = computed(() => {
               {{ t("content.thread.backTo", { filter: activeFilterLabel }) }}
             </button>
             <h2
-              class="mb-1 font-display text-xl tracking-widest text-orange-600 dark:text-orange-600"
+              class="font-display mb-1 text-xl tracking-widest text-orange-600 dark:text-orange-600"
             >
               {{ t("content.thread.title") }}
             </h2>
@@ -303,7 +303,7 @@ const activeFilterDescription = computed(() => {
             class="hidden lg:block"
           >
             <h2
-              class="mb-6 font-display text-2xl tracking-widest text-orange-600 dark:text-orange-600"
+              class="font-display mb-6 text-2xl tracking-widest text-orange-600 dark:text-orange-600"
             >
               {{ activeFilterLabel }}
             </h2>
@@ -334,7 +334,7 @@ const activeFilterDescription = computed(() => {
               <svg
                 v-if="sortBy === 'date'"
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 flex-shrink-0"
+                class="h-4 w-4 shrink-0"
                 :class="{ 'rotate-180': sortDirection === 'asc' }"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -363,7 +363,7 @@ const activeFilterDescription = computed(() => {
               <svg
                 v-if="sortBy === 'likes'"
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 flex-shrink-0"
+                class="h-4 w-4 shrink-0"
                 :class="{ 'rotate-180': sortDirection === 'asc' }"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -398,7 +398,7 @@ const activeFilterDescription = computed(() => {
               <svg
                 v-if="sortBy === 'retweets'"
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 flex-shrink-0"
+                class="h-4 w-4 shrink-0"
                 :class="{ 'rotate-180': sortDirection === 'asc' }"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -429,19 +429,19 @@ const activeFilterDescription = computed(() => {
             :class="{
               'bg-orange-50 dark:bg-orange-900/20':
                 item.id === threadView.originTweet.id,
-              'ring-2 ring-inset ring-orange-600':
+              'ring-2 ring-orange-600 ring-inset':
                 selectionMode && isSelected(item.id),
             }"
           >
             <div
               v-if="selectionMode"
-              class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
+              class="absolute top-1/2 left-4 z-10 -translate-y-1/2"
             >
               <input
                 type="checkbox"
                 :checked="isSelected(item.id)"
                 @change="toggleTweetSelection(item.id)"
-                class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
+                class="h-5 w-5 cursor-pointer rounded-sm border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
               />
             </div>
 
@@ -470,20 +470,20 @@ const activeFilterDescription = computed(() => {
             "
             class="relative border-b border-orange-600 bg-white transition-colors duration-150 hover:bg-slate-100 dark:border-orange-600 dark:bg-gray-800 dark:hover:bg-gray-700"
             :class="{
-              'ring-2 ring-inset ring-orange-600':
+              'ring-2 ring-orange-600 ring-inset':
                 selectionMode && isSelected(item.id),
             }"
           >
             <!-- Selection Checkbox (only in selection mode) -->
             <div
               v-if="selectionMode"
-              class="absolute left-4 top-1/2 z-10 -translate-y-1/2"
+              class="absolute top-1/2 left-4 z-10 -translate-y-1/2"
             >
               <input
                 type="checkbox"
                 :checked="isSelected(item.id)"
                 @change="toggleTweetSelection(item.id)"
-                class="h-5 w-5 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
+                class="h-5 w-5 cursor-pointer rounded-sm border-gray-300 text-orange-600 focus:ring-2 focus:ring-orange-600 dark:border-gray-600"
               />
             </div>
 
@@ -536,12 +536,12 @@ const activeFilterDescription = computed(() => {
     <Transition name="slide-up">
       <div
         v-if="showMobileSearch"
-        class="mobile-search-container w-72 rounded-lg bg-white p-3 shadow-xl dark:bg-gray-800 lg:w-96"
+        class="mobile-search-container w-72 rounded-lg bg-white p-3 shadow-xl lg:w-96 dark:bg-gray-800"
       >
         <div class="relative text-gray-300 dark:text-gray-500">
           <button
             type="button"
-            class="absolute ml-3 mt-2.5 text-gray-400"
+            class="absolute mt-2.5 ml-3 text-gray-400"
           >
             <svg
               class="h-4 w-4 fill-current"
@@ -555,7 +555,7 @@ const activeFilterDescription = computed(() => {
           </button>
           <input
             id="mobile-search-input"
-            class="h-10 w-full rounded-lg border border-gray-300 bg-white px-10 pr-5 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-600 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-600"
+            class="h-10 w-full rounded-lg border border-gray-300 bg-white px-10 pr-5 text-sm text-gray-900 placeholder-gray-400 focus:border-orange-600 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-orange-600"
             type="search"
             inputmode="search"
             autocomplete="off"
@@ -570,7 +570,7 @@ const activeFilterDescription = computed(() => {
     <!-- Search Toggle Button -->
     <button
       @click.stop="toggleMobileSearch()"
-      class="mobile-search-toggle rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl dark:bg-gray-700 dark:hover:bg-gray-600 lg:p-5"
+      class="mobile-search-toggle rounded-full bg-gray-500 p-4 text-white shadow-lg transition-all hover:bg-gray-600 hover:shadow-xl lg:p-5 dark:bg-gray-700 dark:hover:bg-gray-600"
       :class="{
         'bg-orange-600 hover:bg-orange-700 dark:bg-orange-600 dark:hover:bg-orange-700':
           showMobileSearch,
@@ -610,7 +610,7 @@ const activeFilterDescription = computed(() => {
     <button
       v-if="showScrollTop"
       @click="scrollToTop"
-      class="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-orange-600 text-white shadow-lg transition-all hover:bg-orange-700 hover:shadow-xl dark:bg-orange-600 dark:hover:bg-orange-700 lg:h-16 lg:w-16"
+      class="fixed right-6 bottom-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-orange-600 text-white shadow-lg transition-all hover:bg-orange-700 hover:shadow-xl lg:h-16 lg:w-16 dark:bg-orange-600 dark:hover:bg-orange-700"
       aria-label="Scroll to top"
     >
       <svg
