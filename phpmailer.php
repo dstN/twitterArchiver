@@ -4,14 +4,25 @@ use PHPMailer\PHPMailer\Exception;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$allowedOrigins = [
-    'https://twittrarchivr.vercel.app',
-    'http://localhost:3000',
-    'https://localhost:3000',
+// Each site allowed to use this shared relay gets an entry here. The label
+// only changes the subject/body branding of the outgoing mail - unlike a
+// raw client-supplied "recipient" or "subject" parameter would, it can never
+// be used to redirect mail anywhere the origin check below hasn't already
+// vetted. Adding a new site is just adding one more array entry; no new
+// endpoint, no new PHPMailer wiring.
+$siteProfiles = [
+    'https://twittrarchivr.vercel.app' => ['label' => 'twittrArchivr'],
+    'http://localhost:3000' => ['label' => 'twittrArchivr (lokal)'],
+    'https://localhost:3000' => ['label' => 'twittrArchivr (lokal)'],
+    'https://bewerby.de' => ['label' => 'bewerby'],
+    'http://localhost:5173' => ['label' => 'bewerby (lokal)'],
+    'https://localhost:5173' => ['label' => 'bewerby (lokal)'],
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins, true)) {
+$profile = $siteProfiles[$origin] ?? null;
+
+if ($profile !== null) {
     header("Access-Control-Allow-Origin: $origin");
 }
 
@@ -28,6 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
+    exit;
+}
+
+// Previously this only skipped the CORS header for an unlisted origin,
+// which stops a real browser (the preflight for a JSON POST fails without
+// it) but does nothing against a direct, non-browser request - CORS is a
+// browser-enforced mechanism, not server-side access control. A hard reject
+// here closes that gap for every site using this relay, not just the new one.
+if ($profile === null) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Origin not allowed']);
     exit;
 }
 
@@ -88,17 +110,20 @@ try {
     $mail->Port        = 465;
     $mail->SMTPSecure  = PHPMailer::ENCRYPTION_SMTPS;
 
+    $label = $profile['label'];
+
     $mail->setFrom($mailSender, 'Kontaktformular');
-    $mail->addAddress($mailSender, 'twittrArchivr Abuse');
+    $mail->addAddress($mailSender, "$label Abuse");
     $mail->addReplyTo($email, $name);
     $mail->isHTML(true);
 
     $safeName = htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     $safeEmail = htmlspecialchars($email, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $safeLabel = htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     $safeMessage = nl2br(htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
 
-    $mail->Subject = 'Neue Kontaktanfrage von twittrArchivr';
-    $mail->Body    = "<h2>Neue Kontaktanfrage von twittrArchivr</h2>\n" .
+    $mail->Subject = "Neue Kontaktanfrage von $label";
+    $mail->Body    = "<h2>Neue Kontaktanfrage von $safeLabel</h2>\n" .
                      "<p><strong>Name:</strong> $safeName</p>\n" .
                      "<p><strong>E-Mail:</strong> $safeEmail</p>\n" .
                      "<p><strong>Nachricht:</strong><br>$safeMessage</p>";
