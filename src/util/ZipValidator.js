@@ -71,7 +71,9 @@ export class ZipValidator {
 
         scanLength = Math.min(65536, fileSize);
         const scanStart = Math.max(0, fileSize - scanLength);
-        const tailBuffer = await input.slice(scanStart, scanStart + scanLength).arrayBuffer();
+        const tailBuffer = await input
+          .slice(scanStart, scanStart + scanLength)
+          .arrayBuffer();
         scanView = new DataView(tailBuffer);
       }
 

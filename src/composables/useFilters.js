@@ -167,8 +167,7 @@ export function useFilters(data) {
     return withFilterSpinner(() => {
       if (sortBy.value === type) {
         // Toggle direction if same type
-        sortDirection.value =
-          sortDirection.value === "desc" ? "asc" : "desc";
+        sortDirection.value = sortDirection.value === "desc" ? "asc" : "desc";
       } else {
         // New type, default to desc
         sortBy.value = type;
