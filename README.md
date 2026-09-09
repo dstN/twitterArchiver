@@ -34,7 +34,7 @@ locally with 100% privacy.
 
 ### Prerequisites
 
-- Node.js 22.12+
+- Node.js 24+
 - npm
 
 ### Local Setup
