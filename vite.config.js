@@ -29,14 +29,33 @@ export default defineConfig({
           }
           return "assets/[name]-[hash][extname]";
         },
-        manualChunks: {
-          vendor: ["vue", "vue-i18n"],
-          "zip-handler": ["@zip.js/zip.js"],
-          icons: [
-            "@fortawesome/fontawesome-svg-core",
-            "@fortawesome/free-solid-svg-icons",
-            "@fortawesome/free-brands-svg-icons",
-            "@fortawesome/vue-fontawesome",
+        // Rolldown (the bundler behind Vite 8) replaces Rollup's
+        // `manualChunks`. The object form is rejected outright, and the
+        // function form is only advisory - Rolldown still placed the shared
+        // Vue core (@vue/shared, @vue/reactivity, @vue/runtime-core) into
+        // the `icons` chunk because @fortawesome/vue-fontawesome pulls it in.
+        //
+        // `advancedChunks` with an explicit `priority` is what actually
+        // pins them: the highest-priority matching group wins, so `vendor`
+        // claims the Vue and i18n runtime before `icons` can absorb it.
+        // Without the priorities the grouping silently reverts.
+        advancedChunks: {
+          groups: [
+            {
+              name: "vendor",
+              priority: 100,
+              test: /[\\/]node_modules[\\/](vue|vue-i18n|@vue|@intlify)[\\/]/,
+            },
+            {
+              name: "zip-handler",
+              priority: 50,
+              test: /[\\/]node_modules[\\/]@zip\.js[\\/]/,
+            },
+            {
+              name: "icons",
+              priority: 10,
+              test: /[\\/]node_modules[\\/]@fortawesome[\\/]/,
+            },
           ],
         },
       },
