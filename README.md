@@ -1,27 +1,25 @@
-# 🐦 Twittr_Archivr
+# Twittr_Archivr
 
-Your Private Twitter Archive Viewer - Explore and organize your Twitter archive
-locally with 100% privacy.
+Reads a Twitter/X data export and lets you search and browse it in your
+browser. The archive is never uploaded anywhere.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dstN/twitterArchiver)
 
-## ✨ Features
+Live at [twittrarchivr.vercel.app](https://twittrarchivr.vercel.app).
 
-- 🔒 **100% Privacy** - All processing happens locally in your browser
-- 🔍 **Powerful Search** - Find tweets instantly with real-time search
-- 📊 **Smart Filters** - Filter by media, replies, retweets, and more
-- 🎨 **Dark Mode** - Beautiful dark/light theme support
-- 📱 **Mobile Friendly** - Fully responsive design
-- 🌍 **Internationalization** - English & German support
-- 💾 **Export Options** - Export to JSON, CSV, or print
-- 🖼️ **Media Support** - View photos and videos from your archive
-- 🧵 **Thread View** - See your tweet threads properly organized
+## What it does
 
-## 🚀 Live Demo
+- Unzips and parses the export locally. Nothing is sent to a server, because
+  there is no server to send it to.
+- Full-text search across tweets, updating as you type.
+- Filters for media, replies, retweets and threads.
+- Threads are reassembled and shown in order.
+- Photos and videos from the archive are viewable inline.
+- Export to JSON or CSV, or print.
+- Light and dark theme.
+- English and German.
 
-**Production**: [twittrarchivr.vercel.app](https://twittrarchivr.vercel.app)
-
-## 📦 Tech Stack
+## Stack
 
 - **Framework**: Vue 3 with Composition API
 - **Build Tool**: Vite 8 (Rolldown-based)
@@ -30,54 +28,39 @@ locally with 100% privacy.
 - **Icons**: FontAwesome
 - **Archive Processing**: zip.js
 
-## 🛠️ Development
+## Development
 
-### Prerequisites
-
-- Node.js 24+
-- npm
-
-### Local Setup
+Requires Node.js 24 or newer, and npm.
 
 ```bash
-# Clone repository
 git clone https://github.com/dstN/twitterArchiver.git
 cd twitterArchiver
-
-# Install dependencies
 npm install
-
-# Start dev server
-npm run dev
-
-# Open http://localhost:3000
+npm run dev     # http://localhost:3000
 ```
 
-### Build for Production
+To build and check the production output:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## 🚢 Deployment
+Deployment to Vercel happens automatically on push.
 
-This project is configured for automatic deployment on Vercel.
-
-## 📖 Documentation
+## Documentation
 
 - [Meta Tags & SEO Setup](META_SETUP_GUIDE.md)
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+Issues and pull requests are welcome.
 
-## 📄 License
+## License
 
-MIT License - feel free to use this project for your own archives!
+MIT.
 
-## ⚠️ Disclaimer
+## Disclaimer
 
-This is an unofficial tool and is not affiliated with Twitter/X. It's designed
-to help you view your own Twitter archive data that you've downloaded from
-Twitter.
+An unofficial tool, not affiliated with Twitter/X. It reads the archive you
+download from your own account.
