@@ -171,11 +171,11 @@
       "country": "Germany",
       "email": "Email",
       "emailAriaLabel": "Send email to abuse at yinside dot de",
-      "disclaimer": "This tool is provided for personal use. All data processing happens locally in your browser."
+      "disclaimer": "This tool is provided for personal use. Your archive is processed only locally in your browser."
     },
     "privacy": {
       "title": "Privacy Policy",
-      "intro": "This application is designed with privacy in mind. Your Twitter archive is processed entirely in your browser. We do not collect, store, or transmit any personal data.",
+      "intro": "This application is designed with privacy in mind. Your Twitter archive is processed entirely in your browser and is never uploaded. Personal data is processed only in the hosting provider's server logs and when you write to us through the contact form.",
       "hosting": {
         "title": "Hosting & Server Logs",
         "content": "This website is hosted by Vercel. The hosting provider automatically collects information in server log files (IP address, browser type, time). This is technically necessary to display the site securely."
@@ -183,6 +183,11 @@
       "logs": {
         "title": "Log Retention",
         "content": "Server logs are collected for security and diagnostic purposes."
+      },
+      "contact": {
+        "title": "Contact Form",
+        "content": "When you write to us through the contact form, your browser sends your name, email address and message over an encrypted connection to a script at contact.yinside.de. The script runs on a web hosting account with netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe, Germany; netcup acts as our processor under a data processing agreement pursuant to Art. 28 GDPR. The servers are located in Germany; no data is transferred to third countries. The script stores nothing and immediately forwards your message as an email to our mailbox. We use your details only to answer your request. The legal basis is Art. 6(1)(b) GDPR if your request relates to a contract, otherwise Art. 6(1)(f) GDPR; our legitimate interest is answering your request.",
+        "storage": "The web server of contact.yinside.de writes access and error logs (including IP address and time), which are deleted after 3 days at the latest. We delete your message once your request has been dealt with, unless statutory retention obligations apply."
       }
     }
   },

@@ -171,11 +171,11 @@
       "country": "Deutschland",
       "email": "E-Mail",
       "emailAriaLabel": "E-Mail senden an abuse at yinside punkt de",
-      "disclaimer": "Dieses Tool wird für den privaten Gebrauch bereitgestellt. Alle Datenverarbeitung erfolgt lokal in deinem Browser."
+      "disclaimer": "Dieses Tool wird für den privaten Gebrauch bereitgestellt. Dein Archiv wird ausschließlich lokal in deinem Browser verarbeitet."
     },
     "privacy": {
       "title": "Datenschutzerklärung",
-      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet. Wir erheben, speichern oder übertragen keine personenbezogene Daten.",
+      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet und nicht hochgeladen. Personenbezogene Daten fallen nur in den Server-Logs des Hostings an und wenn du uns über das Kontaktformular schreibst.",
       "hosting": {
         "title": "Hosting & Server-Logs",
         "content": "Diese Website wird von Vercel gehostet. Der Hosting-Anbieter erhebt automatisch Informationen in Server-Logdateien (IP-Adresse, Browsertyp, Zeitpunkt). Dies ist technisch notwendig, um die Website sicher anzuzeigen."
@@ -183,6 +183,11 @@
       "logs": {
         "title": "Log-Aufbewahrung",
         "content": "Server-Logs werden zu Sicherheits- und Diagnosezwecken erhoben."
+      },
+      "contact": {
+        "title": "Kontaktformular",
+        "content": "Wenn du uns über das Kontaktformular schreibst, schickt dein Browser deinen Namen, deine E-Mail-Adresse und deine Nachricht verschlüsselt an ein Skript unter contact.yinside.de. Das Skript liegt auf einem Webspace der netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe, Deutschland, die für uns als Auftragsverarbeiter tätig ist; mit ihr besteht ein Vertrag nach Art. 28 DSGVO. Die Server stehen in Deutschland; eine Übermittlung in Drittländer findet nicht statt. Das Skript speichert nichts und leitet deine Nachricht sofort als E-Mail an unser Postfach weiter. Wir verwenden deine Angaben nur, um deine Anfrage zu beantworten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, wenn sich deine Anfrage auf einen Vertrag bezieht, sonst Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist, deine Anfrage zu beantworten.",
+        "storage": "Der Webserver von contact.yinside.de schreibt Zugriffs- und Fehlerprotokolle (unter anderem IP-Adresse und Zeitpunkt), die nach höchstens 3 Tagen gelöscht werden. Deine Nachricht löschen wir, sobald deine Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen."
       }
     }
   },

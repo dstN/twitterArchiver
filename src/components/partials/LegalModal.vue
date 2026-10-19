@@ -237,6 +237,14 @@ onUnmounted(() => {
                   </h4>
                   <p>{{ t("legal.privacy.logs.content") }}</p>
                 </div>
+
+                <div>
+                  <h4 class="mb-2 font-medium">
+                    {{ t("legal.privacy.contact.title") }}
+                  </h4>
+                  <p>{{ t("legal.privacy.contact.content") }}</p>
+                  <p class="mt-2">{{ t("legal.privacy.contact.storage") }}</p>
+                </div>
               </div>
             </section>
           </main>
