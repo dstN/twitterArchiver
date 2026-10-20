@@ -161,6 +161,7 @@
     "title": "Legal Information",
     "button": "Legal",
     "close": "Close",
+    "newTab": "opens in a new tab",
     "imprint": {
       "title": "Imprint",
       "responsible": "Information according to § 5 DDG:",
@@ -171,19 +172,43 @@
       "country": "Germany",
       "email": "Email",
       "emailAriaLabel": "Send email to abuse at yinside dot de",
-      "disclaimer": "This tool is provided for personal use. All data processing happens locally in your browser."
+      "disclaimer": "This tool is provided for personal use. Your archive is processed only locally in your browser."
     },
     "privacy": {
       "title": "Privacy Policy",
-      "intro": "This application is designed with privacy in mind. Your Twitter archive is processed entirely in your browser. We do not collect, store, or transmit any personal data.",
+      "intro": "This application is designed with privacy in mind. Your Twitter archive is processed entirely in your browser and is never uploaded. Personal data is processed only in the hosting provider's server logs and when you write to us through the contact form.",
       "hosting": {
         "title": "Hosting & Server Logs",
-        "content": "This website is hosted by Vercel. The hosting provider automatically collects information in server log files (IP address, browser type, time). This is technically necessary to display the site securely."
+        "content": "This website is hosted by Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, USA. When you request a page, Vercel processes technical data about the request and writes it to server logs, including your IP address, the time, the requested address with its parameters, your browser's identifier (user agent) and, if your browser sends it, the page you came from (referrer). Vercel also derives your city and country from the IP address. The website cannot be delivered without this processing. The legal basis is Art. 6(1)(f) GDPR; our legitimate interest is delivering the website to you securely.",
+        "transfer": "Vercel is based in the USA and also processes the data there. Vercel is certified under the EU-U.S. Data Privacy Framework, so the transfer is based on the European Commission's adequacy decision of 10 July 2023 (Art. 45 GDPR)."
       },
       "logs": {
-        "title": "Log Retention",
-        "content": "Server logs are collected for security and diagnostic purposes."
-      }
+        "title": "Server Log Retention",
+        "content": "How long Vercel keeps the server logs is governed by Vercel's own retention rules; Vercel does not state a fixed period. For details, see {link}.",
+        "link": "Vercel's privacy policy"
+      },
+      "contact": {
+        "title": "Contact Form",
+        "content": "When you write to us through the contact form, your browser sends your name, email address and message over an encrypted connection to a script at contact.yinside.de. The script runs on a web hosting account with netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe, Germany; netcup acts as our processor under a data processing agreement pursuant to Art. 28 GDPR. The servers are located in Germany; no data is transferred to third countries. The script stores nothing and immediately forwards your message as an email to our mailbox. We use your details only to answer your request. The legal basis is Art. 6(1)(b) GDPR if your request relates to a contract, otherwise Art. 6(1)(f) GDPR; our legitimate interest is answering your request.",
+        "storage": "The web server of contact.yinside.de writes access and error logs (including IP address and time), which are deleted after 3 days at the latest. We delete your message once your request has been dealt with, unless statutory retention obligations apply."
+      },
+      "rights": {
+        "title": "Your Rights",
+        "intro": "Under the GDPR you have the following rights regarding the data we process about you:",
+        "access": "Access to the data we process about you (Art. 15 GDPR)",
+        "rectification": "Rectification of inaccurate and completion of incomplete data (Art. 16 GDPR)",
+        "erasure": "Erasure of your data (Art. 17 GDPR)",
+        "restriction": "Restriction of processing (Art. 18 GDPR)",
+        "portability": "Receiving your data in a structured, commonly used and machine-readable format (Art. 20 GDPR)",
+        "automated": "Not being subject to a decision based solely on automated processing that produces legal effects concerning you or similarly significantly affects you (Art. 22 GDPR); we make no such decisions",
+        "complaint": "If you believe that the processing of your data infringes the GDPR, you can lodge a complaint with a data protection supervisory authority, in particular in the Member State of your habitual residence, place of work or place of the alleged infringement (Art. 77 GDPR).",
+        "contact": "To exercise your rights, just write to us at {email}."
+      },
+      "objection": {
+        "title": "Right to Object",
+        "content": "Where we process your data on the basis of Art. 6(1)(f) GDPR, that is for the server logs and for contact form requests that do not relate to a contract, you have the right to object to this processing at any time on grounds relating to your particular situation (Art. 21(1) GDPR). We will then no longer process your data unless we can demonstrate compelling legitimate grounds for the processing which override your interests, rights and freedoms, or the processing serves the establishment, exercise or defence of legal claims. A simple message to {email} is enough to object."
+      },
+      "updated": "Last updated: 20 October 2026"
     }
   },
   "contact": {

@@ -161,6 +161,7 @@
     "title": "Rechtliche Informationen",
     "button": "Recht",
     "close": "Schließen",
+    "newTab": "öffnet in einem neuen Tab",
     "imprint": {
       "title": "Impressum",
       "responsible": "Angaben gemäß § 5 DDG:",
@@ -171,19 +172,43 @@
       "country": "Deutschland",
       "email": "E-Mail",
       "emailAriaLabel": "E-Mail senden an abuse at yinside punkt de",
-      "disclaimer": "Dieses Tool wird für den privaten Gebrauch bereitgestellt. Alle Datenverarbeitung erfolgt lokal in deinem Browser."
+      "disclaimer": "Dieses Tool wird für den privaten Gebrauch bereitgestellt. Dein Archiv wird ausschließlich lokal in deinem Browser verarbeitet."
     },
     "privacy": {
       "title": "Datenschutzerklärung",
-      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet. Wir erheben, speichern oder übertragen keine personenbezogene Daten.",
+      "intro": "Diese Anwendung wurde mit Blick auf Datenschutz entwickelt. Dein Twitter-Archiv wird vollständig in deinem Browser verarbeitet und nicht hochgeladen. Personenbezogene Daten fallen nur in den Server-Logs des Hostings an und wenn du uns über das Kontaktformular schreibst.",
       "hosting": {
         "title": "Hosting & Server-Logs",
-        "content": "Diese Website wird von Vercel gehostet. Der Hosting-Anbieter erhebt automatisch Informationen in Server-Logdateien (IP-Adresse, Browsertyp, Zeitpunkt). Dies ist technisch notwendig, um die Website sicher anzuzeigen."
+        "content": "Diese Website wird von der Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, USA, gehostet. Wenn du eine Seite aufrufst, verarbeitet Vercel technische Daten zu deinem Abruf und schreibt sie in Server-Logs, unter anderem deine IP-Adresse, den Zeitpunkt, die aufgerufene Adresse samt Parametern, die Kennung deines Browsers (User-Agent) und, falls dein Browser sie mitschickt, die Seite, von der du kommst (Referrer). Aus der IP-Adresse leitet Vercel außerdem Stadt und Land ab. Ohne diese Verarbeitung lässt sich die Website nicht ausliefern. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist, dir die Website sicher auszuliefern.",
+        "transfer": "Vercel hat seinen Sitz in den USA und verarbeitet die Daten auch dort. Vercel ist nach dem EU-U.S. Data Privacy Framework zertifiziert. Die Übermittlung stützt sich deshalb auf den Angemessenheitsbeschluss der Europäischen Kommission vom 10. Juli 2023 (Art. 45 DSGVO)."
       },
       "logs": {
-        "title": "Log-Aufbewahrung",
-        "content": "Server-Logs werden zu Sicherheits- und Diagnosezwecken erhoben."
-      }
+        "title": "Speicherdauer der Server-Logs",
+        "content": "Wie lange Vercel die Server-Logs aufbewahrt, richtet sich nach den eigenen Aufbewahrungsregeln von Vercel; eine feste Frist nennt Vercel nicht. Näheres steht in der {link}.",
+        "link": "Datenschutzerklärung von Vercel"
+      },
+      "contact": {
+        "title": "Kontaktformular",
+        "content": "Wenn du uns über das Kontaktformular schreibst, schickt dein Browser deinen Namen, deine E-Mail-Adresse und deine Nachricht verschlüsselt an ein Skript unter contact.yinside.de. Das Skript liegt auf einem Webspace der netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe, Deutschland, die für uns als Auftragsverarbeiter tätig ist; mit ihr besteht ein Vertrag nach Art. 28 DSGVO. Die Server stehen in Deutschland; eine Übermittlung in Drittländer findet nicht statt. Das Skript speichert nichts und leitet deine Nachricht sofort als E-Mail an unser Postfach weiter. Wir verwenden deine Angaben nur, um deine Anfrage zu beantworten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, wenn sich deine Anfrage auf einen Vertrag bezieht, sonst Art. 6 Abs. 1 lit. f DSGVO; unser berechtigtes Interesse ist, deine Anfrage zu beantworten.",
+        "storage": "Der Webserver von contact.yinside.de schreibt Zugriffs- und Fehlerprotokolle (unter anderem IP-Adresse und Zeitpunkt), die nach höchstens 3 Tagen gelöscht werden. Deine Nachricht löschen wir, sobald deine Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen."
+      },
+      "rights": {
+        "title": "Deine Rechte",
+        "intro": "Du hast nach der DSGVO folgende Rechte in Bezug auf die Daten, die wir über dich verarbeiten:",
+        "access": "Auskunft darüber, welche Daten wir über dich verarbeiten (Art. 15 DSGVO)",
+        "rectification": "Berichtigung unrichtiger und Vervollständigung unvollständiger Daten (Art. 16 DSGVO)",
+        "erasure": "Löschung deiner Daten (Art. 17 DSGVO)",
+        "restriction": "Einschränkung der Verarbeitung (Art. 18 DSGVO)",
+        "portability": "Herausgabe deiner Daten in einem strukturierten, gängigen und maschinenlesbaren Format (Art. 20 DSGVO)",
+        "automated": "Keine ausschließlich automatisierte Entscheidung, die dir gegenüber rechtliche Wirkung entfaltet oder dich ähnlich erheblich beeinträchtigt (Art. 22 DSGVO); solche Entscheidungen treffen wir nicht",
+        "complaint": "Wenn du meinst, dass die Verarbeitung deiner Daten gegen die DSGVO verstößt, kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, insbesondere in dem Mitgliedstaat deines Aufenthaltsorts, deines Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes (Art. 77 DSGVO).",
+        "contact": "Um deine Rechte geltend zu machen, schreib uns formlos an {email}."
+      },
+      "objection": {
+        "title": "Widerspruchsrecht",
+        "content": "Soweit wir deine Daten auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO verarbeiten, also bei den Server-Logs und bei Anfragen über das Kontaktformular, die sich nicht auf einen Vertrag beziehen, kannst du dieser Verarbeitung aus Gründen, die sich aus deiner besonderen Situation ergeben, jederzeit widersprechen (Art. 21 Abs. 1 DSGVO). Wir verarbeiten deine Daten dann nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe für die Verarbeitung nachweisen, die deine Interessen, Rechte und Freiheiten überwiegen, oder die Verarbeitung dient der Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen. Für deinen Widerspruch genügt eine formlose Nachricht an {email}."
+      },
+      "updated": "Stand: 20. Oktober 2026"
     }
   },
   "contact": {
