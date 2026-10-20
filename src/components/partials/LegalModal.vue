@@ -31,6 +31,20 @@ const mailtoHref = computed(() => {
   return `mailto:${emailParts.user}@${emailParts.domain}.${emailParts.tld}`;
 });
 
+// Links inside running text: underlined so they don't rely on colour alone,
+// orange-800/300 for AAA contrast on the white/gray-800 background.
+const inlineLinkClass =
+  "text-orange-800 underline hover:no-underline focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 focus:outline-hidden dark:text-orange-300 dark:focus:ring-offset-gray-800";
+
+const rights = [
+  "access",
+  "rectification",
+  "erasure",
+  "restriction",
+  "portability",
+  "automated",
+];
+
 const showContactModal = ref(false);
 
 function openContactModal() {
@@ -229,13 +243,30 @@ onUnmounted(() => {
                     {{ t("legal.privacy.hosting.title") }}
                   </h4>
                   <p>{{ t("legal.privacy.hosting.content") }}</p>
+                  <p class="mt-2">{{ t("legal.privacy.hosting.transfer") }}</p>
                 </div>
 
                 <div>
                   <h4 class="mb-2 font-medium">
                     {{ t("legal.privacy.logs.title") }}
                   </h4>
-                  <p>{{ t("legal.privacy.logs.content") }}</p>
+                  <i18n-t
+                    keypath="legal.privacy.logs.content"
+                    tag="p"
+                  >
+                    <template #link>
+                      <a
+                        href="https://vercel.com/legal/privacy-policy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        :class="inlineLinkClass"
+                        >{{ t("legal.privacy.logs.link")
+                        }}<span class="sr-only">
+                          ({{ t("legal.newTab") }})</span
+                        ></a
+                      >
+                    </template>
+                  </i18n-t>
                 </div>
 
                 <div>
@@ -245,6 +276,55 @@ onUnmounted(() => {
                   <p>{{ t("legal.privacy.contact.content") }}</p>
                   <p class="mt-2">{{ t("legal.privacy.contact.storage") }}</p>
                 </div>
+
+                <div>
+                  <h4 class="mb-2 font-medium">
+                    {{ t("legal.privacy.rights.title") }}
+                  </h4>
+                  <p>{{ t("legal.privacy.rights.intro") }}</p>
+                  <ul class="mt-2 list-disc space-y-1 pl-5">
+                    <li
+                      v-for="right in rights"
+                      :key="right"
+                    >
+                      {{ t(`legal.privacy.rights.${right}`) }}
+                    </li>
+                  </ul>
+                  <p class="mt-2">{{ t("legal.privacy.rights.complaint") }}</p>
+                  <i18n-t
+                    keypath="legal.privacy.rights.contact"
+                    tag="p"
+                    class="mt-2"
+                  >
+                    <template #email>
+                      <a
+                        :href="mailtoHref"
+                        :class="inlineLinkClass"
+                        >{{ obfuscatedEmail }}</a
+                      >
+                    </template>
+                  </i18n-t>
+                </div>
+
+                <div>
+                  <h4 class="mb-2 font-medium">
+                    {{ t("legal.privacy.objection.title") }}
+                  </h4>
+                  <i18n-t
+                    keypath="legal.privacy.objection.content"
+                    tag="p"
+                  >
+                    <template #email>
+                      <a
+                        :href="mailtoHref"
+                        :class="inlineLinkClass"
+                        >{{ obfuscatedEmail }}</a
+                      >
+                    </template>
+                  </i18n-t>
+                </div>
+
+                <p>{{ t("legal.privacy.updated") }}</p>
               </div>
             </section>
           </main>
